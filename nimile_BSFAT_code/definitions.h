@@ -1,0 +1,68 @@
+#ifndef _DEFINITIONS_H_
+#define _DEFINITIONS_H_
+/**
+ * This file contains various definition which are used inside the project.
+ */
+#define TRUE	1
+#define FALSE	0
+
+#define EXCEPTION_NO					 0
+#define EXCEPTION						-1
+#define EXCEPTION_NOT_EXIST				-2
+#define EXCEPTION_INDEX_OUT_OF_BOUNDS	-3
+
+#define EXCEPTION_BS_FAT				-4
+#define EXCEPTION_BS_BLOCK				-5
+#define EXCEPTION_BS_CLUSTER			-6
+#define EXCEPTION_BS_FILE				-7
+
+#define EXCEPTION_BS_FAT_COULD_NOT_INITIALIZE		-41
+#define EXCEPTION_BS_FAT_SIZE_MISMATCH				-42
+#define	EXCEPTION_BS_FAT_NO_FREE_FILES				-43
+#define EXCEPTION_BS_CLUSTER_INDEX_OUT_OF_BOUNDS	-49
+
+#define EXCEPTION_BS_CLUSTER_NOT_INITIALIZED -61 
+
+#define EXCEPTION_BS_FILE_FILE_NOT_CREATED	-71
+#define EXCEPTION_BS_FILE_TO_LARGE_STRING	-72
+#define EXCEPTION_BS_FILE_NOT_ENOUGH_SPACE	-73
+
+#define HAS_EXCEPTION(result) (result < 0)
+
+#define BS_BLOCK_FREE		0
+#define BS_BLOCK_RESERVED	1
+#define BS_BLOCK_OCCUPIED	1
+#define BS_BLOCK_CORRUPTED	1
+
+#define BS_FILE_READ_ONLY		0b00000001
+#define BS_FILE_EXECUTABLE		0b00000010
+#define BS_FILE_HIDDEN			0b00000100
+#define BS_FILE_SYSTEM			0b00001000
+#define BS_FILE_DIRECTORY		0b00010000
+#define BS_FILE_MODIFY			0b00100000
+#define BS_FILE_DELETED			0b01000000
+#define BS_FILE_FREE			0b10000000
+#define BS_FILE_ALL				0b11111111
+
+#define BS_FILE_HOURS	0b1111100000000000
+#define BS_FILE_MINUTES 0b0001011111100000
+#define BS_FILE_SECONDS 0b0000000000011111
+
+#define BS_FILE_YEAR 	1111111000000000
+#define BS_FILE_MONTH	0000000111100000
+#define BS_FILE_DAY		0000000000011111 
+
+#define BLOCK_SIZE 512
+#define MAX_FILES 10
+#define INVALID_FILE_INDEX (MAX_FILES + MAX_FILES)
+
+typedef unsigned int uint;
+typedef int boolean;
+typedef char* cstring;
+
+typedef struct BSBlock_t BSBlock;
+typedef struct BSFile_t BSFile;
+typedef struct BSFat_t BSFat;
+typedef struct BSCluster_t BSCluster;
+
+#endif //_DEFINITIONS_H_
