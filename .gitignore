@@ -10,4 +10,4 @@
 *.code-workspace
 
 # Build directory
-build/*
+code/build/*

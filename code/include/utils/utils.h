@@ -47,8 +47,8 @@ namespace utils{
 
     const static char* TERMINAL_CLEAR = "\e[1;1H\e[2J";
 
-    const static char* ICON_ACCEPT_RAW = "\xE2\x9C\x93";
-    const static char* ICON_DENIED_RAW = "x";
+    const static char* ICON_ACCEPT_RAW = "✓";// "\xE2\x9C\x93";
+    const static char* ICON_DENIED_RAW = "✗";
     const static char* ICON_ACCEPT = "\x1B[32m\xE2\x9C\x93\x1B[0m";
     const static char* ICON_DENIED = "\x1B[31mx\x1B[0m";
 
