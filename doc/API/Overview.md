@@ -1,31 +1,15 @@
 # Operating System Project API
 ## Table of content
 - [Operating System Project API](#operating-system-project-api)
-  * [Table of content](#Table-of-content)
- 
-  * [print(String/Number message)](#print-string-number-message-)
-    + [Argument(s)](#argument-s-), [Returns](#returns), [Example](#example)
- 
-  * [clear()](#clear--)
-    + [Note](#note-1), [Argument(s)](#argument-s--1), [Returns](#returns-1), [Example](#example-1)
- 
-  * [createDisk(String path, Number size)](#createdisk-string-path--number-size-)
-    + [Note](#note-2), [Argument(s)](#argument-s--2), [Returns](#returns-2), [Example](#example-2)
- 
-  * [loadDisk(String path)](#loaddisk-string-path-)
-    + [Note](#note-3), [Argument(s)](#argument-s--3), [Returns](#returns-3), [Example](#example-3)
- 
-  * [listDisks()](#listdisks--)
-    + [Note](#note-4), [Argument(s)](#argument-s--4), [Returns](#returns-4), [Example](#example-4)
- 
-  * [selectDisk(Number index)](#selectdisk-number-index-)
-    + [Note](#note-5), [Argument(s)](#argument-s--5), [Returns](#returns-5), [Example](#example-5)
- 
+  * [Table of content](#Table-of-content) 
+  * [print(String/Number message)](#print-string-number-message-) 
+  * [clear()](#clear--) 
+  * [createDisk(String path, Number size)](#createdisk-string-path--number-size-) 
+  * [loadDisk(String path)](#loaddisk-string-path-) 
+  * [listDisks()](#listdisks--) 
+  * [selectDisk(Number index)](#selectdisk-number-index-) 
   * [mount()](#mount--)
-    + [Note](#note-6), [Argument(s)](#argument-s--6), [Returns](#returns-6), [Example](#example-6)
- 
   * [unmount()](#unmount--)
-    + [Note](#note-7), [Argument(s)](#argument-s--7), [Returns](#returns-7), [Example](#example-7)
     
     <br>
 ---
