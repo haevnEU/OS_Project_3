@@ -222,6 +222,13 @@
 >
 >>### Example
 >>```Lua 
+>>
+>>-- Select disk 0, which should be /data/operating_systems/myDisk5MB.vdf
+>>>selectDisk(0);
+>>-- mount the previous selected disk
+>>mount();
+>>-- do something
+>>-- Finished and now unmount the disk to release the used resources
 >>unmount();
 >>```
 >[Table of content](#Table-of-content)
