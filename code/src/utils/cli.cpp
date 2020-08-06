@@ -146,13 +146,11 @@ void CLI::unmountDisk(){
 void CLI::startDiskUtils(){
     if(nullptr == currentDisk){
         std::cout << utils::COLOR_RED << "No disks was selected." << utils::COLOR_RESET<< std::endl;
-        wait(std::cin);
         return;
     }
 
     if(!currentDisk->isMounted()){
         std::cout << utils::COLOR_RED << "Disk is not mounted" << utils::COLOR_RESET<< std::endl;
-        wait(std::cin);
         return;
     }
 
@@ -176,7 +174,9 @@ void CLI::scriptMode(){
     API api = API::getInstance();
     while(true){
         std::string in;
+        std::cout << ">" << utils::COLOR_BLUE;
         std::cin >> in;
+        std::cout << utils::COLOR_RESET;
         if(in.size() > 0){
             if(in[0] == 'q'){
                 return;
@@ -231,6 +231,6 @@ void CLI::enterInteractiveMode(){
         case 'q':
             return;
         }
-        wait( std::cin );
+        wait(std::cin);
     }
 }

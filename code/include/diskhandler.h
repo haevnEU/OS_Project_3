@@ -28,7 +28,7 @@ public static_methods:
     std::vector<Disk*>* getDisks() const;
     Disk* disk;
 
-    Disk *getDisk() const;
+    Disk* getDisk() const;
     void setDisk(int index);
 };
 

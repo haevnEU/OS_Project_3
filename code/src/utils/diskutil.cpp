@@ -55,7 +55,7 @@ void diskUtil::createMBR(){
     utils::printModule("Disk Utils", "MBRCreator", "This module submodule creates a "
                                                    "Master Boot Record on a virtual disk"
                                                    "file.\n"
-                                                   "Importan note using this on an existing"
+                                                   "Important note using this on an existing"
                                                    "MBR will override its content and all"
                                                    "data will be lost.");
     if(nullptr == disk){
@@ -70,7 +70,6 @@ void diskUtil::createMBR(){
         disk->createMasterBootRecord();
     }else{
         std::cout << "Operation aborted." << std::endl;
-        wait(std::cin);
     }
 }
 

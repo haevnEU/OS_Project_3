@@ -54,6 +54,7 @@ namespace utils{
 
 
     static void printHeader(const char* name){
+        
         struct winsize size;
         ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
         std::cout << TERMINAL_CLEAR;

@@ -40,7 +40,8 @@ Disk::~Disk(){
 void Disk::createDisk(uint32_t size){
     // Creates a new Virtual Disk File with zeros as content.
     // It will inform the user over a progressbar
-    utils::printModule("Disk", "DiskCreator");
+   
+    //utils::printModule("Disk", "DiskCreator");
     std::cout << "[create] Start disk creation ..." << std::endl;
     ProgressBar bar;
     // Perfomace decision. One step is one percent of the size.
@@ -77,7 +78,7 @@ void Disk::createDisk(uint32_t size){
 }
 
 void Disk::deleteDisk(){
-    utils::printModule("Disk", "DiskDeleter");
+//    utils::printModule("Disk", "DiskDeleter");
 
 }
 
@@ -89,8 +90,9 @@ void Disk::mount(){
     //      - 2. Open the file
     //      - 3. Map the file to an array using mmap
     // Finally load the MBR from the virtua disk
-    std::cout << utils::TERMINAL_CLEAR;
-    utils::printModule("Disk", "Mount");
+   
+    //std::cout << utils::TERMINAL_CLEAR;
+    //utils::printModule("Disk", "Mount");
     // 1.
     if(mounted){
         std::cout << utils::COLOR_YELLOW << "[mount] Disk is mounted" << utils::COLOR_RESET << std::endl;
@@ -141,9 +143,10 @@ void Disk::mount(){
 void Disk::unmount(){
     // If not mounted the operation aborts.
     // Unmap the allocated virtual disk file from memory.
-    //      If fails the application will no longer works stable. This case should never occurre
-    utils::printModule("Disk", "Unmout");
-    std::cout << utils::TERMINAL_CLEAR;
+    //      If fails the application will no longer works stable. This case should never occurres
+    
+    //utils::printModule("Disk", "Unmount");
+    //std::cout << utils::TERMINAL_CLEAR;
     if(!mounted){
         return;
     }
@@ -205,8 +208,8 @@ void Disk::loadMasterBootRecord(){
 
 void Disk::createMasterBootRecord(){
 
-    std::cout << utils::TERMINAL_CLEAR;
-    utils::printModule("Disk", "MBRCreator");
+    //std::cout << utils::TERMINAL_CLEAR;
+    //utils::printModule("Disk", "MBRCreator");
 
     std::cout << "[MBR] Create Master Boot Record" << std::endl;
     if(!mounted){
@@ -265,8 +268,9 @@ uint32_t Disk::calculateStartAddress(uint8_t partitionIndex){
 void Disk::createPartition(uint32_t size, FileSystemType fileSystemType, bool isBootable){
     // Required a mounted disk, exisitng MBR and a spot inside the Partitiontable
     //  => From the last results a max available amount of partition of 4
-    utils::printModule("Disk", "PartitionCreator");
-    std::cout << "[partition] Creation started" << std::endl;
+    
+    //utils::printModule("Disk", "PartitionCreator");
+    //std::cout << "[partition] Creation started" << std::endl;
     if(nullptr == MBR_m){
         std::cout << "[partition] Create failed. No MBR found on disk" << std::endl;
         return;

@@ -51,6 +51,7 @@ public static_methods: // API Methods
 
     static int LUA_create_new_disk(lua_State* L);
 
+
     static int LUA_load_disk(lua_State* L);
 
     static int LUA_list_disk(lua_State *L);
@@ -64,7 +65,15 @@ public static_methods: // API Methods
     static int LUA_unmount_disk(lua_State *L);
 
 
+    static int LUA_create_master_boot_record(lua_State* L);
+    
+    static int LUA_list_master_boot_record(lua_State* L);
+    
+    static int LUA_wipe_master_boot_record(lua_State* L);
+    
 
+    static int LUA_create_createPartition_boot_record(lua_State* L);
+    
 
     static void printElement(Disk* disk, int index, char filler = ' '){
         bool mounted = disk->isMounted();

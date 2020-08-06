@@ -4,17 +4,25 @@
 >
 >>- [clear()](#clear)
 >
->>- [createDisk(String path, Number size)](#createdisk)
+>>- [createDisk(String path, Integer size)](#createdisk)
 >
 >>- [loadDisk(String path)](#loaddisk)
 >
 >>- [listDisks()](#listdisks)
 >
->>- [selectDisk(Number index)](#selectdisk)
+>>- [selectDisk(Integer index)](#selectdisk)
 >
 >>- [mount()](#mount)
 >
 >>- [unmount()](#unmount)   
+>
+>>- [createMasterBootRecord()](#createMasterBootRecord)
+>
+>>- [listMasterBootRecord()](#listMasterBootRecord)
+>
+>>- [wipeMasterBootRecord()](#wipeMasterBootRecord)
+>
+>>- [createPartition(Integer size, Character primary, Integer file_system)](#createPartition)
 
 
 ---
@@ -94,7 +102,7 @@
 >>```Lua 
 >>-- Create a new empty disk located under the /data/operating_system directory with 5MB as size
 >>createDisk("/data/operating_systems/myDisk5MB.vdf", 5242880);
->>-- Create a new empty disk located under th /data/operatin_system directory with 5GB as size
+>>-- Create a new empty disk located under th /data/operating_system directory with 5GB as size
 >>createDisk("/data/operating_systems/myDisk5GB.vdf", 5368709120);
 >>```
 >[Table of content](#Table-of-content)
@@ -234,13 +242,13 @@
 >[Table of content](#Table-of-content)
 
 
->## PH
+>## createMasterBootRecord
 >> ```c++  
->>void ph(void);
+>>void createMasterBootRecord(void);
 >>```
 >
 >>### Note
->>* This function
+>>* This function create a master boot record on previous selected and mounted disk
 >
 >>### Argument(s)
 >>* *None*
@@ -250,7 +258,97 @@
 >
 >>### Example
 >>```Lua 
+>>-- Load, select and mount a disk
+>>loadDisk("/data/operating_system/myDisk5GB.vdf");
+>>selectDisk(0);
+>>mount();
+>>-- Create the master boot record entry
+>>createMasterBootRecord();
+>>```
+>[Table of content](#Table-of-content)
+
+createMasterBootRecord
+>## listMasterBootRecord
+>> ```c++  
+>>void listMasterBootRecord(void);
+>>```
+>
+>>### Note
+>>* This function lists meta information about the disk.
+>>    * Size of the disk
+>>    * Path of the virtual disk
+>>    * Mounting state
+>>    * Existing partitions, including their meta information
+>
+>>### Argument(s)
+>>* *None*
+>
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua 
+>>listMasterBootRecord();
+>>```
+>[Table of content](#Table-of-content)
+
+
+>## wipeMasterBootRecord
+>> ```c++  
+>>void wipeMasterBootRecord(void);
+>>```
+>
+>>### Note
+>>* This function wipes the master boot record.
+>>> **Important calling this method will made the entire saved data unrecoverable**
+>
+>>### Argument(s)
+>>* *None*
+>
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua 
+>>wipeMasterBootRecord();
+>>```
+>[Table of content](#Table-of-content)
+
+
+>## createPartition
+>> ```c++  
+>>void createPartition(int size, char primary, int file_system);
+>>```
+>
+>>### Note
+>>* This function creates a partition
+>
+>>### Argument(s)
+>>* *size*: Size of the partition in bytes, the size must be less or equal the total available free disk space
+>>* *primary*: If its a primary partition the argument should be *'y'* or *'Y'* otherwise *'n'* or *'N'*
+>>* *file_system*: Enter a number from the list below
 >>
+>>>
+>>> Supported file system types 
+>>>Filesystem | file_system argument 
+>>>    ---    | ---
+>>>None       |  0
+>>>INode      | 16
+>>>FAT        | 32
+>
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua 
+>>-- Load, select and mount a disk
+>>loadDisk("/data/operating_system/myDisk5GB.vdf");
+>>selectDisk(0);
+>>mount();
+>>-- Create the master boot record entry
+>>createMasterBootRecord();
+>>-- Create a primary partition with INode and a size of 2.5GB
+>>createPartition(2684354560, 'y', 16);
 >>```
 >[Table of content](#Table-of-content)
 
@@ -261,7 +359,7 @@
 >>```
 >
 >>### Note
->>* This function
+>>* This function 
 >
 >>### Argument(s)
 >>* *None*
@@ -271,69 +369,5 @@
 >
 >>### Example
 >>```Lua 
->>
->>```
->[Table of content](#Table-of-content)
-
-
->## PH
->> ```c++  
->>void ph(void);
->>```
->
->>### Note
->>* This function
->
->>### Argument(s)
->>* *None*
->
->>### Returns
->>* *Nothing*
->
->>### Example
->>```Lua 
->>
->>```
->[Table of content](#Table-of-content)
-
-
->## PH
->> ```c++  
->>void ph(void);
->>```
->
->>### Note
->>* This function
->
->>### Argument(s)
->>* *None*
->
->>### Returns
->>* *Nothing*
->
->>### Example
->>```Lua 
->>
->>```
->[Table of content](#Table-of-content)
-
-
->## PH
->> ```c++  
->>void ph(void);
->>```
->
->>### Note
->>* This function
->
->>### Argument(s)
->>* *None*
->
->>### Returns
->>* *Nothing*
->
->>### Example
->>```Lua 
->>
 >>```
 >[Table of content](#Table-of-content)
