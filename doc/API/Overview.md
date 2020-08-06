@@ -1,355 +1,332 @@
 # Operating System Project API
-## Table of content
-- [Operating System Project API](#operating-system-project-api)
-  * [Table of content](#Table-of-content) 
-  * [print(String/Number message)](#print-string-number-message-) 
-  * [clear()](#clear--) 
-  * [createDisk(String path, Number size)](#createdisk-string-path--number-size-) 
-  * [loadDisk(String path)](#loaddisk-string-path-) 
-  * [listDisks()](#listdisks--) 
-  * [selectDisk(Number index)](#selectdisk-number-index-) 
-  * [mount()](#mount--)
-  * [unmount()](#unmount--)
-    
-    <br>
----
+>## Table of content
+>>- [print(String/Number message)](#print)
+>
+>>- [clear()](#clear)
+>
+>>- [createDisk(String path, Number size)](#createdisk)
+>
+>>- [loadDisk(String path)](#loaddisk)
+>
+>>- [listDisks()](#listdisks)
+>
+>>- [selectDisk(Number index)](#selectdisk)
+>
+>>- [mount()](#mount)
+>
+>>- [unmount()](#unmount)   
 
->## print(String/Number message)
->### Note
->### Argument(s)
->* *message*: The message which should be displayed on the default output device
+
+---
+<br>
+
+>## print
+>> ### Signature
+>> ```c++  
+>>void print(string message);
+>>void print(int number);
+>>```
 >
->### Returns
->* *Nothing*
+>>### Note
+>> * Prints a number or message to the default output
 >
->### Example
->```Lua 
->print("Foo");
->print(3);
->```
+>>### Argument(s)
+>>* *message*: The message which should be displayed
+>>* *number*: This is a number which should be displayed
+>
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua 
+>>print("Foo");
+>>print(3);
+>>```
 >[Table of content](#Table-of-content)
 
  
 
 
 
->## clear()
->### Note
->* The cls command is equivalent to the clear command
->### Argument(s)
->* *None*
+>## clear
+>> ### Signature
+>> ```c++  
+>>void clear(void);
+>>```
 >
->### Returns
->* *Nothing*
+>>### Note
+>>* The cls command is equivalent to the clear command
 >
->### Example
->```Lua 
->print("foo");
->clear();
->print("bar");
->cls();
->```
+>>### Argument(s)
+>>* *None*
+>
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua 
+>>print("foo");
+>>clear();
+>>print("bar");
+>>cls();
+>>```
 >[Table of content](#Table-of-content)
 
 
 
->## createDisk(String path, Number size)
->### Note
->* Create a new disk with given *size* at location which is specified by *path*
+>## createDisk
+>> ### Signature
+>> ```c++  
+>>void createDisk(string path, int size);
+>>```
 >
->### Arguments
->* *path*: This is the fully qualified name to the disk location
->* *size*: Total size in bytes
+>>### Note
+>>* Create a new disk with given *size* at location which is specified by *path*
 >
->### Returns
->* *Nothing*
+>>### Argument(s)
+>>* *path*: This is the fully qualified name to the disk location
+>>* *size*: Total size in bytes
 >
->### Example
->```Lua 
->-- Create a new empty disk located under the /data/operating_system directory with 5MB as size
->createDisk("/data/operating_systems/myDisk5MB.vdf", 5242880);
->-- Create a new empty disk located under th /data/operatin_system directory with 5GB as size
->createDisk("/data/operating_systems/myDisk5GB.vdf", 5368709120);
->```
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua 
+>>-- Create a new empty disk located under the /data/operating_system directory with 5MB as size
+>>createDisk("/data/operating_systems/myDisk5MB.vdf", 5242880);
+>>-- Create a new empty disk located under th /data/operatin_system directory with 5GB as size
+>>createDisk("/data/operating_systems/myDisk5GB.vdf", 5368709120);
+>>```
 >[Table of content](#Table-of-content)
 
 
 
->## loadDisk(String path)
->### Note
->* This function loads a virtual disk from the drive
+>## loadDisk
+>> ### Signature
+>> ```c++  
+>>void loadDisk(string path);
+>>```
 >
->### Argument(s)
->* *path*: The fully qualified name of the disk file
+>>### Note
+>>* This function loads a virtual disk from the drive
 >
->### Returns
->* *Nothing*
+>>### Argument(s)
+>>* *path*: The fully qualified name of the disk file
 >
->### Example
->```Lua 
->-- Loads a virtual disk from /data/operating_system directory
->loadDisk("/data/operating_system/myDisk5MB.vdf");
->```
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua 
+>>-- Loads a virtual disk from /data/operating_system directory
+>>loadDisk("/data/operating_system/myDisk5MB.vdf");
+>>```
 >[Table of content](#Table-of-content)
 
 
 
->## listDisks()
->### Note
->* This function lists all available disks 
+>## listDisks
+>> ### Signature
+>> ```c++  
+>>void listDisks(void);
+>>```
 >
->### Argument(s)
->* *None*
+>>### Note
+>>* This function lists all available disks 
 >
->### Returns
->* *Nothing*
+>>### Argument(s)
+>>* *None*
 >
->### Example
->```Lua 
->-- List all loaded disks, including previous created ones
->listDisks();
->```
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua 
+>>-- List all loaded disks, including previous created ones
+>>listDisks();
+>>```
 >[Table of content](#Table-of-content)
 
 
 
->## selectDisk(Number index)
->### Note
->* This function selects a disk from the list as current working disk
+>## selectDisk
+>> ### Signature
+>> ```c++  
+>>void selectDisk(int index);
+>>```
 >
->### Argument(s)
->* *index*: Index of the disk, use *listDisks* to receive the index of each disk
+>>### Note
+>>* This function selects a disk from the list as current working disk
 >
->### Returns
->* *Nothing*
+>>### Argument(s)
+>>* *index*: Index of the disk, use *listDisks* to receive the index of each disk
 >
->### Example
->```Lua
->-- Load some disks 
->loadDisk("/data/operating_systems/myDisk5MB.vdf");
->loadDisk("/data/operating_systems/myDisk5GB.vdf");
->-- Receive the indices of all loaded disks
->listDisks();
->-- Select disk 0, which should be /data/operating_systems/myDisk5MB.vdf
->selectDisk(0);
->```
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua
+>>-- Load some disks 
+>>loadDisk("/data/operating_systems/myDisk5MB.vdf");
+>>loadDisk("/data/operating_systems/myDisk5GB.vdf");
+>>-- Receive the indices of all loaded disks
+>>listDisks();
+>>-- Select disk 0, which should be /data/operating_systems/myDisk5MB.vdf
+>>selectDisk(0);
+>>```
 >[Table of content](#Table-of-content)
 
 
 
->## mount()
->### Note
->* This function mounts the current working disk into memory
+>## mount
+>> ### Signature
+>> ```c++  
+>>void mount(void);
+>>```
 >
->### Argument(s)
->* *None*
+>>### Note
+>>* This function mounts the current working disk into memory
 >
->### Returns
->* *Nothing*
+>>### Argument(s)
+>>* *None*
 >
->### Example
->```Lua 
->-- Select disk 0, which should be /data/operating_systems/myDisk5MB.vdf
->selectDisk(0);
->-- mount the previous selected disk
->mount();
->```
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua 
+>>-- Select disk 0, which should be /data/operating_systems/myDisk5MB.vdf
+>>>selectDisk(0);
+>>-- mount the previous selected disk
+>>mount();
+>>```
 >[Table of content](#Table-of-content)
 
 
 
->## unmount()
->### Note
->* This function unmounts the current working disk from memory
->> When the application quits all disks will be unmounted regardless of an api call
->### Argument(s)
->* *None*
+>## unmount
+>> ### Signature
+>> ```c++  
+>>void unmount(void);
+>>```
 >
->### Returns
->* *Nothing*
+>>### Note
+>>* This function unmounts the current working disk from memory
+>>> When the application quits all disks will be unmounted regardless of an api call
 >
->### Example
->```Lua 
->unmount();
->```
+>>### Argument(s)
+>>* *None*
+>
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua 
+>>unmount();
+>>```
 >[Table of content](#Table-of-content)
-
 
 
 >## PH
->### Note
->* This function
+>> ```c++  
+>>void ph(void);
+>>```
 >
->### Argument(s)
->* *None*
+>>### Note
+>>* This function
 >
->### Returns
->* *Nothing*
+>>### Argument(s)
+>>* *None*
 >
->### Example
->```Lua 
+>>### Returns
+>>* *Nothing*
 >
->```
+>>### Example
+>>```Lua 
+>>
+>>```
 >[Table of content](#Table-of-content)
 
 
-
 >## PH
->### Note
->* This function
+>> ```c++  
+>>void ph(void);
+>>```
 >
->### Argument(s)
->* *None*
+>>### Note
+>>* This function
 >
->### Returns
->* *Nothing*
+>>### Argument(s)
+>>* *None*
 >
->### Example
->```Lua 
+>>### Returns
+>>* *Nothing*
 >
->```
+>>### Example
+>>```Lua 
+>>
+>>```
 >[Table of content](#Table-of-content)
 
 
-
 >## PH
->### Note
->* This function
+>> ```c++  
+>>void ph(void);
+>>```
 >
->### Argument(s)
->* *None*
+>>### Note
+>>* This function
 >
->### Returns
->* *Nothing*
+>>### Argument(s)
+>>* *None*
 >
->### Example
->```Lua 
+>>### Returns
+>>* *Nothing*
 >
->```
+>>### Example
+>>```Lua 
+>>
+>>```
 >[Table of content](#Table-of-content)
 
 
-
 >## PH
->### Note
->* This function
+>> ```c++  
+>>void ph(void);
+>>```
 >
->### Argument(s)
->* *None*
+>>### Note
+>>* This function
 >
->### Returns
->* *Nothing*
+>>### Argument(s)
+>>* *None*
 >
->### Example
->```Lua 
+>>### Returns
+>>* *Nothing*
 >
->```
+>>### Example
+>>```Lua 
+>>
+>>```
 >[Table of content](#Table-of-content)
 
 
-
 >## PH
->### Note
->* This function
+>> ```c++  
+>>void ph(void);
+>>```
 >
->### Argument(s)
->* *None*
+>>### Note
+>>* This function
 >
->### Returns
->* *Nothing*
+>>### Argument(s)
+>>* *None*
 >
->### Example
->```Lua 
+>>### Returns
+>>* *Nothing*
 >
->```
->[Table of content](#Table-of-content)
-
-
-
->## PH
->### Note
->* This function
->
->### Argument(s)
->* *None*
->
->### Returns
->* *Nothing*
->
->### Example
->```Lua 
->
->```
->[Table of content](#Table-of-content)
-
-
-
->## PH
->### Note
->* This function
->
->### Argument(s)
->* *None*
->
->### Returns
->* *Nothing*
->
->### Example
->```Lua 
->
->```
->[Table of content](#Table-of-content)
-
-
-
->## PH
->### Note
->* This function
->
->### Argument(s)
->* *None*
->
->### Returns
->* *Nothing*
->
->### Example
->```Lua 
->
->```
->[Table of content](#Table-of-content)
-
-
-
->## PH
->### Note
->* This function
->
->### Argument(s)
->* *None*
->
->### Returns
->* *Nothing*
->
->### Example
->```Lua 
->
->```
->[Table of content](#Table-of-content)
-
-
-
->## PH
->### Note
->* This function
->
->### Argument(s)
->* *None*
->
->### Returns
->* *Nothing*
->
->### Example
->```Lua 
->
->```
+>>### Example
+>>```Lua 
+>>
+>>```
 >[Table of content](#Table-of-content)
