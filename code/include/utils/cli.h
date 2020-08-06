@@ -62,11 +62,13 @@ namespace utils{
          * @details This module invokes a wizard to load a virtual disk file
          */
         void loadDisk();
+     
         /**
          * @brief listDisks
          * @details This module prints all loaded virtual disk files
          */
         void listDisks();
+     
         /**
          * @brief selectDisk
          * @details This module priits all loaded virtual disk files
