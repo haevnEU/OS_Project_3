@@ -12,7 +12,7 @@ extern "C"{
 }
 
 #include "utils.h"
-#include "../disk.h"
+#include "disk.h"
 
 /**
  * @brief The diskUtil class

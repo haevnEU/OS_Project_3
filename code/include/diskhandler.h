@@ -22,8 +22,12 @@ public static_methods:
         return instance;
     }
 
-    void addDisk(Disk* disk);
+public methods:
 
+    DiskHandler(DiskHandler const&) = delete;
+    void operator=(DiskHandler const&) = delete;
+
+    void addDisk(Disk* disk);
 
     std::vector<Disk*>* getDisks() const;
     Disk* disk;

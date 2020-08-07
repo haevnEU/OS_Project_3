@@ -1,6 +1,5 @@
 #include "utils/diskutil.h"
 
-
 diskUtil::diskUtil(){}
 
 void diskUtil::show(Disk* disk){
@@ -59,17 +58,17 @@ void diskUtil::createMBR(){
                                                    "MBR will override its content and all"
                                                    "data will be lost.");
     if(nullptr == disk){
-        std::cout << utils::COLOR_RED << "[create] Cannot create master boot record. Selected disk is nullptr" << utils::COLOR_RESET << std::endl;
+        utils::printError("Cannot create master boot record", "create", DISK_NULL);
         return;
     }
-    std::cout << "Are you sure to create a MBR (y/N): ";
+    utils::printInfo("Create a new master boot record(y/N): ", "create");
     char choice;
     std::cin >> choice;
 
     if(choice == 'y' || choice == 'Y'){
         disk->createMasterBootRecord();
     }else{
-        std::cout << "Operation aborted." << std::endl;
+        utils::printWarning("Operation aborted", "create");
     }
 }
 
@@ -77,11 +76,11 @@ void diskUtil::listMetaInformation(){
     utils::printModule("Disk Utils", "MBRMetaInformer", "This submodule lists meta information"
                                                         "about a virtual disk.");
     if(nullptr == disk){
-        std::cout << utils::COLOR_RED << "[list] Cannot list MBR. Selected disk is nullptr" << utils::COLOR_RESET << std::endl;
+        utils::printError("Cannot list master boot record", "list", DISK_NULL);
         return;
     }
     if(nullptr == disk->MBR()){
-        std::cout << utils::COLOR_RED << "[list] Cannot list MBR. No MBR found on disk" << utils::COLOR_RESET << std::endl;
+        utils::printError("No master boot record found", "list", MBR_NULL);
         return;
     }
 
@@ -126,13 +125,14 @@ void diskUtil::createPartition(){
     FileSystemType fs = FileSystemType::FAT;
     bool bootable;
 
-    utils::printModule("Disk Utils", "PartitionCreator", "This submodule provides a wizzard "
+    utils::printModule("Disk Utils", "PartitionCreator", "This submodule provides a wizard "
                                                          "which allows the creation of a"
                                                          "new partition.");
-    std::cout << "Enter partition size: ";
+    
+    utils::printInfo("Enter partition size: ", "create");
     std::cin >> size;
-    std::cout << "Bootable partition (y/N): ";
-    char in;
+    utils::printInfo("Primary partition (y/N): ", "create");
+        char in;
     std::cin >> in;
     if(in == 'y' || in == 'Y'){
         bootable = true;
@@ -140,11 +140,12 @@ void diskUtil::createPartition(){
         bootable = false;
     }
 
-    std::cout << "Choose your filesystem" << std::endl
-              << "0) NONE" << std::endl
-              << "1) FAT" << std::endl
-              << "2) INODE" << std::endl;
+    utils::printInfo("Choose your filesystem", "create");
+    utils::printInfo("0) None", "create");
+    utils::printInfo("0) FAT", "create");
+    utils::printInfo("0) INode", "create");
     std::cin >> in;
+    
     if(in == '1')fs = FileSystemType::FAT;
     else if(in == '2')fs = FileSystemType::INODE;
     else fs = FileSystemType::NONE;

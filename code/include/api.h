@@ -71,8 +71,8 @@ public static_methods: // API Methods
     
     static int LUA_wipe_master_boot_record(lua_State* L);
     
-
     static int LUA_create_createPartition_boot_record(lua_State* L);
+    
     
 
     static void printElement(Disk* disk, int index, char filler = ' '){

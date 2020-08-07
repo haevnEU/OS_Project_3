@@ -4,9 +4,13 @@
 #include <vector>
 
 #include "utils.h"
+
+#include "disk.h"
+#include "diskhandler.h"
+
 #include "diskutil.h"
-#include "mbrutils.h"
-#include "../diskhandler.h"
+
+#include "api.h"
 
 namespace utils{
 
@@ -17,7 +21,6 @@ namespace utils{
     class CLI{
         /// Diksutil TUI
         diskUtil* du;
-        MBRUtils* mbru;
 
         /// Contains all loaded disks
         //std::vector<Disk*>* disks;

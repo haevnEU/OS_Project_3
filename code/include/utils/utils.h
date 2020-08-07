@@ -20,6 +20,34 @@
 #define static_methods
 #define static_attributes
 
+#define UNKOWN_ERROR            0x05FFFFFF // This is an unknown exception, should never occur
+
+#define FILE_IO_NOT_FOUND       0x05F10404 // File not found
+#define FILE_WRONG_FILE_SYSTEM  0x51F1BADF // The input doenst started with /
+
+#define INDEX_OUT_OF_BOUND      0x51A1FFFF // Index was out of boundary
+
+#define DISK_NULL               0x51B1DEAD // Disc is nullptr
+#define DISC_SIZE_INVALID       0x51B10101 // Requested disk size is not possible to create
+#define DISC_NOT_MOUNTED        0x05B12003 // Disc is not mounted
+
+#define MBR_NULL                0x05C1DEAD // MBR is nullptr
+// 05xxxxxx = This project
+// xxD1xxxx = Disk module
+// xxxx0xxx = General error
+// xxxx1xxx = File IO catergory
+// xxxx2xxx = State error
+#define DISC_GENERIC_ERROR   0x05D10000 // Generic disc error
+#define DISC_CORRUPTED       0x05D10BAD // Disc is corrupted
+
+#define DISC_PATHING_ERROR   0x05D11001 // Path input dont started with a /
+#define DISC_FILE_IO_ERROR   0x05D11002 // File operation failed
+#define DISC_FILE_NOT_FOUND  0x05D11003 // VDF file not found
+
+#define DISC_NOT_LOAD        0x05D12002 // Disc is not loaded
+
+
+
 /**
  * @brief wait This method waits for input
  * @param in Stream in which should be waited
@@ -32,7 +60,6 @@ static void wait(std::istream& in, const char* msg = "Press [RETURN] to continue
 }
 
 namespace utils{
-
 
     const static char* COLOR_RESET     = "\x1B[0m";
     const static char* COLOR_RED       = "\x1B[31m";
@@ -51,6 +78,57 @@ namespace utils{
     const static char* ICON_DENIED_RAW = "✗";
     const static char* ICON_ACCEPT = "\x1B[32m\xE2\x9C\x93\x1B[0m";
     const static char* ICON_DENIED = "\x1B[31mx\x1B[0m";
+
+
+    static void printError(std::string message, std::string module_name, uint64_t error_code = 0){
+        std::cerr << COLOR_RED << "[" << module_name << "]" << message << std::endl;
+        if(error_code != 0){
+            std::cerr << "Error code: 0x" << std::hex << error_code << std::dec;
+        }
+        std::cout << COLOR_RESET << std::endl;
+    }
+
+    static void printError(std::string message, int error_code = 0){
+        std::cerr << COLOR_RED << "[Unknown]" << message << std::endl;
+        if(error_code != 0){
+            std::cerr << "Error code: " << std::hex << error_code << std::dec;
+        }
+        std::cout << COLOR_RESET << std::endl;
+    }
+    
+    static void printWarning(std::string message, std::string module_name, int warn_code = 0){
+        std::cerr << COLOR_YELLOW << "[" << module_name << "]" << message << std::endl;
+        if(warn_code != 0){
+            std::cerr << "Warning code: 0x" << std::hex << warn_code << std::dec;
+        }
+        std::cout << COLOR_RESET << std::endl;
+    }
+
+    static void printWarning(std::string message, int warn_code = 0){
+        std::cerr << COLOR_YELLOW << "[Unknown]" << message << std::endl;
+        if(warn_code != 0){
+            std::cerr << "Warn code: 0x" << std::hex << warn_code << std::dec;
+        }
+        std::cout << COLOR_RESET << std::endl;
+    }
+    
+    static void printInfo(std::string message, std::string module_name, int info_code = 0){
+        std::cerr << COLOR_WHITE << "[" << module_name << "]" << message << std::endl;
+        if(info_code != 0){
+            std::cerr << "Info code: 0x" << std::hex << info_code << std::dec;
+        }
+        std::cout << COLOR_RESET << std::endl;
+    }
+
+    static void printInfo(std::string message, int info_code = 0){
+        std::cerr << COLOR_WHITE << "[Unknown]" << message << std::endl;
+        if(info_code != 0){
+            std::cerr << "Info code: 0x" << std::hex << info_code << std::dec;
+        }
+        std::cout << COLOR_RESET << std::endl;
+    }
+        
+    
 
 
     static void printHeader(const char* name){
@@ -83,10 +161,11 @@ namespace utils{
 
     static void printModule(const char* header, const char* module, const char* description = nullptr){
         printHeader(header);
-        std::cout << std::endl << "Module: " << module << std::endl << std::endl;
+        std::cout << std::endl << "Module: " << module << std::endl;
         if(nullptr != description){
-            std::cout << description << std::endl<< std::endl;
+            std::cout << description << std::endl;
         }
+        std::cout << std::endl;
     }
 }
 

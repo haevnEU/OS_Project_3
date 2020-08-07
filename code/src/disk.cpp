@@ -25,12 +25,14 @@ bool Disk::isMounted() const{
 
 
 Disk::Disk(const char* path){
+    std::cout << "Create " << this << std::endl;
     MBR_m = nullptr;
     this->path_m = new char[strlen(path) + 1];
     memcpy(this->path_m, path, strlen(path) + 1);
 }
 
 Disk::~Disk(){
+    std::cout << "Delete " << this << std::endl;
     unmount();
     delete path_m;
     delete MBR_m;
@@ -44,7 +46,7 @@ void Disk::createDisk(uint32_t size){
     //utils::printModule("Disk", "DiskCreator");
     std::cout << "[create] Start disk creation ..." << std::endl;
     ProgressBar bar;
-    // Perfomace decision. One step is one percent of the size.
+    // Perfomace decision. One step0x55ed33485740 is one percent of the size.
     uint32_t step = size / 100;
     bar.maximum(100);
     std::cout << utils::COLOR_CYAN << "[create] Using path: " << path_m << utils::COLOR_RESET << std::endl;

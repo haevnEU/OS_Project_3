@@ -8,6 +8,8 @@
 #include "utils/cli.h"
 #include "api.h"
 
+#include "utils/utils.h"
+
 int main(int argc, char *argv[]){
 
   
@@ -17,5 +19,6 @@ int main(int argc, char *argv[]){
     cli.enterInteractiveMode();
 
     API::getInstance().close();
-   return 0;
+
+    return 0;
 }

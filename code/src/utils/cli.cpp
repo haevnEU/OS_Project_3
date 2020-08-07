@@ -1,6 +1,4 @@
 #include "utils/cli.h"
-#include "disk.h"
-#include "api.h"
 
 using namespace utils;
 
@@ -8,15 +6,12 @@ void CLI::addDisk(Disk *disk){}
 
 CLI::CLI(){
     du = new diskUtil();
-    mbru = new MBRUtils();
-    //disks = new std::vector<Disk*>();
     currentDisk = nullptr;
 }
 
+// TODO place inside disk handler
 CLI::~CLI(){
     delete du;
-    delete mbru;
-
     for (auto i = handler.getDisks()->begin(); i != handler.getDisks()->end(); ++i){
         delete(*i);
         *i = nullptr;
@@ -55,22 +50,39 @@ void CLI::printMenu(){
 void CLI::printSelectedDisk(){
     if(nullptr != currentDisk){
         bool mounted = currentDisk->isMounted();
-        std::cout << "Mounted: " << (mounted ? "\x1B[32m\xE2\x9C\x93" : "\x1B[31mx") << utils::COLOR_RESET << std::endl
+        std::cout << "Mounted: " << (mounted ? utils::ICON_ACCEPT : utils::ICON_DENIED) << utils::COLOR_RESET << std::endl
                   << "Path:    " << currentDisk->path() << std::endl
                   << "Size:    " << currentDisk->size() << std::endl;
     }
 }
 
 void CLI::createDisk(){
-    utils::printModule("Disk Util", "DiskCreator", "This wizzard allows the creation"
+    utils::printModule("Disk Util", "DiskCreator", "This wizard allows the creation"
                                                    "of a new Virtual Disk File.");
     std::cout << "Enter path: ";
     std::string path = "";
     std::cin >> path;
+    
+    if(path.size() < 0){  
+        utils::printError("Invalid pathing", "create", UNKOWN_ERROR); 
+        return;
+    }
+    if(path[0] == 'q'){
+        utils::printWarning("Operation aborted", "create");
+        return;
+    }
+    if(path[0] != '/'){
+        utils::printError("Invalid pathing", "create", FILE_WRONG_FILE_SYSTEM);
+        return;
+    }
+
     std::cout << "Enter size in bytes: ";
     uint32_t size;
     std::cin >> size;
-
+    if(size <= 512){
+        utils::printError("Size is invalid", "create", DISC_SIZE_INVALID);
+        return;
+    }
     Disk* disk = new Disk(path.c_str());
     disk->createDisk(size);
     handler.getDisks()->push_back(disk);
@@ -78,12 +90,27 @@ void CLI::createDisk(){
 
 void CLI::loadDisk(){
     utils::printModule("Util", "Load Disk", "This module loads a Virtual Disk File.\nEnter the full path to the VDF file.");
+    std::cout << "Path: ";
     std::string path;
     std::cin >> path;
-
+    
+    if(path.size() < 0){  
+        utils::printError("Invalid pathing", "load", UNKOWN_ERROR); 
+        return;
+    }
+    if(path[0] == 'q'){
+        utils::printWarning("Operation aborted", "load");
+        return;
+    }
+    if(path[0] != '/'){
+        utils::printError("Invalid pathing", "load", FILE_WRONG_FILE_SYSTEM);
+        return;
+    }
+    
     if(access(path.c_str(), F_OK ) == -1) {
-        std::cout << utils::COLOR_RED << "Virtual Disk does not exist" << utils::COLOR_RESET << std::endl;
+        utils::printError("File does not exists", "load", FILE_IO_NOT_FOUND);
     }else{
+        
         std::cout << "Disk loaded" << std::endl;
         Disk* disk = new Disk(path.c_str());
         handler.getDisks()->push_back(disk);
@@ -94,7 +121,7 @@ void printElement(Disk* disk, int index, char filler = ' '){
     bool mounted = disk->isMounted();
 
     std::cout << std::setw(5) << std::setfill(' ') << index << " " << filler
-              << "    " << (mounted ? "\x1B[32m\xE2\x9C\x93" : "\x1B[31mx") << utils::COLOR_RESET
+              << "    " << (mounted ? utils::ICON_ACCEPT : utils::ICON_DENIED)
               << "    " << filler << ' '
               << disk->path();
 }
@@ -113,7 +140,7 @@ void CLI::listDisks(){
 
 void CLI::selectDisk(){
     if(handler.getDisks()->size() <= 0){
-        std::cout << utils::COLOR_RED << "No disks where loaded." << utils::COLOR_RESET;
+        utils::printError("No disks loaded", "select", INDEX_OUT_OF_BOUND);
         return;
     }
     listDisks();
@@ -124,12 +151,14 @@ void CLI::selectDisk(){
     choice--;
     if(choice < handler.getDisks()->size()){
        currentDisk = handler.getDisks()->at(choice);
+    }else{
+        utils::printError("Index out of bound", "select", INDEX_OUT_OF_BOUND);
     }
 }
 
 void CLI::mountDisk(){
     if(nullptr == currentDisk){
-        std::cout << utils::COLOR_RED << "No disks was selected." << utils::COLOR_RESET;
+        utils::printError("No disk selected", "mount", DISK_NULL);
         return;
     }
     currentDisk->mount();
@@ -137,7 +166,7 @@ void CLI::mountDisk(){
 
 void CLI::unmountDisk(){
     if(nullptr == currentDisk){
-        std::cout << utils::COLOR_RED << "No disks was selected." << utils::COLOR_RESET;
+        utils::printError("No disk selected", "unmount", DISK_NULL);
         return;
     }
     currentDisk->unmount();
@@ -145,12 +174,12 @@ void CLI::unmountDisk(){
 
 void CLI::startDiskUtils(){
     if(nullptr == currentDisk){
-        std::cout << utils::COLOR_RED << "No disks was selected." << utils::COLOR_RESET<< std::endl;
+        utils::printError("No disk selected", "start utils",DISK_NULL);
         return;
     }
 
     if(!currentDisk->isMounted()){
-        std::cout << utils::COLOR_RED << "Disk is not mounted" << utils::COLOR_RESET<< std::endl;
+        utils::printError("Selected disk is not mounted", "start utils", DISC_NOT_MOUNTED);
         return;
     }
 
@@ -201,6 +230,7 @@ void CLI::enterInteractiveMode(){
 
         printMenu();
         char choice;
+        std::cout << "Choice: ";
         std::cin >> choice;
         switch(choice){
         case '1':

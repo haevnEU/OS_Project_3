@@ -2,7 +2,7 @@
 CXX      := -c++
 
 # flags vor the compiler
-CXXFLAGS :=  -Wall 
+CXXFLAGS :=  -Werror 
 
 # Libraries
 LDFLAGS  := -L/usr/lib -lstdc++ -lm 
