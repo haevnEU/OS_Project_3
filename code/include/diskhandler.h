@@ -34,6 +34,7 @@ public methods:
 
     Disk* getDisk() const;
     void setDisk(int index);
+    void removeDisk();
 };
 
 #endif // DISKHANDLER_H

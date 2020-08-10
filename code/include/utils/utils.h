@@ -21,6 +21,9 @@
 #define static_methods
 #define static_attributes
 
+#define CURRENT_VIRTUAL_DISK_FILE_VERSION 0x02
+#define MINIMUM_VIRTUAL_DISK_FILE_VERSION 0x02
+
 #define UNKOWN_ERROR            0x05FFFFFF // This is an unknown exception, should never occur
 
 #define FILE_IO_NOT_FOUND       0x05F10404 // File not found
@@ -80,6 +83,22 @@ namespace utils{
     const static char* ICON_DENIED_RAW = "✗";
     const static char* ICON_ACCEPT = "\x1B[32m\xE2\x9C\x93\x1B[0m";
     const static char* ICON_DENIED = "\x1B[31mx\x1B[0m";
+
+    static bool file_extension_equals(const std::string& file, const std::string& ext){
+        std::string::size_type idx;
+        idx = file.rfind('.');
+        if(idx != std::string::npos){
+            std::string extension = file.substr(idx+1);     
+            for(int i = 0; ext[i] != 0; ++i){
+                if(extension[i] != ext[i]){
+                    return false;
+                }
+            }   
+        } else {        
+            return false;
+        }
+        return true;
+    }
 
     static bool file_exists(const std::string& name) {
         struct stat buffer;   

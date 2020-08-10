@@ -19,6 +19,10 @@ uint32_t Disk::size() const{
     return size_m;
 }
 
+uint32_t Disk::available_size() const{
+    return available_size_m;
+}
+
 bool Disk::isMounted() const{
     return mounted;
 }
@@ -78,8 +82,16 @@ void Disk::createDisk(int64_t size){
             bar.update();
         }
     }
+    char c0 = 0xC0;
+    char version = CURRENT_VIRTUAL_DISK_FILE_VERSION;
+    fwrite (&c0, 1, 1, fp);
+
+    fwrite (&version, 1, 1, fp);
+    
+
     fclose(fp);
     std::cout << utils::COLOR_GREEN << "[create] Virtual disk file created under " << path_m << utils::COLOR_RESET << std::endl;
+    available_size_m = size;
 }
 
 void Disk::deleteDisk(){
@@ -139,6 +151,8 @@ void Disk::mount(){
 
     close(fd);
 
+    available_size_m = fileStats_m->st_size - 2;
+    std::cout << available_size_m << std::endl;
     mounted = true;
     loadMasterBootRecord();
 
@@ -182,6 +196,8 @@ void Disk::loadMasterBootRecord(){
     }
 
     MBR_m = new MasterBootRecord();
+    
+    available_size_m -= 0x1FF - 1;
     for(int index = 0; index < 4; ++index){
         // Inspect if a the partition exists using the bootable flag
         if(data_m[0x1BE + (index * 16)] > 0x00){
@@ -205,6 +221,9 @@ void Disk::loadMasterBootRecord(){
 
             // Create new partition in the MBR Wrapper object
             uint32_t size = end - start;
+            
+            // update the available size
+            available_size_m -= size;
             MBR_m->addPartition(new Partition(start, size, fs, bootable), index);
         }
     }
@@ -249,6 +268,7 @@ void Disk::createMasterBootRecord(){
     std::cout << utils::COLOR_GREEN << "[MBR] Successfull created." << utils::COLOR_RESET << std::endl;
 
     MBR_m = new MasterBootRecord();
+    available_size_m -= 0x1FF - 1;
 }
 
 
@@ -270,7 +290,18 @@ uint32_t Disk::calculateStartAddress(uint8_t partitionIndex){
     return  (partition->startAddress() + partition->size() + 1);
 }
 
-void Disk::createPartition(uint32_t size, FileSystemType fileSystemType, bool isBootable){
+void Disk::createPartition(int64_t size, FileSystemType fileSystemType, bool isBootable){
+
+
+  if(size < 0){
+        std::cerr << utils::COLOR_RED << "[partition] A negative size was entered: " << size << utils::COLOR_RESET << std::endl;
+        return;
+    }    
+    if(size > available_size_m){
+        std::cerr << utils::COLOR_RED << "[partition] Size of " << size << " exceeds the maximum capacity of " << available_size_m  << utils::COLOR_RESET << std::endl; 
+        return;
+    }
+
     // Required a mounted disk, exisitng MBR and a spot inside the Partitiontable
     //  => From the last results a max available amount of partition of 4
     
@@ -325,6 +356,8 @@ void Disk::createPartition(uint32_t size, FileSystemType fileSystemType, bool is
         data_m[i + 2] = static_cast<uint8_t>(0xF0);
         data_m[i + 3] = static_cast<uint8_t>(0x0D);
     }
+    
+    available_size_m -= size;
 }
 
 void Disk::removePartition(uint8_t index){

@@ -54,12 +54,14 @@ private attributes:
     struct stat* fileStats_m;
 
 
+    uint32_t available_size_m;
 public getter:
 
     const char* path();
     unsigned const char* data();
     MasterBootRecord* MBR();
     uint32_t size() const;
+    uint32_t available_size() const;
     bool isMounted() const;
 
 
@@ -141,7 +143,7 @@ public methods:
      * @param fileSystemType Type of the filesystem @see FSTypes
      * @param isPrimary Indicates if the partition is a primary one, should alway be true
      */
-    void createPartition(uint32_t size_m, FileSystemType fileSystemType, bool isPrimary);
+    void createPartition(int64_t size_m, FileSystemType fileSystemType, bool isPrimary);
 
     /**
      * @brief removePartition
@@ -150,7 +152,6 @@ public methods:
      * @param index Partition which should be removed
      */
     void removePartition(uint8_t index);
-
 
 private methods:
 

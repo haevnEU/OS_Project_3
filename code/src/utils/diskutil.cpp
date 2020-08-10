@@ -121,7 +121,7 @@ void diskUtil::listMetaInformation(){
 
 
 void diskUtil::createPartition(){
-    uint32_t size;
+    int64_t size;
     FileSystemType fs = FileSystemType::FAT;
     bool bootable;
 
@@ -129,9 +129,19 @@ void diskUtil::createPartition(){
                                                          "which allows the creation of a"
                                                          "new partition.");
     
-    utils::printInfo("Enter partition size: ", "create");
+    std::cout << "[partition] Enter partition size: ";
     std::cin >> size;
-    utils::printInfo("Primary partition (y/N): ", "create");
+   
+    if(size < 0){
+        std::cerr << utils::COLOR_RED << "[partition] A negative size was entered: " << size << utils::COLOR_RESET << std::endl;
+        return;
+    }    
+    if(size > disk->available_size()){
+        std::cerr << utils::COLOR_RED << "[partition] Size of " << size << " exceeds the maximum capacity of " << disk->available_size()  << utils::COLOR_RESET << std::endl; 
+        return;
+    }
+    
+    std::cout << "[partition] Primary partition (y/N): ";
         char in;
     std::cin >> in;
     if(in == 'y' || in == 'Y'){
@@ -140,10 +150,11 @@ void diskUtil::createPartition(){
         bootable = false;
     }
 
-    utils::printInfo("Choose your filesystem", "create");
-    utils::printInfo("0) None", "create");
-    utils::printInfo("0) FAT", "create");
-    utils::printInfo("0) INode", "create");
+    std::cout << "[partition]Choose your filesystem" << std::endl
+              << "[partition] 0) None" << std::endl
+              << "[partition] 1) FAT" << std::endl
+              << "[partition] 2) INode" << std::endl
+              << "[partition] Choice: ";
     std::cin >> in;
     
     if(in == '1')fs = FileSystemType::FAT;
