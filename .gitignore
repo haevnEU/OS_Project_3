@@ -1,0 +1,13 @@
+# Object files
+*.o
+
+# VisualStudioCode #
+.vscode/*
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+*.code-workspace
+
+# Build directory
+code/build/*
