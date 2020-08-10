@@ -25,35 +25,38 @@ bool Disk::isMounted() const{
 
 
 Disk::Disk(const char* path){
-    std::cout << "Create " << this << std::endl;
     MBR_m = nullptr;
     this->path_m = new char[strlen(path) + 1];
     memcpy(this->path_m, path, strlen(path) + 1);
 }
 
 Disk::~Disk(){
-    std::cout << "Delete " << this << std::endl;
     unmount();
     delete path_m;
     delete MBR_m;
 }
 
 
-void Disk::createDisk(uint32_t size){
+void Disk::createDisk(int64_t size){
     // Creates a new Virtual Disk File with zeros as content.
     // It will inform the user over a progressbar
    
-    //utils::printModule("Disk", "DiskCreator");
-    std::cout << "[create] Start disk creation ..." << std::endl;
+    std::cout << "[create] Start disk creation..." << std::endl;
+    if(size < 0){
+        std::cerr << utils::COLOR_RED << "[create] A negative file size was entered: " << size << utils::COLOR_RESET << std::endl;
+        return;
+    }    
+    if(size > std::numeric_limits<uint32_t>::max()){
+        std::cerr << utils::COLOR_RED << "[create] File size of " << size << " exceeds the maximum limit of " << std::numeric_limits<uint32_t>::max()  << utils::COLOR_RESET << std::endl; 
+        return;
+    }
     ProgressBar bar;
     // Perfomace decision. One step0x55ed33485740 is one percent of the size.
     uint32_t step = size / 100;
     bar.maximum(100);
     std::cout << utils::COLOR_CYAN << "[create] Using path: " << path_m << utils::COLOR_RESET << std::endl;
+    std::cout << utils::COLOR_CYAN << "[create] Desired disk size: " << size << utils::COLOR_RESET << std::endl;
 
-    if(size > std::numeric_limits<uint32_t>::max()){
-           //size = std::numeric_limits<uint32_t>::max();
-    }
     this->size_m = size;
     // Open the virtual disk file
     std::cout << "[create] Open: [";

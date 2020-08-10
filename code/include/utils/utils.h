@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <fstream>
 #include <sys/ioctl.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <string>
 #include <iomanip>
@@ -24,6 +25,7 @@
 
 #define FILE_IO_NOT_FOUND       0x05F10404 // File not found
 #define FILE_WRONG_FILE_SYSTEM  0x51F1BADF // The input doenst started with /
+#define FILE_WRONG_PATH         0x51F1BADA // The path is invalid
 
 #define INDEX_OUT_OF_BOUND      0x51A1FFFF // Index was out of boundary
 
@@ -79,6 +81,10 @@ namespace utils{
     const static char* ICON_ACCEPT = "\x1B[32m\xE2\x9C\x93\x1B[0m";
     const static char* ICON_DENIED = "\x1B[31mx\x1B[0m";
 
+    static bool file_exists(const std::string& name) {
+        struct stat buffer;   
+        return (stat (name.c_str(), &buffer) == 0); 
+    }
 
     static void printError(std::string message, std::string module_name, uint64_t error_code = 0){
         std::cerr << COLOR_RED << "[" << module_name << "]" << message << std::endl;

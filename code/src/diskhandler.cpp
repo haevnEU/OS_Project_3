@@ -5,6 +5,21 @@ DiskHandler::DiskHandler(){
 }
 
 void DiskHandler::addDisk(Disk *disk){
+    if(!utils::file_exists(disk->path())){
+        std::cerr << utils::COLOR_RED << "[Diskhandler] Disk file does not exists, deleting object" << utils::COLOR_RESET << std::endl;
+        delete(disk);
+        return;
+    }
+
+    for (auto i = disks->begin(); i != disks->end(); ++i){
+        if(strcmp(disk->path(), ((Disk*)*i)->path()) == 0){
+            std::cerr << utils::COLOR_YELLOW << "[Diskhandler] Disk allready loaded" << utils::COLOR_RESET << std::endl;
+            delete(disk);
+            return;
+        }
+    }
+
+    std::cout << "Add disk" << std::endl;
     disks->push_back(disk);
 }
 

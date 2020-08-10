@@ -81,7 +81,7 @@ public methods:
      *          virtual disk is determined by @see{#size}
      * @param size Size of the disk in bytes
      */
-    void createDisk(uint32_t size_m);
+    void createDisk(int64_t size_m);
 
     void deleteDisk();
 

@@ -77,7 +77,7 @@ void CLI::createDisk(){
     }
 
     std::cout << "Enter size in bytes: ";
-    uint32_t size;
+    int64_t size;
     std::cin >> size;
     if(size <= 512){
         utils::printError("Size is invalid", "create", DISC_SIZE_INVALID);
@@ -85,7 +85,7 @@ void CLI::createDisk(){
     }
     Disk* disk = new Disk(path.c_str());
     disk->createDisk(size);
-    handler.getDisks()->push_back(disk);
+    DiskHandler::getInstance().addDisk(disk);
 }
 
 void CLI::loadDisk(){
@@ -113,7 +113,7 @@ void CLI::loadDisk(){
         
         std::cout << "Disk loaded" << std::endl;
         Disk* disk = new Disk(path.c_str());
-        handler.getDisks()->push_back(disk);
+        DiskHandler::getInstance().addDisk(disk);
     }
 }
 
