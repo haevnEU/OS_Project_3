@@ -2,9 +2,10 @@
 #define FILESYSTEMTYPE_H
 
 enum FileSystemType{
-    NONE = 0,
-    FAT = 16,
-    INODE = 32
+    NONE = 0x00,
+    FAT = 0x04,
+    FAT_HIDDEN = 0x14,
+    INODE = 0x83
 };
 
 /**
@@ -17,6 +18,7 @@ static const char* getFileSystemName(FileSystemType fileSystemType){
     switch(fileSystemType){
         case FileSystemType::NONE: return "None";
         case FileSystemType::FAT: return "FAT";
+        case FileSystemType::FAT_HIDDEN: return "FAT_HIDDEN";
         case FileSystemType::INODE: return "INODE";
     }
     return "UNKNOWN";
@@ -30,10 +32,10 @@ static const char* getFileSystemName(FileSystemType fileSystemType){
  */
 static FileSystemType numberToFileSystemTyp(unsigned char fileSystemType){
     switch(fileSystemType){
-        case 0: return FileSystemType::NONE;
-        case 16: return FileSystemType::FAT;
-        case 32: return FileSystemType::INODE;
-        default: return FileSystemType::NONE;
+        case 0x04: return FileSystemType::FAT;
+        case 0x14: return FileSystemType::FAT_HIDDEN;
+        case 0x83: return FileSystemType::INODE;
     }
+    return FileSystemType::NONE;
 }
 #endif // FILESYSTEMTYPE_H

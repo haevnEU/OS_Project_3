@@ -146,6 +146,14 @@ public methods:
     void createPartition(int64_t size_m, FileSystemType fileSystemType, bool isPrimary);
 
     /**
+     * @brief wipePartition
+     * @details Removes the partition from the MBR.
+     *          This methods wipes the partition entirely, all occupied blocks will be overriden with zero        
+     *  @param index Partition which should be removed
+     */
+    void wipePartition(uint8_t index);
+
+    /**
      * @brief removePartition
      * @details Removes the partition from the MBR.
      *          No data will be wiped, but the data cannot be accessed anymore on an easy way
