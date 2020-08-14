@@ -385,6 +385,11 @@ void Disk::createPartition(int64_t size, FileSystemType fileSystemType, bool isB
 
 void Disk::wipePartition(uint8_t index){
     index--;
+    if(nullptr == MBR_m->partition(index)){
+        std::cerr << utils::COLOR_RED << "[Wipe] Requested partition is allready wiped." << utils::COLOR_RESET << std::endl;
+        return;
+    }
+
     uint64_t start = MBR_m->partition(index)->startAddress();
     uint64_t size = MBR_m->partition(index)->size();
     std::cout << "[Wipe] Start wiping"<< std::endl; 
@@ -418,6 +423,10 @@ void Disk::wipePartition(uint8_t index){
 }
 
 void Disk::removePartition(uint8_t index){
+    if(nullptr == MBR_m->partition(index)){
+        std::cerr << utils::COLOR_RED << "[Wipe] Requested partition is allready wiped." << utils::COLOR_RESET << std::endl;
+        return;
+    }
     MBR_m->removePartition(index);
     data_m[0x1BE + (index * 16)] = static_cast<uint8_t>(0x00);
 }

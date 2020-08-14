@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['setter_335',['setter',['../utils_8h.html#a0770a55ae93c8175db5131124376ca83',1,'utils.h']]],
-  ['static_5fattributes_336',['static_attributes',['../utils_8h.html#a818eba35bfaaa8ad49a3de166b5ecea8',1,'utils.h']]],
-  ['static_5fmethods_337',['static_methods',['../utils_8h.html#a1f704ef2581826278f5af656290645f1',1,'utils.h']]]
+  ['gb_989',['GB',['../disk_8h.html#a44172ac633c517cb4c9e278cef36b000',1,'disk.h']]],
+  ['getter_990',['getter',['../utils_8h.html#a55e4186fe295c059cd27dbebc7c3bfb7',1,'utils.h']]]
 ];

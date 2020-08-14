@@ -65,6 +65,17 @@ Disk *DiskHandler::getDisk() const{
     return disk;
 }
 
+int DiskHandler::amountDisks(){
+    return disks->size();
+}
+
+Disk *DiskHandler::getDisk(int index) const{
+    if(index < 0 || index > disk->size()){
+        return nullptr;
+    }
+    return disks->at(index);
+}
+
 void DiskHandler::removeDisk(){
  for (auto i = disks->begin(); i != disks->end(); ++i){
         if(strcmp(disk->path(), ((Disk*)*i)->path()) == 0){

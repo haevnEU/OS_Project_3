@@ -33,6 +33,9 @@ public methods:
     Disk* disk;
 
     Disk* getDisk() const;
+    Disk* getDisk(int index) const;
+
+    int amountDisks();
     void setDisk(int index);
     void removeDisk();
 };

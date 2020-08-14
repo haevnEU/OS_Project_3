@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['white_322',['WHITE',['../class_progress_bar.html#a766864cef0914da67dac3732bc7dd24c',1,'ProgressBar']]]
+  ['user_5fcolor_950',['user_color',['../class_progress_bar.html#ae3e21b0108fdd8395003f0d88af08060',1,'ProgressBar']]]
 ];
