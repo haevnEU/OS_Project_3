@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['red_313',['RED',['../class_progress_bar.html#a17c06c1ffa9f64d651335667cb8ce1f2',1,'ProgressBar']]],
-  ['reset_314',['RESET',['../class_progress_bar.html#a3becedaf17522c338b9d895a1937a4f8',1,'ProgressBar']]]
+  ['progress_5fbar_5fvalue_936',['progress_bar_value',['../class_progress_bar.html#a56c8f60ee31a7c7b79ebb32ea7dd2763',1,'ProgressBar']]],
+  ['purple_937',['PURPLE',['../class_progress_bar.html#a801ea40c4d88dccf08e32076282b5b8a',1,'ProgressBar']]]
 ];

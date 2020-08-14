@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['user_5fcolor_321',['user_color',['../class_progress_bar.html#ae3e21b0108fdd8395003f0d88af08060',1,'ProgressBar']]]
+  ['terminal_5fclear_949',['TERMINAL_CLEAR',['../namespaceutils.html#a507d7c5200d56f4875eddcdcef767f17',1,'utils']]]
 ];

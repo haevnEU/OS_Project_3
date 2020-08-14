@@ -19,6 +19,10 @@ uint32_t Disk::size() const{
     return size_m;
 }
 
+uint32_t Disk::available_size() const{
+    return available_size_m;
+}
+
 bool Disk::isMounted() const{
     return mounted;
 }
@@ -57,7 +61,6 @@ void Disk::createDisk(int64_t size){
     std::cout << utils::COLOR_CYAN << "[create] Using path: " << path_m << utils::COLOR_RESET << std::endl;
     std::cout << utils::COLOR_CYAN << "[create] Desired disk size: " << size << utils::COLOR_RESET << std::endl;
 
-    this->size_m = size;
     // Open the virtual disk file
     std::cout << "[create] Open: [";
     auto fp = fopen(path_m, "wb");
@@ -78,8 +81,16 @@ void Disk::createDisk(int64_t size){
             bar.update();
         }
     }
+    char c0 = 0xC0;
+    char version = CURRENT_VIRTUAL_DISK_FILE_VERSION;
+    fwrite (&c0, 1, 1, fp);
+
+    fwrite (&version, 1, 1, fp);
+    
+
     fclose(fp);
     std::cout << utils::COLOR_GREEN << "[create] Virtual disk file created under " << path_m << utils::COLOR_RESET << std::endl;
+    available_size_m = size;
 }
 
 void Disk::deleteDisk(){
@@ -139,6 +150,9 @@ void Disk::mount(){
 
     close(fd);
 
+    available_size_m = fileStats_m->st_size - 2;
+    size_m = fileStats_m->st_size - 2;
+    std::cout << available_size_m << std::endl;
     mounted = true;
     loadMasterBootRecord();
 
@@ -182,9 +196,14 @@ void Disk::loadMasterBootRecord(){
     }
 
     MBR_m = new MasterBootRecord();
+    
+    available_size_m -= 0x1FF - 1;
     for(int index = 0; index < 4; ++index){
         // Inspect if a the partition exists using the bootable flag
         if(data_m[0x1BE + (index * 16)] > 0x00){
+            if(data_m[0x1BE + (index * 16)] == 0x50){
+                continue;
+            }
             // If the bootable flag is 0x80 this is a primary partition
             bool bootable = (data_m[0x1BE + (index * 16)] == 0x80);
 
@@ -205,6 +224,10 @@ void Disk::loadMasterBootRecord(){
 
             // Create new partition in the MBR Wrapper object
             uint32_t size = end - start;
+            
+            // update the available size
+            available_size_m -= size;
+            std::cout << "Add partition" << std::endl;
             MBR_m->addPartition(new Partition(start, size, fs, bootable), index);
         }
     }
@@ -238,7 +261,7 @@ void Disk::createMasterBootRecord(){
     std::cout << utils::COLOR_GREEN << utils::ICON_ACCEPT << utils::COLOR_RESET << "]" << std::endl;
 
      std::cout << "[MBR] Writing reserved flags: [";
-    for(int i = 0; i < 4; i++)data_m[0x1BE + (i * 16)] = static_cast<uint8_t>(0x50);
+    for(int i = 0; i < 4; i++)data_m[0x1BE + (i * 16)] = static_cast<uint8_t>(0x00);
     std::cout << utils::COLOR_GREEN << utils::ICON_ACCEPT << utils::COLOR_RESET << "]" << std::endl;
 
     std::cout << "[MBR] Writing magic numbers: [";
@@ -249,6 +272,7 @@ void Disk::createMasterBootRecord(){
     std::cout << utils::COLOR_GREEN << "[MBR] Successfull created." << utils::COLOR_RESET << std::endl;
 
     MBR_m = new MasterBootRecord();
+    available_size_m = size_m - 0x1FF - 1;
 }
 
 
@@ -257,7 +281,6 @@ uint32_t Disk::calculateStartAddress(uint8_t partitionIndex){
     // => It is required to know the end address of the previous partition
     //    The endaddress = Startaddresss + size + 1.
     // If no previous partition exists the operation returns nullptr
-
 
     if(partitionIndex == 0){
         return MBR_SIZE + 1;
@@ -270,7 +293,18 @@ uint32_t Disk::calculateStartAddress(uint8_t partitionIndex){
     return  (partition->startAddress() + partition->size() + 1);
 }
 
-void Disk::createPartition(uint32_t size, FileSystemType fileSystemType, bool isBootable){
+void Disk::createPartition(int64_t size, FileSystemType fileSystemType, bool isBootable){
+
+
+  if(size < 0){
+        std::cerr << utils::COLOR_RED << "[partition] A negative size was entered: " << size << utils::COLOR_RESET << std::endl;
+        return;
+    }    
+    if(size > available_size_m){
+        std::cerr << utils::COLOR_RED << "[partition] Size of " << size << " exceeds the maximum capacity of " << available_size_m  << utils::COLOR_RESET << std::endl; 
+        return;
+    }
+
     // Required a mounted disk, exisitng MBR and a spot inside the Partitiontable
     //  => From the last results a max available amount of partition of 4
     
@@ -292,17 +326,20 @@ void Disk::createPartition(uint32_t size, FileSystemType fileSystemType, bool is
     // Calculate the start address. If it the first partition 512 will be used
     //  Otherwise 512 + size of the previous partition + 1 will be used
     uint32_t start = calculateStartAddress(index);
-
     uint32_t end = start + size;
-    MBR_m->addPartition(new Partition(start, size, fileSystemType, isBootable), index);
     // If the partition is not empty the operation will cancel at this point
-    if(data_m[0x1BE + (index * 16)] != 0x50){
+    // TODO Fix this with primary 0x00 = inactive 0x80 = active
+    std::cout << (int)data_m[0x1BE + (index*16)] << std::endl;;
+    if(data_m[0x1BE + (index * 16)] != 0x00){
         return;
     }
+    MBR_m->addPartition(new Partition(start, size, fileSystemType, isBootable), index);
 
     // Write primary partition flag and filesystem type.
     // Note an partition entry is exact 16 Bytes
+
     data_m[0x1BE + (index * 16)] = static_cast<uint8_t>(0x80);
+
     data_m[0x1BF + (index * 16)] =  static_cast<uint8_t>(fileSystemType);
 
     // Ill assign the LSB to the smallest position and the HSB to the highest position.
@@ -325,8 +362,71 @@ void Disk::createPartition(uint32_t size, FileSystemType fileSystemType, bool is
         data_m[i + 2] = static_cast<uint8_t>(0xF0);
         data_m[i + 3] = static_cast<uint8_t>(0x0D);
     }
+    
+    available_size_m -= size;
+
+    uint64_t start2 = MBR_m->partition(index)->startAddress();
+    uint64_t size2 = MBR_m->partition(index)->size();
+    bool secure = true;
+    
+    ProgressBar bar;
+    // Perfomace decision. One step0x55ed33485740 is one percent of the size.
+    uint32_t step = size2 / 100;
+    bar.maximum(100);
+    if(secure){
+        for(int i = 0; i < (start2 + size2); i++){
+            data_m[start2 + i] = static_cast<uint8_t>(0);
+            if(i % step == 0){
+                bar.update();
+            }
+        }
+    }
+}
+
+void Disk::wipePartition(uint8_t index){
+    index--;
+    if(nullptr == MBR_m->partition(index)){
+        std::cerr << utils::COLOR_RED << "[Wipe] Requested partition is allready wiped." << utils::COLOR_RESET << std::endl;
+        return;
+    }
+
+    uint64_t start = MBR_m->partition(index)->startAddress();
+    uint64_t size = MBR_m->partition(index)->size();
+    std::cout << "[Wipe] Start wiping"<< std::endl; 
+    ProgressBar bar;
+    // Perfomace decision. One step is one percent of the size.
+    uint32_t step = size / 100;
+    bar.maximum(100);
+    
+    for(int i = 0; i < (start + size); i++){
+        data_m[start + i] = static_cast<uint8_t>(0);
+//        data_m[start + i] = static_cast<uint8_t>(rand() % 0xFF); // 
+        if(i % step == 0){ 
+            bar.update();
+        }
+    }
+    MBR_m->removePartition(index);
+
+    data_m[0x1BE + (index * 16)] = static_cast<uint8_t>(0x00);
+    data_m[0x1BF + (index * 16)] = static_cast<uint8_t>(0x00);
+
+
+    data_m[0x1C0 + (index * 16)] = static_cast<uint8_t>(0x00);
+    data_m[0x1C1 + (index * 16)] = static_cast<uint8_t>(0x00);
+    data_m[0x1C2 + (index * 16)] = static_cast<uint8_t>(0x00);
+    data_m[0x1C3 + (index * 16)] = static_cast<uint8_t>(0x00);
+
+    data_m[0x1C4 + (index * 16)] = static_cast<uint8_t>(0x00);
+    data_m[0x1C5 + (index * 16)] = static_cast<uint8_t>(0x00);
+    data_m[0x1C6 + (index * 16)] = static_cast<uint8_t>(0x00);
+    data_m[0x1C7 + (index * 16)] = static_cast<uint8_t>(0x00);
 }
 
 void Disk::removePartition(uint8_t index){
+    if(nullptr == MBR_m->partition(index)){
+        std::cerr << utils::COLOR_RED << "[Wipe] Requested partition is allready wiped." << utils::COLOR_RESET << std::endl;
+        return;
+    }
     MBR_m->removePartition(index);
+    data_m[0x1BE + (index * 16)] = static_cast<uint8_t>(0x00);
 }

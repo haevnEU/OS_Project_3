@@ -11,6 +11,7 @@ void diskUtil::show(Disk* disk){
                   << "2) Create MBR" << std::endl
                   << "3) List partitions" << std::endl
                   << "4) Create new partition" << std::endl
+                  << "5) Remove partition" << std::endl
                   << "q) Back" << std::endl
                   << "Choice: ";
         char choice;
@@ -30,6 +31,7 @@ void diskUtil::show(Disk* disk){
             createPartition();
             break;
         case '5':
+            removePartition();
             break;
         case '6':
             break;
@@ -84,7 +86,8 @@ void diskUtil::listMetaInformation(){
         return;
     }
 
-    std::cout << "Size of disk: " << disk->size() << std::endl
+    std::cout << "Size of disk: " << disk->size() << "bytes" << std::endl 
+              << "Free space of disk: " << disk->available_size() << "bytes" <<  std::endl 
               << "Mounted: " << (disk->isMounted() ? utils::ICON_ACCEPT : utils::ICON_DENIED) << std::endl;
     for(int i = 0; i < 4; ++i){
         Partition* partition = disk->MBR()->partition(i);
@@ -121,7 +124,7 @@ void diskUtil::listMetaInformation(){
 
 
 void diskUtil::createPartition(){
-    uint32_t size;
+    int64_t size;
     FileSystemType fs = FileSystemType::FAT;
     bool bootable;
 
@@ -129,27 +132,57 @@ void diskUtil::createPartition(){
                                                          "which allows the creation of a"
                                                          "new partition.");
     
-    utils::printInfo("Enter partition size: ", "create");
+    std::cout << "[partition] Enter partition size: ";
     std::cin >> size;
-    utils::printInfo("Primary partition (y/N): ", "create");
-        char in;
-    std::cin >> in;
-    if(in == 'y' || in == 'Y'){
-        bootable = true;
-    }else{
-        bootable = false;
+   
+    if(size < 0){
+        std::cerr << utils::COLOR_RED << "[partition] A negative size was entered: " << size << utils::COLOR_RESET << std::endl;
+        return;
+    }    
+    if(size > disk->available_size()){
+        std::cerr << utils::COLOR_RED << "[partition] Size of " << size << " exceeds the maximum capacity of " << disk->available_size()  << utils::COLOR_RESET << std::endl; 
+        return;
     }
-
-    utils::printInfo("Choose your filesystem", "create");
-    utils::printInfo("0) None", "create");
-    utils::printInfo("0) FAT", "create");
-    utils::printInfo("0) INode", "create");
+    
+    char in;
+    std::cout << "[partition]Choose your filesystem" << std::endl
+              << "[partition] 0) None" << std::endl
+              << "[partition] 1) FAT" << std::endl
+              << "[partition] 2) FAT HIDDEN" << std::endl
+              << "[partition] 3) INode" << std::endl
+              << "[partition] Choice: ";
     std::cin >> in;
     
     if(in == '1')fs = FileSystemType::FAT;
-    else if(in == '2')fs = FileSystemType::INODE;
+    else if(in == '2')fs = FileSystemType::FAT_HIDDEN;
+    else if(in == '3')fs = FileSystemType::INODE;
     else fs = FileSystemType::NONE;
     disk->createPartition(size, fs, bootable);
+}
+
+void diskUtil::removePartition(){
+    utils::printModule("Partition Cleaner", "This module allows removing a partition from the disk");
+    std::cout << "[partition] Select a index (1-4): ";
+    int index;
+    std::cin >> index;
+    if(index < 1 || index > 4){
+        std::cerr << utils::COLOR_RED << "[partition] Index is out of bounds" << utils::COLOR_RESET << std::endl;
+        return;
+    }
+
+    char in;
+    std::cout << "[partition] 1) Wipe partition (secure)" << std::endl
+              << "[partition] 2) Delete partition (insecure)" << std::endl
+              << "[partition] q) Abort" << std::endl
+              << "[partition] Choice: ";
+    std::cin >> in;
+    if(in == '1'){
+        disk->wipePartition(index);
+    }else if(in == '2'){
+        disk->removePartition(index);
+    }else{
+        return;
+    }
 }
 
 void diskUtil::openPartitionTool(){

@@ -62,6 +62,12 @@ public methods:
      * @details Invokes the submodule which invokes the create partition submodule
      */
     void createPartition();
+    /**
+     * @brief removePartition
+     * @details This method deletes a entry from the master boot record.
+     *          During the process the user can also select a full partition wipe
+     */
+    void removePartition();
 
     /**
      * @brief openPartitionTool

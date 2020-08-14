@@ -1,10 +1,8 @@
 var searchData=
 [
-  ['scriptmode_256',['scriptMode',['../classutils_1_1_c_l_i.html#ad2871878ea4a887b4001a4bad20d8e73',1,'utils::CLI']]],
-  ['selectdisk_257',['selectDisk',['../classutils_1_1_c_l_i.html#aac8d8c1eec8536bcb89c7e26821aa3d1',1,'utils::CLI']]],
-  ['setdisk_258',['setDisk',['../class_disk_handler.html#a39f75134d5500ea4bc574efc24a92d73',1,'DiskHandler::setDisk()'],['../class_m_b_r_utils.html#ad7b34cfe0c30e61b1be2e401f102a50b',1,'MBRUtils::setDisk()']]],
-  ['show_259',['show',['../classdisk_util.html#a9be51bec57b2e24843966bd327cb8c48',1,'diskUtil']]],
-  ['size_260',['size',['../class_disk.html#a0acf88d6baa8ac0faedcecd4e62dd009',1,'Disk::size()'],['../class_partition.html#a3d06fb099828620acee4d40655fd9a8b',1,'Partition::size()']]],
-  ['startaddress_261',['startAddress',['../class_partition.html#aeb9d4aa64e79179b9794775b016ea34b',1,'Partition']]],
-  ['startdiskutils_262',['startDiskUtils',['../classutils_1_1_c_l_i.html#a954ae8145402ed06d4a45c97c05c1661',1,'utils::CLI']]]
+  ['registerapi_853',['registerAPI',['../class_a_p_i.html#a5bacb002a2f1ea424655a335aba26dd9',1,'API']]],
+  ['removedisk_854',['removeDisk',['../class_disk_handler.html#aa7eca04324c24afdcdb6583c3eb7337a',1,'DiskHandler']]],
+  ['removepartition_855',['removePartition',['../class_disk.html#a9bdcfbfb4bef50fe89b24625c1c76455',1,'Disk::removePartition()'],['../class_master_boot_record.html#a5c2193823f6c7fcddadf91b90e83c646',1,'MasterBootRecord::removePartition()'],['../classdisk_util.html#a5a41bc83a9ab5241ff881a6bed0ea342',1,'diskUtil::removePartition()']]],
+  ['render_856',['render',['../class_progress_bar.html#acaf434e487e1265cf0f979362478b6b7',1,'ProgressBar']]],
+  ['reset_857',['reset',['../class_progress_bar.html#a9ccd597a098a693f9364741fc69a3de2',1,'ProgressBar']]]
 ];

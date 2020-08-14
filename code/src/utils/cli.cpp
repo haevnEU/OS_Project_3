@@ -148,6 +148,9 @@ void CLI::selectDisk(){
     int choice;
     std::cout << "Choice: ";
     std::cin >> choice;
+    if(choice == 'q' || choice == 0){
+        return;
+    }
     choice--;
     if(choice < handler.getDisks()->size()){
        currentDisk = handler.getDisks()->at(choice);
