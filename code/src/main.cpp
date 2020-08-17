@@ -14,8 +14,12 @@
 
 void signalHandler(int signum){
     std::cerr << utils::COLOR_RED << "[MAIN] An Interrupt was caught." << std::endl
-              << "If you create a new issue ticket, please provide previous interaction and the following information" << std::endl
-              << "Interrupt [" << signum << "]" << std::endl
+              << "If you open a new issue ticket please provide the following information" << std::endl
+              << "Replace <ACTION> with your previous actions" << std::endl<< std::endl
+              << "Issue: " << strsignal(signum) << "[" << signum <<"]" << std::endl
+              << "Previous action: <ACTION>" << std::endl
+              << std::endl 
+              << "Application state: " << std::endl
               << "Diskhandler: " << std::endl;
     DiskHandler& handler = DiskHandler::getInstance();
     int amountDisks = handler.amountDisks();
@@ -33,21 +37,50 @@ void signalHandler(int signum){
         }
         
         std::cout << disk->available_size() << "/" << disk->size() << " bytes used" << std::endl;
-        std::cout << "State: " << (disk->isMounted() ? "Mounted" : "Unmounted");
-        std::cout << "Location: " << disk->path();
+        std::cout << "State: " << (disk->isMounted() ? "Mounted" : "Unmounted") << std::endl;
+        std::cout << "Location: " << disk->path() << std::endl;
         // Disk infos 
 
         mbr = disk->MBR();
         if(nullptr == mbr){
             std::cout << "Master Boot Record is nullptr" << std::endl;
             continue;
+        }else{
+            for(int i = 0; i < 4; i++){
+                partition = mbr->partition(i);
+                std::cout << "+------------------------------" << std::endl;
+                if(nullptr == partition){
+                    std::cout << "| Partition No: " << i << ": " << std::endl
+                            << "| \tNULL" << std::endl
+                            << "+------------------------------" << std::endl;
+                }else{
+                    if(partition->startAddress() == 0x00 && partition->size() == 0){
+                        std::cout << "| Partition No: " << i << ": " << std::endl
+                                << "| \t" << "NULL" << std::endl
+                                << "+------------------------------" << std::endl;
+                    }else{
+                        std::cout << "| Partition No: " << i << std::endl
+                                << "| \t" << "Startaddress: 0x" << std::hex << std::setw(8) << std::setfill('0') << partition->startAddress() << std::endl
+                                << "| \t" << "Endaddress:   0x" << std::hex << std::setw(8) << std::setfill('0') << (partition->size() + partition->startAddress()) << std::endl
+                                << "| \t" << "Size:         "   << std::dec << partition->size() << std::endl
+                                << "| \t" << "Primary:      "   << (partition->isPrimary() ? utils::ICON_ACCEPT_RAW : utils::ICON_DENIED_RAW) << std::endl
+                                << "| \t" << "Filesystem:   "   << getFileSystemName(partition->fileSystemType()) << std::endl
+                                << "+------------------------------" << std::endl;
+                
+                    }
+                }
+            }
         }
         
     }
+    std::cout << utils::COLOR_RESET;
     exit(signum);
 }
 
 void quit(int signum){
+    std::cout << utils::COLOR_RESET;
+    exit(signum);
+
     if(signum == SIGINT){
         char choice;
         std::cout << utils::TERMINAL_CLEAR << "[MAIN] Are you sure to quit (y/N): ";

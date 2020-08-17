@@ -397,7 +397,10 @@ void Disk::wipePartition(uint8_t index){
     // Perfomace decision. One step is one percent of the size.
     uint32_t step = size / 100;
     bar.maximum(100);
-    
+    if(step <= 100){
+        bar.maximum(size);
+        step = 1;
+    } 
     for(int i = 0; i < (start + size); i++){
         data_m[start + i] = static_cast<uint8_t>(0);
 //        data_m[start + i] = static_cast<uint8_t>(rand() % 0xFF); // 
@@ -423,6 +426,7 @@ void Disk::wipePartition(uint8_t index){
 }
 
 void Disk::removePartition(uint8_t index){
+    index--;
     if(nullptr == MBR_m->partition(index)){
         std::cerr << utils::COLOR_RED << "[Wipe] Requested partition is allready wiped." << utils::COLOR_RESET << std::endl;
         return;

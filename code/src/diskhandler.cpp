@@ -70,7 +70,7 @@ int DiskHandler::amountDisks(){
 }
 
 Disk *DiskHandler::getDisk(int index) const{
-    if(index < 0 || index > disk->size()){
+    if(index < 0 || index > disks->size()){
         return nullptr;
     }
     return disks->at(index);
