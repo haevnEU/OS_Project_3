@@ -2,6 +2,8 @@
 #define API_H
 
 #include <iostream>
+#include <ctime>
+#include <chrono>
 
 extern "C" {
 #include "lua/lua.h"
@@ -12,7 +14,13 @@ extern "C" {
 
 
 #include "disk.h"
+#include "diskhandler.h"
+
+#include "lua/luaapihelp.h"
+
+#include "utils/cli.h"
 #include "utils/utils.h"
+
 
 static lua_State* L;
 /**
@@ -21,14 +29,9 @@ static lua_State* L;
  *          As scripting language lua is choosen.
  */
 class API{
-
-private attributes:
-
-
-
 private methods:
-    API();
 
+    API();
     void registerAPI();
 
 public static_methods:
@@ -45,6 +48,8 @@ public static_methods:
 
 public static_methods: // API Methods
 
+    static int LUA_api_help(lua_State* L);
+
     static int LUA_print(lua_State* L);
 
     static int LUA_clear_screen(lua_State* L);
@@ -53,8 +58,6 @@ public static_methods: // API Methods
 
 
     static int LUA_load_disk(lua_State* L);
-
-    static int LUA_list_disk(lua_State *L);
 
     static int LUA_delete_disk(lua_State *L);
 
@@ -70,9 +73,13 @@ public static_methods: // API Methods
     static int LUA_list_master_boot_record(lua_State* L);
     
     static int LUA_wipe_master_boot_record(lua_State* L);
+
     
     static int LUA_create_createPartition_boot_record(lua_State* L);
-    
+
+    static int LUA_delete_partition(lua_State* L);
+
+    static int LUA_wipe_partition(lua_State* L);
     
 
     static void printElement(Disk* disk, int index, char filler = ' '){
@@ -83,6 +90,11 @@ public static_methods: // API Methods
                   << "    " << filler << ' '
                   << disk->path();
     }
+
+private methods:
+    static void printError(const char* message);
+    static void printError(const char* message, int code);
+    static void printError(const char* message, const char* syntax);
 
 public methods:
 

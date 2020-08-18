@@ -19,6 +19,7 @@ private attributes:
     /// Partition table of the MBR, only 4 entries are possilbe
     Partition* partitionTable[4];
 
+    int last_error_m = 0;
 public getter:
 
     /**
@@ -29,6 +30,7 @@ public getter:
      */
     Partition* partition(int index);
 
+    int lastError();
 
 public methods:
 

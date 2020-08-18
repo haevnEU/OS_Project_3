@@ -91,7 +91,6 @@ void quit(int signum){
         
     }
 }
-
 int main(int argc, char *argv[]){
 
     signal(SIGINT, quit);

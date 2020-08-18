@@ -1,7 +1,4 @@
 #include "api.h"
-#include "disk.h"
-#include "diskhandler.h"
-#include "utils/cli.h"
 
 API::API(){
 
@@ -9,20 +6,20 @@ API::API(){
 
     // 2. Open required libraries
     luaL_openlibs(L);
-
     registerAPI();
 }
 
-void
-API::close(){
+void API::close(){
     lua_close(L);
 }
 
 
-API::~API(){
-}
+API::~API(){}
 
-void API::registerAPI(){
+void API::registerAPI(){    
+
+    lua_pushcfunction(L, LUA_api_help);
+    lua_setglobal(L, "api");
 
     lua_pushcfunction(L, LUA_print);
     lua_setglobal(L, "print");
@@ -40,9 +37,6 @@ void API::registerAPI(){
 
     lua_pushcfunction(L, LUA_load_disk);
     lua_setglobal(L, "loadDisk");
-
-    lua_pushcfunction(L, LUA_list_disk);
-    lua_setglobal(L, "listDisks");
 
     lua_pushcfunction(L, LUA_select_disk);
     lua_setglobal(L, "selectDisk");
@@ -66,23 +60,75 @@ void API::registerAPI(){
     lua_pushcfunction(L, LUA_create_createPartition_boot_record);
     lua_setglobal(L, "createPartition");
 
+    lua_pushcfunction(L, LUA_delete_partition);
+    lua_setglobal(L, "deletePartition");
+
+    lua_pushcfunction(L, LUA_wipe_partition);
+    lua_setglobal(L, "wipePartition");
 }
 
 void API::executeScript(const char* path){
-    std::cout << path<< std::endl;
+    std::cout << path << std::endl;
     int result = luaL_dofile(L, path);
     if (result != LUA_OK) {
-        std::cout << utils::COLOR_RED << lua_tostring(L,-1) << utils::COLOR_RESET << std::endl;
+        printError(lua_tostring(L, -1), path);
     }
 }
 
 void API::executeCommand(const char* command){
     int result = luaL_dostring(L, command);
     if (result != LUA_OK) {
-        std::cout << utils::COLOR_RED << lua_tostring(L,-1) << utils::COLOR_RESET << std::endl;
+        printError(lua_tostring(L, -1), "command");        
     }
 }
 
+
+void API::printError(const char* message){ 
+    auto end_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::cerr << utils::COLOR_RED 
+              << "Time: " << std::ctime(&end_time) << std::endl
+              << "Message: " << message << std::endl 
+              << utils::COLOR_RESET << std::endl;
+}
+
+void API::printError(const char* message, int code){ 
+    auto end_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::cerr << utils::COLOR_RED 
+              << "Time: " << std::ctime(&end_time) << std::endl
+              << "Message: " << message << std::endl 
+              << "Code: " << code2str(code) << "(" << std::hex << code << std::dec << ")" << std::endl 
+              << utils::COLOR_RESET << std::endl;
+}
+
+void API::printError(const char* message, const char* syntax){     
+    auto end_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::cerr << utils::COLOR_RED 
+              << "Time: " << std::ctime(&end_time) << std::endl
+              << "Message: " << message << std::endl 
+              << "Syntax: " << syntax << std::endl 
+              << utils::COLOR_RESET << std::endl;
+}
+
+int API::LUA_api_help(lua_State* L){
+    std::cout << utils::COLOR_YELLOW 
+    << "API commands" << std::endl
+    << "• " << api_commands.print << std::endl
+    << "• " << api_commands.clear << std::endl
+    << "• " << api_commands.createDisk << std::endl
+    << "• " << api_commands.loadDisk << std::endl
+    << "• " << api_commands.listDisk << std::endl
+    << "• " << api_commands.selectDisk << std::endl
+    << "• " << api_commands.mount << std::endl
+    << "• " << api_commands.unmount << std::endl
+    << "• " << api_commands.createMasterBootRecord << std::endl
+    << "• " << api_commands.listMasterBootRecord << std::endl
+    << "• " << api_commands.wipeMasterBootRecord << std::endl
+    << "• " << api_commands.createPartition << std::endl
+    << "• " << api_commands.deletePartition << std::endl
+    << "• " << api_commands.wipePartition << utils::COLOR_RESET << std::endl;
+    return 0;
+
+}
 
 int API::LUA_print(lua_State *L){
     std::cout << lua_tostring(L, -1) << std::endl;
@@ -94,40 +140,40 @@ int API::LUA_clear_screen(lua_State *L){
     return 0;
 }
 
-
 int API::LUA_create_new_disk(lua_State* L){
     if(!lua_isnumber(L, -1) || !lua_isstring(L, -2)){
-        utils::printError("Wrong parameter.");
+        printError("One argument is not valid.", api_commands.createDisk);
         return 0;
     }
+
+
     const char* path = lua_tostring(L, -2);
     uint32_t size = (uint32_t)lua_tonumber(L, -1);
     Disk* disk = new Disk(path);
     disk->createDisk(size);
-    DiskHandler::getInstance().addDisk(disk);
+    if(OPERATION_SUCCEED == disk->lastError()){  
+        std::cout << utils::COLOR_GREEN << "Disk created" << utils::COLOR_RESET << std::endl;
+        DiskHandler::getInstance().addDisk(disk);
+    }else{
+        printError("Operation failed.", disk->lastError());
+    }
     return 0;
 }
 
 int API::LUA_load_disk(lua_State* L){
     if(!lua_isstring(L, -1)){
-        utils::printError("Wrong parameter.");
+        printError("One argument is not valid.", api_commands.loadDisk);
         return 0;
     }
     const char* path = lua_tostring(L, -1);
+
+
     Disk* disk = new Disk(path);
     DiskHandler::getInstance().addDisk(disk);
-    return 0;
-}
-
-int API::LUA_list_disk(lua_State* L){
-    int idx = 1;
-    std::cout << std::endl << "Index | Mounted | Path" << std::endl;
-    std::cout << "------+---------+-------------------------" << std::endl;
-    DiskHandler& handler = DiskHandler::getInstance();
-    for (auto i = handler.getDisks()->begin(); i != handler.getDisks()->end(); ++i){
-        printElement(((Disk*)*i), idx);
-        std::cout <<std::endl;
-        idx++;
+    if(OPERATION_SUCCEED == DiskHandler::getInstance().lastError()){
+        std::cout << utils::COLOR_GREEN << "Disk added" << utils::COLOR_RESET << std::endl;
+    }else{
+        printError("Operation failed.", disk->lastError());
     }
     return 0;
 }
@@ -138,12 +184,23 @@ int API::LUA_delete_disk(lua_State *L){
 
  int API::LUA_select_disk(lua_State *L){
     if(!lua_isnumber(L, -1)){
-        utils::printError("Argument is not a number");
+        printError("One argument is invalid", api_commands.selectDisk);
         return 0;
     }     
-    int index = lua_tonumber(L, -1);;
+    int index = lua_tonumber(L, -1);
     DiskHandler& handler = DiskHandler::getInstance();
+    if(index < 0 || index >= handler.amountDisks()){
+        printError("Operation failed. Index is out of bounds");
+        return 0;
+    }
+
+
     handler.setDisk(index);
+    if(OPERATION_SUCCEED == DiskHandler::getInstance().lastError()){
+        std::cout << utils::COLOR_GREEN << "Disk selected" << utils::COLOR_RESET << std::endl;
+    }else{        
+        printError("Operation failed.", DiskHandler::getInstance().lastError());
+    }
     return 0;
 
  }
@@ -152,10 +209,18 @@ int API::LUA_delete_disk(lua_State *L){
     DiskHandler& handler = DiskHandler::getInstance();
     Disk* disk = handler.disk;
     if(nullptr == disk){
-        utils::printError("No disk was selected");
+        printError("Selected disk is nullptr");
         return 0;
     }
+
+
     disk->mount();
+    if(OPERATION_SUCCEED == disk->lastError()){  
+        std::cout << utils::COLOR_GREEN << "Disk mounted" << utils::COLOR_RESET << std::endl;
+        DiskHandler::getInstance().addDisk(disk);
+    }else{
+        printError("Operation failed.", disk->lastError());
+    }
     return 0;
  }
 
@@ -163,44 +228,60 @@ int API::LUA_delete_disk(lua_State *L){
     DiskHandler& handler = DiskHandler::getInstance();
     Disk* disk = handler.getDisk();
     if(nullptr == disk){
-        utils::printError("No disk was selected");
+        printError("Selected disk is nullptr");
         return 0;
     }
+
+
     disk->unmount();
+    if(OPERATION_SUCCEED == disk->lastError()){
+        std::cout << utils::COLOR_RED << "Disk not unmounted" << utils::COLOR_RESET << std::endl;
+    }else{
+        std::cout << utils::COLOR_GREEN << "Disk unmounted" << utils::COLOR_RESET << std::endl;
+    }
     return 0;
  }
 
 int API::LUA_create_master_boot_record(lua_State* L){
     DiskHandler& handler = DiskHandler::getInstance();
-    Disk* disk = handler.getDisk();    if(nullptr == disk){
-        utils::printError("No disk was selected");
+    Disk* disk = handler.getDisk();    
+    if(nullptr == disk){
+        printError("Selected disk is nullptr");
         return 0;
     }
     if(!disk->isMounted()){
-        utils::printError("Selected disk is not mounted");
+        printError("Selected disk is not mounted");
         return 0;
     }
+ 
 
     disk->createMasterBootRecord();
-
+    if(OPERATION_SUCCEED == disk->lastError()){  
+        std::cout << utils::COLOR_GREEN << "Master boot record created" << utils::COLOR_RESET << std::endl;
+        DiskHandler::getInstance().addDisk(disk);
+    }else{
+        printError("Operation failed.", disk->lastError());
+    }
     return 0;
 }
     
 int API::LUA_list_master_boot_record(lua_State* L){
     DiskHandler& handler = DiskHandler::getInstance();
-    Disk* disk = handler.getDisk();    if(nullptr == disk){
-        utils::printError("No disk was selected");
+    Disk* disk = handler.getDisk();    
+    if(nullptr == disk){
+        printError("Selected disk is nullptr");
         return 0;
     }
     if(!disk->isMounted()){
-        utils::printError("Selected disk is not mounted");
+        printError("Selected disk is not mounted");
         return 0;
     }
 
-   if(nullptr == disk->MBR()){
-        utils::printError("Selected disk has no master boot record");
+    if(nullptr == disk->MBR()){
+        printError("Selected disk has no master boot record");
         return 0;
     }
+
 
     std::cout << "Size of disk: " << disk->size() << std::endl
               << "Mounted: " << (disk->isMounted() ? utils::ICON_ACCEPT : utils::ICON_DENIED) << std::endl;
@@ -239,18 +320,26 @@ int API::LUA_list_master_boot_record(lua_State* L){
 }
     
 int API::LUA_wipe_master_boot_record(lua_State* L){
+    std::cout << utils::COLOR_YELLOW << "DEPRECATED CALL" << utils::COLOR_RESET << std::endl;
     DiskHandler& handler = DiskHandler::getInstance();
-    Disk* disk = handler.getDisk();    if(nullptr == disk){
-        utils::printError("No disk was selected");
+    Disk* disk = handler.getDisk();    
+    if(nullptr == disk){
+        printError("No disk was selected");
         return 0;
     }
     if(!disk->isMounted()){
-        utils::printError("Selected disk is not mounted");
+        printError("Selected disk is not mounted");
         return 0;
     }
 
-    disk->createMasterBootRecord();
 
+    disk->createMasterBootRecord();
+    if(OPERATION_SUCCEED == disk->lastError()){  
+        std::cout << utils::COLOR_GREEN << "Disk cleared" << utils::COLOR_RESET << std::endl;
+        DiskHandler::getInstance().addDisk(disk);
+    }else{
+        printError("Operation failed.", disk->lastError());
+    }
     return 0;
 }
 
@@ -260,21 +349,21 @@ int API::LUA_create_createPartition_boot_record(lua_State* L){
     int64_t file_system;
     
     if(!lua_isnumber(L, 1)){
-        utils::printError("First argument is not a number");
+        printError("One argument is invalid", api_commands.createPartition);
         return 0;
     }else{
         size = lua_tointeger(L, 1);
     }
 
     if(!lua_isstring(L, 2)){
-        utils::printError("Second argument is not a valid string");
+        printError("One argument is invalid", api_commands.createPartition);
         return 0;
     }else{
         primary = lua_tostring(L, 2)[0];
     }
 
     if(!lua_isnumber(L, 1)){
-        utils::printError("Third argument is not a number");
+        printError("One argument is invalid", api_commands.createPartition);
         return 0;
     }else{
         file_system = lua_tointeger(L, 3);
@@ -285,27 +374,93 @@ int API::LUA_create_createPartition_boot_record(lua_State* L){
     }
 
     DiskHandler& handler = DiskHandler::getInstance();
-    Disk* disk = handler.getDisk();    if(nullptr == disk){
-        utils::printError("No disk was selected");
+    Disk* disk = handler.getDisk();    
+    if(nullptr == disk){
+        printError("No disk was selected");
         return 0;
     }
     if(!disk->isMounted()){
-        utils::printError("Selected disk is not mounted");
+        printError("Selected disk is not mounted");
         return 0;
     }
     if(nullptr == disk->MBR()){
-        utils::printError("Selected disk has no master boot record");
+        printError("Selected disk has no master boot record");
         return 0;
     }
 
 
     disk->createPartition(size, numberToFileSystemTyp(file_system), primary_b);
-
+    if(OPERATION_SUCCEED == disk->lastError()){  
+        std::cout << utils::COLOR_GREEN << "Partition created";
+        DiskHandler::getInstance().addDisk(disk);
+    }else{
+        printError("Operation failed.", disk->lastError());
+    }
     return 0;
 }
 
 
 
+int API::LUA_delete_partition(lua_State* L){
+    if(!lua_isnumber(L, 1)){
+        printError("One argument is invalid", api_commands.deletePartition);
+        return 0;
+    }
+    int index = lua_tointeger(L, 1);
+    
+    if(index < 0 || index > 3){
+        printError("Index is out of bounds");
+        return 0;
+    }
+
+    Disk* disk = DiskHandler::getInstance().getDisk();
+    if(nullptr == disk){
+        printError("Selected disk is nullptr");
+        return 0;
+    }
+    
+
+    disk->removePartition(index);
+    if(OPERATION_SUCCEED == disk->lastError()){  
+        std::cout << utils::COLOR_GREEN << "Partition removed" << utils::COLOR_RESET << std::endl;
+        DiskHandler::getInstance().addDisk(disk);
+    }else{
+        printError("Operation failed.", disk->lastError());
+    }
+    return 0;
+}
+
+
+int API::LUA_wipe_partition(lua_State* L){
+    if(!lua_isnumber(L, 1)){
+        printError("One argument is invalid", api_commands.wipePartition);
+        return 0;
+    }
+    int index = lua_tointeger(L, 1);
+    
+    if(index < 0 || index > 3){
+        std::cerr << utils::COLOR_RED << "Index is out of bounds" << utils::COLOR_RESET << std::endl;
+        printError("Index out of bounds");
+        return 0;
+    }
+    
+    Disk* disk = DiskHandler::getInstance().getDisk();
+    if(nullptr == disk){
+        printError("Selected disk is nullptr");
+        std::cerr << utils::COLOR_RED << "Selected disk is nullptr" << utils::COLOR_RESET << std::endl;
+        return 0;
+    }
+
+
+    disk->wipePartition(index);    
+    if(OPERATION_SUCCEED == disk->lastError()){  
+        std::cout << utils::COLOR_GREEN << "Partition wiped" << utils::COLOR_RESET << std::endl;
+        DiskHandler::getInstance().addDisk(disk);
+    }else{
+        printError("Operation failed.", disk->lastError());
+    }
+    return 0;
+}
 
 
 

@@ -3,8 +3,10 @@
 Partition *MasterBootRecord::partition(int index){
     if(index >= 4){
         std::cout << utils::COLOR_RED << "[MBR] Requested index " << index << " is not in bound of the MBR partition table" << utils::COLOR_RESET << std::endl;
+        last_error_m = INDEX_OUT_OF_BOUNDS;
         return nullptr;
     }
+    last_error_m = OPERATION_SUCCEED;
     return partitionTable[index];
 }
 
@@ -16,21 +18,29 @@ MasterBootRecord::MasterBootRecord(){
     partitionTable[3] = nullptr;
 }
 
+int MasterBootRecord::lastError(){
+    return last_error_m;
+}
+
 void MasterBootRecord::addPartition(Partition *partition, int index){
     if(index >= 4){
         std::cout << utils::COLOR_RED << "[MBR] Requested index " << index << " is not in bound of the MBR partition table" << utils::COLOR_RESET << std::endl;
+        last_error_m = INDEX_OUT_OF_BOUNDS;
         return;
     }
     partitionTable[index] = partition;
+    last_error_m = OPERATION_SUCCEED;
 }
 
 void MasterBootRecord::removePartition(int index){
     if(index >= 4){
         std::cout << utils::COLOR_RED << "[MBR] Requested index " << index << " is not in bound of the MBR partition table" << utils::COLOR_RESET << std::endl;
+        last_error_m = INDEX_OUT_OF_BOUNDS;
         return;
     }
     delete partitionTable[index];
     partitionTable[index] = nullptr;
+    last_error_m = OPERATION_SUCCEED;
 }
 
 int MasterBootRecord::findFreePartition(){

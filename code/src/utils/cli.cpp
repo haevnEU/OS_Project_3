@@ -37,12 +37,13 @@ void CLI::printMenu(){
         std::cout << utils::COLOR_YELLOW;
     }
     std::cout << "5) Mount selected Virtual Disk" << std::endl;
-    std::cout << "6) Unmount selected Virtual Disk" << std::endl;
     if(nullptr == currentDisk || !currentDisk->isMounted()){
         std::cout << utils::COLOR_YELLOW;
     }
+    std::cout << "6) Unmount selected Virtual Disk" << std::endl;
     std::cout << "7) Enter Disk Utils" << std::endl << utils::COLOR_RESET;
     std::cout << "8) Enter script mode" << std::endl << utils::COLOR_RESET;
+    
 
     std::cout << "q) Quit" << std::endl;
 }
@@ -219,6 +220,9 @@ void CLI::scriptMode(){
                           << "Executing a command: Enter the LUA command" << std::endl
                           << "Quit this mode: Type q" << std::endl
                           << "Request this help: Type ?" << std::endl;
+                api.LUA_api_help(nullptr);
+            }else if(in[0] == '\n'){
+                std::cout << ">";
             }else{
                 api.executeCommand(in.c_str());
             }
@@ -260,7 +264,8 @@ void CLI::enterInteractiveMode(){
         case '8':
             scriptMode();
             break;
-
+        case '9':
+            break;
         case 'q':
             return;
         }

@@ -9,7 +9,7 @@
 class DiskHandler{
 
 private attributes:
-
+    int last_error_m = 0;
 private methods:
 
     DiskHandler();
@@ -27,13 +27,15 @@ public methods:
     DiskHandler(DiskHandler const&) = delete;
     void operator=(DiskHandler const&) = delete;
 
+    int lastError();
+
     void addDisk(Disk* disk);
 
     std::vector<Disk*>* getDisks() const;
     Disk* disk;
 
-    Disk* getDisk() const;
-    Disk* getDisk(int index) const;
+    Disk* getDisk();
+    Disk* getDisk(int index);
 
     int amountDisks();
     void setDisk(int index);

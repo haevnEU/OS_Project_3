@@ -17,9 +17,6 @@ extern "C"{
 #include "FileSystemType.h"
 #include "masterbootrecord.h"
 
-#define KB (1024)
-#define MB (1024 * KB)
-#define GB (1024  MB)
 
 /**
  * @brief The Disk class
@@ -34,6 +31,7 @@ private static_attributes:
     const static uint32_t MBR_SIZE = 512;
 
 private attributes:
+    int last_error_m = 0;
 
     /// PAth to the virtual disk file
     char* path_m;
@@ -82,11 +80,13 @@ public methods:
      * @details This methods creates a new empty virtual disk file. The size of the
      *          virtual disk is determined by @see{#size}
      * @param size Size of the disk in bytes
+     * @return 0 if operation was successfully.
      */
     void createDisk(int64_t size_m);
 
     void deleteDisk();
 
+    int lastError();
 
     /**
      * @brief mount This method mounts the virtual disk into memory.
@@ -98,6 +98,7 @@ public methods:
      *          This is step is required to ensure that the whole disk is mapped. Finally
      *          the virtual disk file is mapped into the memory using mmap.
      *          If a MBR exists it will be loaded into the wrapper class.
+     * @return 0 if operation was successfully.
      */
     void mount();
 
@@ -107,7 +108,8 @@ public methods:
      * @details Unmounting only works on mounted disks, if the disk is not mounted
      *          the operation fails. The c function mmap is called to unmap the virtual disk
      *          from memory, if the operation fails the application is usntable therefore it
-     *          should never occurr
+     *          should never occurres
+     * @return 0 if operation was successfully.
      */
     void unmount();
 
@@ -117,6 +119,7 @@ public methods:
      * @details This operation required a mounted virtual disk and an existing MBR.
      *          This operation reads the MBR from a virtual disk and mapps it values into
      *          a wrapper class. If a partition is found it will also create the partition.
+     * @return 0 if operation was successfully.
      */
     void loadMasterBootRecord();
 
@@ -129,6 +132,7 @@ public methods:
      *          complete the MBR. This operation required that the disk is mounted. Executing
      *          this operation on an existing MBR will override everything as a result the
      *          data will no longer be accessable under normal circumstances.
+     * @return 0 if operation was successfully.
      */
     void createMasterBootRecord();
 
@@ -142,6 +146,7 @@ public methods:
      * @param size Size of the partition in bytes
      * @param fileSystemType Type of the filesystem @see FSTypes
      * @param isPrimary Indicates if the partition is a primary one, should alway be true
+     * @return 0 if operation was successfully.
      */
     void createPartition(int64_t size_m, FileSystemType fileSystemType, bool isPrimary);
 
@@ -149,7 +154,8 @@ public methods:
      * @brief wipePartition
      * @details Removes the partition from the MBR.
      *          This methods wipes the partition entirely, all occupied blocks will be overriden with zero        
-     *  @param index Partition which should be removed
+     * @param index Partition which should be removed
+     * @return 0 if operation was successfully.
      */
     void wipePartition(uint8_t index);
 
@@ -158,6 +164,7 @@ public methods:
      * @details Removes the partition from the MBR.
      *          No data will be wiped, but the data cannot be accessed anymore on an easy way
      * @param index Partition which should be removed
+     * @return 0 if operation was successfully.
      */
     void removePartition(uint8_t index);
 

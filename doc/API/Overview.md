@@ -8,8 +8,6 @@
 >
 >>- [loadDisk(String path)](#loaddisk)
 >
->>- [listDisks()](#listdisks)
->
 >>- [selectDisk(Integer index)](#selectdisk)
 >
 >>- [mount()](#mount)
@@ -23,7 +21,12 @@
 >>- [wipeMasterBootRecord()](#wipeMasterBootRecord)
 >
 >>- [createPartition(Integer size, Character primary, Integer file_system)](#createPartition)
-
+>
+>>- [deletePartition()](#deletePartition)
+>
+>>- [wipePartition()](#wipePartition)
+>
+>>- [Operation Result Codes](#Operation-Result-Codes)
 
 ---
 <br>
@@ -130,31 +133,6 @@
 >>loadDisk("/data/operating_system/myDisk5MB.vdf");
 >>```
 >[Table of content](#Table-of-content)
-
-
-
->## listDisks
->> ### Signature
->> ```c++  
->>void listDisks(void);
->>```
->
->>### Note
->>* This function lists all available disks 
->
->>### Argument(s)
->>* *None*
->
->>### Returns
->>* *Nothing*
->
->>### Example
->>```Lua 
->>-- List all loaded disks, including previous created ones
->>listDisks();
->>```
->[Table of content](#Table-of-content)
-
 
 
 >## selectDisk
@@ -349,6 +327,119 @@ createMasterBootRecord
 >>createMasterBootRecord();
 >>-- Create a primary partition with INode and a size of 2.5GB
 >>createPartition(2684354560, 'y', 16);
+>>```
+>[Table of content](#Table-of-content)
+
+
+>## deletePartition
+>> ```c++  
+>>void deletePartition(int index);
+>>```
+>
+>>### Note
+>>* This function delete a partition from the disk.
+>>  The deletion will not be secure
+>
+>>### Argument(s)
+>>* *index*: Index of the partition, in range from 0 to 3
+>
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua 
+>>loadDisk("/data/operating_system/myDisk5GB.vdf");
+>>selectDisk(0);
+>>mount();
+>>createMasterBootRecord();
+>>createPartition(2684354560, 'y', 16);
+>>deletePartition(0);
+>>```
+>[Table of content](#Table-of-content)
+
+
+>## wipePartition
+>> ```c++  
+>>void wipePartition(int index);
+>>```
+>
+>>### Note
+>>* This function wipes a partition from the disk.
+>>  The deletion will override the partition with 0, its will be secure.
+>
+>>### Argument(s)
+>>* *index*: Index of the partition, in range from 0 to 3
+>
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua 
+>>loadDisk("/data/operating_system/myDisk5GB.vdf");
+>>selectDisk(0);
+>>mount();
+>>createMasterBootRecord();
+>>createPartition(2684354560, 'y', 16);
+>>wipePartition(0);
+>>```
+>[Table of content](#Table-of-content)
+
+
+>## Operation Result Codes
+>>
+>>### General
+>>* 0x00000000: Operation succeed 
+>>* 0xFFFFFFFF: Unknown Error 
+>>* 0x00005555: Index out of bounds
+>
+>>### File IO
+>>* 0x01F10404: File Not Found
+>>* 0x01F1FF04: File open failed
+>>* 0x01F10BAD: File version is incompatible
+>
+>>### Memory Management
+>>* 0x01AADEAD: Disk file could not be mapped to memory
+>>* 0x01AADEFF: Disk could not be stated 
+>
+>>### Disk
+>>* 0x01D10500: Disk already loaded
+>>* 0x01D10002: Requested disk size is negative
+>>* 0x01D1FFF0: Requested disk size is to big
+>>* 0x01D10010: Disk is not mounted
+>>* 0x01D10011: Disk is mounted
+>
+>>### Master Boot Record
+>>* 0x01C10404: Master boot record not found
+>>* 0x01C1FFF0: Master boot record capacity reached
+>>* 
+>
+>>### Partition
+>>* 0x01B10002: Partition size is negative
+>>* 0x01B1FFF0: Partition size is to big
+>>* 0x01B1AAAA: Requested partition already exists
+>>* 0x01B1AABB: Partition already wiped
+>
+>>### File System
+>>* 
+>[Table of content](#Table-of-content)
+
+
+>## PH
+>> ```c++  
+>>void ph(void);
+>>```
+>
+>>### Note
+>>* This function 
+>
+>>### Argument(s)
+>>* *None*
+>
+>>### Returns
+>>* *Nothing*
+>
+>>### Example
+>>```Lua 
 >>```
 >[Table of content](#Table-of-content)
 

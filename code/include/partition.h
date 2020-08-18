@@ -24,12 +24,14 @@ private attributes:
     /// Size of the partition
     unsigned int size_m;
 
+    uint32_t endAddress_m;
 
 public getter:
 
     bool isPrimary() const;
     FileSystemType fileSystemType() const;
     uint32_t startAddress() const;
+    uint32_t endAddress() const;
     uint32_t size() const;
 
 
@@ -43,7 +45,7 @@ public methods:
      * @param fileSystemType Filesystemtype
      * @param isBootAble Primary partition, should always be true
      */
-    Partition(unsigned int startAddress, unsigned int size, FileSystemType fileSystemType, bool isBootAble = true);
+    Partition(unsigned int startAddress, uint32_t endAddress, FileSystemType fileSystemType, bool isBootAble = true);
 
 
 };

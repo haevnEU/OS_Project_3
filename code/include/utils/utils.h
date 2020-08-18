@@ -51,7 +51,72 @@
 
 #define DISC_NOT_LOAD        0x05D12002 // Disc is not loaded
 
+// General result codes
+#define OPERATION_SUCCEED 0x00000000
+#define UNKNOWN_ERROR     0xFFFFFFFF
+#define INDEX_OUT_OF_BOUNDS 0x00005555
+#define NOT_IMPLEMENTED 0xABCD0123
 
+// File IO result codes
+#define FILE_NOT_FOUND        0x01F10404
+#define FILE_VERSION_MISMATCH 0x01F10BAD
+#define FILE_OPEN_FAILED      0x01F1FF04
+
+// Memory management result codes
+#define MAPPING_FAILED 0x01AADEAD
+#define STAT_FAILED    0x01AADEFF
+
+// Disk result codes
+#define DISK_ALREADY_LOADED 0x01D10500
+#define REQUESTED_DISK_SIZE_NEGATIVE 0x01D10002
+#define REQUESTED_DISK_SIZE_TO_BIG   0x01D1FFF0
+#define DISK_UNMOUNTED   0x01D10010
+#define DISK_MOUNTED     0x01D10011
+
+// Master boot record result codes
+#define NO_MASTER_BOOT_RECORD   0x01C10404
+#define FULL_MASTER_BOOT_RECORD 0x01C1FFF0
+
+// Partition result code
+#define REQUESTED_PARTITION_SIZE_NEGATIVE  0x01B10002
+#define REQUESTED_PARTITION_SIZE_TO_BIG    0x01B1FFF0
+#define REQUESTED_PARTITION_ALREADY_EXISTS 0x01B1AAAA
+#define REQUESTED_PARTITION_ALREADY_WIPED  0x01B1AABB
+
+// Filesystem result codes
+
+
+#define KB (1024)
+#define MB (1024 * KB)
+#define GB (1024 * MB)
+#define MAX_DISK_SIZE 5368709120
+
+static const char* code2str(int code){
+    switch(code){
+        case OPERATION_SUCCEED: return "\x1B[32moperation succeed";
+        case UNKNOWN_ERROR: return "unknown error";
+        case INDEX_OUT_OF_BOUNDS: return "Index out of bounds";
+        case NOT_IMPLEMENTED: return "Not implemented";
+
+        case FILE_NOT_FOUND: return "file not found";
+        case FILE_OPEN_FAILED: return "file opening failed";
+
+        case MAPPING_FAILED: return "mapping failed";
+        case STAT_FAILED: return "stat failed";
+
+        case REQUESTED_DISK_SIZE_NEGATIVE: return "requested disk size was negative";
+        case REQUESTED_DISK_SIZE_TO_BIG: return "requested disk size was to big";
+        case DISK_UNMOUNTED: return "disk is not mounted";
+        case DISK_MOUNTED: return "disk is mounted";
+
+        case REQUESTED_PARTITION_SIZE_NEGATIVE: return "requested partition size is negative";
+        case REQUESTED_PARTITION_SIZE_TO_BIG: return "requested partition size is to big";
+        case REQUESTED_PARTITION_ALREADY_EXISTS: return "requested partition already exists";
+        case REQUESTED_PARTITION_ALREADY_WIPED: return "requested partition already wiped";
+
+        default: return "Unknown code";
+    }
+}
 
 /**
  * @brief wait This method waits for input

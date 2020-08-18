@@ -48,10 +48,12 @@ void Disk::createDisk(int64_t size){
     std::cout << "[create] Start disk creation..." << std::endl;
     if(size < 0){
         std::cerr << utils::COLOR_RED << "[create] A negative file size was entered: " << size << utils::COLOR_RESET << std::endl;
+        last_error_m = REQUESTED_DISK_SIZE_NEGATIVE;
         return;
     }    
-    if(size > std::numeric_limits<uint32_t>::max()){
+    if(size > MAX_DISK_SIZE){
         std::cerr << utils::COLOR_RED << "[create] File size of " << size << " exceeds the maximum limit of " << std::numeric_limits<uint32_t>::max()  << utils::COLOR_RESET << std::endl; 
+        last_error_m = REQUESTED_DISK_SIZE_TO_BIG;
         return;
     }
     ProgressBar bar;
@@ -66,6 +68,7 @@ void Disk::createDisk(int64_t size){
     auto fp = fopen(path_m, "wb");
     if(nullptr == fp){
         std::cout << utils::COLOR_RED << utils::ICON_DENIED << utils::COLOR_RESET << "]" << std::endl;
+        last_error_m = MAPPING_FAILED;
         return;
     }else{
         std::cout << utils::COLOR_GREEN << utils::ICON_ACCEPT << utils::COLOR_RESET << "]" << std::endl;
@@ -84,18 +87,21 @@ void Disk::createDisk(int64_t size){
     char c0 = 0xC0;
     char version = CURRENT_VIRTUAL_DISK_FILE_VERSION;
     fwrite (&c0, 1, 1, fp);
-
-    fwrite (&version, 1, 1, fp);
-    
+    fwrite (&version, 1, 1, fp);   
 
     fclose(fp);
     std::cout << utils::COLOR_GREEN << "[create] Virtual disk file created under " << path_m << utils::COLOR_RESET << std::endl;
     available_size_m = size;
+    last_error_m = OPERATION_SUCCEED;
 }
 
 void Disk::deleteDisk(){
 //    utils::printModule("Disk", "DiskDeleter");
 
+}
+
+int Disk::lastError(){
+    return last_error_m;
 }
 
 
@@ -107,11 +113,10 @@ void Disk::mount(){
     //      - 3. Map the file to an array using mmap
     // Finally load the MBR from the virtua disk
    
-    //std::cout << utils::TERMINAL_CLEAR;
-    //utils::printModule("Disk", "Mount");
-    // 1.
+
     if(mounted){
         std::cout << utils::COLOR_YELLOW << "[mount] Disk is mounted" << utils::COLOR_RESET << std::endl;
+        last_error_m = DISK_MOUNTED;
         return;
     }else{
         std::cout << utils::COLOR_GREEN << "[mount] Start mounting ... " << std::endl;
@@ -122,6 +127,7 @@ void Disk::mount(){
     auto fd = open(path_m, O_RDWR, S_IRUSR | S_IWUSR);
     if(-1 == fd){
         std::cout << utils::COLOR_RED << utils::ICON_DENIED << utils::COLOR_RESET << "]" << std::endl;
+        last_error_m = FILE_OPEN_FAILED;
         return;
     }else{
         std::cout << utils::COLOR_GREEN << utils::ICON_ACCEPT << utils::COLOR_RESET << "]" << std::endl;
@@ -131,6 +137,7 @@ void Disk::mount(){
     if(-1 == stat(path_m, fileStats_m)){
         std::cout << utils::COLOR_RED << utils::ICON_DENIED << utils::COLOR_RESET << "]" << std::endl;
         close(fd);
+        last_error_m = STAT_FAILED;
         return;
     }else{
         std::cout << utils::COLOR_GREEN << utils::ICON_ACCEPT << utils::COLOR_RESET << "]" << std::endl;
@@ -143,6 +150,7 @@ void Disk::mount(){
         close(fd);
         delete(fileStats_m);
         fileStats_m = nullptr;
+        last_error_m = MAPPING_FAILED;
         return;
     }else{
         std::cout << utils::COLOR_GREEN << utils::ICON_ACCEPT << utils::COLOR_RESET << "]" << std::endl;
@@ -157,6 +165,7 @@ void Disk::mount(){
     loadMasterBootRecord();
 
     std::cout << utils::COLOR_GREEN << utils::COLOR_BOLD << "[mount] Virtual Disk mounted" << utils::COLOR_RESET << std::endl;
+    last_error_m = OPERATION_SUCCEED;
 }
 
 void Disk::unmount(){
@@ -167,14 +176,18 @@ void Disk::unmount(){
     //utils::printModule("Disk", "Unmount");
     //std::cout << utils::TERMINAL_CLEAR;
     if(!mounted){
+        last_error_m = DISK_UNMOUNTED;
         return;
     }
     std::cout << "[unmount] Unmounting disk..." << std::endl;
     if(0 != munmap(data_m,  static_cast<size_t>(fileStats_m->st_size))){
-        std::cout << utils::COLOR_YELLOW << "[unmount] Unexcpected error occurred, VDF is not unmapped" << std::endl;
+        std::cout << utils::COLOR_YELLOW << "[unmount] Unexpected error occurred, VDF is not unmapped" << std::endl;
+        last_error_m = MAPPING_FAILED;
+        return;
     }
     mounted = false;
     std::cout << utils::COLOR_GREEN << "[unmount] Disk is unmounted" << utils::COLOR_RESET << std::endl;
+    last_error_m = OPERATION_SUCCEED;
 }
 
 
@@ -188,10 +201,12 @@ void Disk::loadMasterBootRecord(){
 
     if(!mounted){
         std::cout << utils::COLOR_RED << "[MBR] Loading aborted. Disk was not mounted" << utils::COLOR_RESET << std::endl;
+        last_error_m = DISK_UNMOUNTED;
         return;
     }
     // 1.
     if(data_m[0] == 0x00){
+        last_error_m = UNKNOWN_ERROR;
         return;
     }
 
@@ -228,10 +243,10 @@ void Disk::loadMasterBootRecord(){
             // update the available size
             available_size_m -= size;
             std::cout << "Add partition" << std::endl;
-            MBR_m->addPartition(new Partition(start, size, fs, bootable), index);
+            MBR_m->addPartition(new Partition(start, end, fs, bootable), index);
         }
     }
-
+    last_error_m = OPERATION_SUCCEED;
 }
 
 void Disk::createMasterBootRecord(){
@@ -242,6 +257,7 @@ void Disk::createMasterBootRecord(){
     std::cout << "[MBR] Create Master Boot Record" << std::endl;
     if(!mounted){
         std::cout << utils::COLOR_RED << "[MBR] Operation aborted. Disk was not mounted" << utils::COLOR_RESET << std::endl;
+        last_error_m = DISC_NOT_MOUNTED;
         return;
     }
 
@@ -260,7 +276,7 @@ void Disk::createMasterBootRecord(){
     }
     std::cout << utils::COLOR_GREEN << utils::ICON_ACCEPT << utils::COLOR_RESET << "]" << std::endl;
 
-     std::cout << "[MBR] Writing reserved flags: [";
+    std::cout << "[MBR] Writing reserved flags: [";
     for(int i = 0; i < 4; i++)data_m[0x1BE + (i * 16)] = static_cast<uint8_t>(0x00);
     std::cout << utils::COLOR_GREEN << utils::ICON_ACCEPT << utils::COLOR_RESET << "]" << std::endl;
 
@@ -273,6 +289,7 @@ void Disk::createMasterBootRecord(){
 
     MBR_m = new MasterBootRecord();
     available_size_m = size_m - 0x1FF - 1;
+    last_error_m = OPERATION_SUCCEED;
 }
 
 
@@ -294,14 +311,14 @@ uint32_t Disk::calculateStartAddress(uint8_t partitionIndex){
 }
 
 void Disk::createPartition(int64_t size, FileSystemType fileSystemType, bool isBootable){
-
-
-  if(size < 0){
+    if(size < 0){
         std::cerr << utils::COLOR_RED << "[partition] A negative size was entered: " << size << utils::COLOR_RESET << std::endl;
+        last_error_m = REQUESTED_PARTITION_SIZE_NEGATIVE;
         return;
     }    
     if(size > available_size_m){
         std::cerr << utils::COLOR_RED << "[partition] Size of " << size << " exceeds the maximum capacity of " << available_size_m  << utils::COLOR_RESET << std::endl; 
+        last_error_m = REQUESTED_PARTITION_SIZE_TO_BIG;
         return;
     }
 
@@ -312,6 +329,7 @@ void Disk::createPartition(int64_t size, FileSystemType fileSystemType, bool isB
     //std::cout << "[partition] Creation started" << std::endl;
     if(nullptr == MBR_m){
         std::cout << "[partition] Create failed. No MBR found on disk" << std::endl;
+        last_error_m = NO_MASTER_BOOT_RECORD;
         return;
     }
 
@@ -320,7 +338,8 @@ void Disk::createPartition(int64_t size, FileSystemType fileSystemType, bool isB
 
     if(index == MBR_FULL){
        std::cout << "[partition] Creation failed. MBR is FULL." << std::endl;
-       return;
+       last_error_m = FULL_MASTER_BOOT_RECORD;
+        return;
     }
 
     // Calculate the start address. If it the first partition 512 will be used
@@ -331,9 +350,10 @@ void Disk::createPartition(int64_t size, FileSystemType fileSystemType, bool isB
     // TODO Fix this with primary 0x00 = inactive 0x80 = active
     std::cout << (int)data_m[0x1BE + (index*16)] << std::endl;;
     if(data_m[0x1BE + (index * 16)] != 0x00){
+        last_error_m = REQUESTED_PARTITION_ALREADY_EXISTS;
         return;
     }
-    MBR_m->addPartition(new Partition(start, size, fileSystemType, isBootable), index);
+    MBR_m->addPartition(new Partition(start, end, fileSystemType, isBootable), index);
 
     // Write primary partition flag and filesystem type.
     // Note an partition entry is exact 16 Bytes
@@ -364,34 +384,25 @@ void Disk::createPartition(int64_t size, FileSystemType fileSystemType, bool isB
     }
     
     available_size_m -= size;
-
-    uint64_t start2 = MBR_m->partition(index)->startAddress();
-    uint64_t size2 = MBR_m->partition(index)->size();
-    bool secure = true;
     
-    ProgressBar bar;
-    // Perfomace decision. One step0x55ed33485740 is one percent of the size.
-    uint32_t step = size2 / 100;
-    bar.maximum(100);
-    if(secure){
-        for(int i = 0; i < (start2 + size2); i++){
-            data_m[start2 + i] = static_cast<uint8_t>(0);
-            if(i % step == 0){
-                bar.update();
-            }
-        }
-    }
+    last_error_m = OPERATION_SUCCEED;
 }
 
 void Disk::wipePartition(uint8_t index){
+    std::cout << "This operation is disabled";
+    last_error_m = NOT_IMPLEMENTED;
+    return;
     index--;
     if(nullptr == MBR_m->partition(index)){
         std::cerr << utils::COLOR_RED << "[Wipe] Requested partition is allready wiped." << utils::COLOR_RESET << std::endl;
+        last_error_m = REQUESTED_PARTITION_ALREADY_WIPED;
         return;
     }
 
     uint64_t start = MBR_m->partition(index)->startAddress();
+    uint64_t end = MBR_m->partition(index)->endAddress();
     uint64_t size = MBR_m->partition(index)->size();
+    std::cout << "0x" << std::hex << (start + size) << std::dec << std::endl;
     std::cout << "[Wipe] Start wiping"<< std::endl; 
     ProgressBar bar;
     // Perfomace decision. One step is one percent of the size.
@@ -401,7 +412,7 @@ void Disk::wipePartition(uint8_t index){
         bar.maximum(size);
         step = 1;
     } 
-    for(int i = 0; i < (start + size); i++){
+    for(int i = 0; i < end; i++){
         data_m[start + i] = static_cast<uint8_t>(0);
 //        data_m[start + i] = static_cast<uint8_t>(rand() % 0xFF); // 
         if(i % step == 0){ 
@@ -423,14 +434,18 @@ void Disk::wipePartition(uint8_t index){
     data_m[0x1C5 + (index * 16)] = static_cast<uint8_t>(0x00);
     data_m[0x1C6 + (index * 16)] = static_cast<uint8_t>(0x00);
     data_m[0x1C7 + (index * 16)] = static_cast<uint8_t>(0x00);
+
+    last_error_m = OPERATION_SUCCEED;
 }
 
 void Disk::removePartition(uint8_t index){
     index--;
     if(nullptr == MBR_m->partition(index)){
         std::cerr << utils::COLOR_RED << "[Wipe] Requested partition is allready wiped." << utils::COLOR_RESET << std::endl;
+        last_error_m = REQUESTED_PARTITION_ALREADY_WIPED;
         return;
     }
     MBR_m->removePartition(index);
     data_m[0x1BE + (index * 16)] = static_cast<uint8_t>(0x00);
+    last_error_m = OPERATION_SUCCEED;
 }
