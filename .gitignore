@@ -11,3 +11,6 @@
 
 # Build directory
 code/build/*
+
+# Generic documentation
+doc/html/*
