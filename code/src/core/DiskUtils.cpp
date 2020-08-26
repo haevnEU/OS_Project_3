@@ -15,7 +15,6 @@ DiskUtils::~DiskUtils(){
     partition_definitions->clear();
     delete partition_definitions;
 }
-
 void DiskUtils::enter(){
     const char* entries[] = {"Load existing virtual disk file", "Create new virtual disk file", "Verify virtual disk file", "Return to BIOS"};
     int choice = -1;
@@ -116,7 +115,6 @@ void DiskUtils::createNewVirtualDiskFile(){
     }
     wait(std::cin);
 }
-
 void DiskUtils::loadExistingVirtualDiskFile(){
     std::cout << utils::colors::CLEAR << "This wizard allows you to load partitions from a virtual disk file."<< std::endl 
               << "This will allow the using of these partitions." << std::endl;
