@@ -248,6 +248,8 @@ namespace utils::menu{
      * @details This method prints every menu entry on the terminal and allows the selection
      *          with specified keys. The menu is customizable via a settings argument.
      *          The result value correspond to the provided entries, e.g. result 0 <=> entries[0]
+     *          A known bug is that the input stream is filled after some operation, therefore
+     *          setting the settings entry clear_cache is recommended
      * @param entries Menu entries which should be printed
      * @param amount_entries Amount of the entries
      * @param menu_header Header of the menu

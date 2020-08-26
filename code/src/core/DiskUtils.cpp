@@ -20,8 +20,10 @@ void DiskUtils::enter(){
     const char* entries[] = {"Load existing virtual disk file", "Create new virtual disk file", "Verify virtual disk file", "Return to BIOS"};
     int choice = -1;
     bool active = true;
+    utils::menu::menu_settings settings;
+    
     while(active){
-        choice = utils::menu::printMenu("DiskUtils", entries, 4, choice);
+        choice = utils::menu::print(entries, 4, "DiskUtils", settings);
         switch(choice){
             case 0:
     	        loadExistingVirtualDiskFile();
@@ -36,17 +38,71 @@ void DiskUtils::enter(){
                 active = false;
             break;
         }
+        settings.clear_cache = true;
     }
 }
 
 
 void DiskUtils::createNewVirtualDiskFile(){
-    std::cout << utils::colors::CLEAR << "This wizard guides you through the creation of a virtual disk file" << std::endl;
+ std::cout << utils::colors::CLEAR << "This wizard guides you through the creation of a virtual disk file within an existing folder" << std::endl;
     std::string path;
     uint64_t size;
+    bool pathIsValid = false;
+    std::string response;
 
-    std::cout << "Path: ";
-    std::cin >> path;
+    while(!pathIsValid){
+        std::cout << "Enter disk path (e.g. /home/<USERNAME>/disk.vdf):" << std::endl;
+        std::cin >> path;
+
+        int result = utils::verifyInput(path);
+        if(utils::verify_results::operation_aborted == result){
+            std::cout << utils::colors::YELLOW << "Operation aborted" << utils::colors::RESET;
+            return;
+        }else if(utils::verify_results::input_path_invalid == result){
+            std::cout << utils::colors::RED << "Given path is invalid" << utils::colors::RESET;
+        }else if(utils::verify_results::input_to_small == result){
+            std::cout << utils::colors::RED << "Given path is invalid" << utils::colors::RESET;
+        }else if(path[0] != '/' && (path[0] != '.' && path[1] != '/')){
+            std::cout << utils::colors::CLEAR << utils::colors::RED << "Path must start with <" << utils::colors::RESET;
+            std::cout << "/" << utils::colors::RED << "> or <" << utils::colors::RESET << "./";
+            std::cout << utils::colors::RED << ">. Given Path is invalid: " << utils::colors::RESET << path << std::endl;
+        }else if((path[path.size() - 4] != '.') && 
+                 (path[path.size() - 3] != 'v') && 
+                 (path[path.size() - 2] != 'd') && 
+                 (path[path.size() - 1] != 'f')){
+            path.append(".vdf");
+            std::cout << utils::colors::YELLOW << "Added missing File Extension: " << utils::colors::RESET << path << std::endl;
+            pathIsValid = true;
+        } else {
+            pathIsValid = true;
+        }
+
+        if(utils::file::exists(path) && pathIsValid) {
+            std::cout << utils::colors::YELLOW << path << " already exists. Do you want to overwrite it? [y/n] " << utils::colors::RESET;
+            while(std::cin >> response && (response != "n" || response != "y")) {
+                if(response == "y") {
+                    break;
+                } if(response == "n") {
+                    pathIsValid = false;
+                    std::cout << utils::colors::CLEAR;
+                    break;
+                }
+            }
+            response = ""; 
+        }
+    }
+
+    std::cout << "Disk size in bytes: ";
+    std::cin >> size;
+    if(size > MAX_DISK_SIZE){
+        std::cout << utils::colors::RED << "Given size is to big." << utils::colors::RESET << std::endl;
+        return;
+    }
+
+    createDisk(path.c_str(), size);
+
+
+
 
     if(utils::verifyInput(path)){
         std::cout << "Disk size in bytes: ";
