@@ -19,6 +19,7 @@ extern "C"{
 // project includes
 #include "../utils/utils.h"
 #include "partition.hpp"
+#include "DiskUtils.hpp"
 
 namespace core::utilities{
     
@@ -36,7 +37,7 @@ namespace core::utilities{
         }
         
     private:
-      
+        std::string error_message;      
 
     private: 
         /**
@@ -84,7 +85,7 @@ namespace core::utilities{
          * @param end End address of the partition
          * @param file_system File system type of the partition
          */
-        void createPartition(const char* path, uint64_t start, uint64_t end, int file_system);
+        void createPartition(const char* path, uint64_t size, int file_system);
 
         /**
          * @brief Wipes a partition
@@ -92,7 +93,7 @@ namespace core::utilities{
          * @param path Path to virtual disk file
          * @param definitition Definition of the partition
          */
-        void wipePartition(const char* path, partition_definition* definitition);
+        void wipePartition(const char* path, int index);
 
         /**
          * @brief Erases a partition
@@ -100,7 +101,7 @@ namespace core::utilities{
          * @param path Path to virtual disk file
          * @param definitition Definition of the partition
          */
-        void erasePartition(const char* path, partition_definition* definitition);
+        void erasePartition(const char* path, int index);//partition_definition* definitition);
 
     };
 }
