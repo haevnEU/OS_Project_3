@@ -1,226 +1,124 @@
-#ifndef UTILS_H
-#define UTILS_H
+#pragma once
 
+#include <ostream>
 #include <iostream>
-#include <unistd.h>
 #include <fstream>
-#include <sys/ioctl.h>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <string>
 #include <iomanip>
-#include <cstring>
 #include <limits>
 
-#define getter
-#define setter
+#include <iomanip>
+#include <limits>
+#include <cstdint>
 
-#define methods
-#define attributes
+extern "C"{
+    #include <termios.h>
+    #include <unistd.h>
+    #include <sys/ioctl.h>
+    #include <sys/stat.h>
+    #include <unistd.h>
+}
 
-#define static_methods
-#define static_attributes
+#include "file.h"
+#include "logger.h"
+#include "progressbar.h"
+#include "terminal_colors.h"
+//#include "diskutils.hpp"
 
+static bool DEBUG = false;
+
+/**
+ * @brief Current version
+ */
 #define CURRENT_VIRTUAL_DISK_FILE_VERSION 0x02
+
+/**
+ * @brief Minimum required version
+ */
 #define MINIMUM_VIRTUAL_DISK_FILE_VERSION 0x02
-
-#define UNKOWN_ERROR            0x05FFFFFF // This is an unknown exception, should never occur
-
-#define FILE_IO_NOT_FOUND       0x05F10404 // File not found
-#define FILE_WRONG_FILE_SYSTEM  0x51F1BADF // The input doenst started with /
-#define FILE_WRONG_PATH         0x51F1BADA // The path is invalid
-
-#define INDEX_OUT_OF_BOUND      0x51A1FFFF // Index was out of boundary
-
-#define DISK_NULL               0x51B1DEAD // Disc is nullptr
-#define DISC_SIZE_INVALID       0x51B10101 // Requested disk size is not possible to create
-#define DISC_NOT_MOUNTED        0x05B12003 // Disc is not mounted
-
-#define MBR_NULL                0x05C1DEAD // MBR is nullptr
-// 05xxxxxx = This project
-// xxD1xxxx = Disk module
-// xxxx0xxx = General error
-// xxxx1xxx = File IO catergory
-// xxxx2xxx = State error
-#define DISC_GENERIC_ERROR   0x05D10000 // Generic disc error
-#define DISC_CORRUPTED       0x05D10BAD // Disc is corrupted
-
-#define DISC_PATHING_ERROR   0x05D11001 // Path input dont started with a /
-#define DISC_FILE_IO_ERROR   0x05D11002 // File operation failed
-#define DISC_FILE_NOT_FOUND  0x05D11003 // VDF file not found
-
-#define DISC_NOT_LOAD        0x05D12002 // Disc is not loaded
-
-// General result codes
-#define OPERATION_SUCCEED 0x00000000
-#define UNKNOWN_ERROR     0xFFFFFFFF
-#define INDEX_OUT_OF_BOUNDS 0x00005555
-#define NOT_IMPLEMENTED 0xABCD0123
-
-// File IO result codes
-#define FILE_NOT_FOUND        0x01F10404
-#define FILE_VERSION_MISMATCH 0x01F10BAD
-#define FILE_OPEN_FAILED      0x01F1FF04
-
-// Memory management result codes
-#define MAPPING_FAILED 0x01AADEAD
-#define STAT_FAILED    0x01AADEFF
-
-// Disk result codes
-#define DISK_ALREADY_LOADED 0x01D10500
-#define REQUESTED_DISK_SIZE_NEGATIVE 0x01D10002
-#define REQUESTED_DISK_SIZE_TO_BIG   0x01D1FFF0
-#define DISK_UNMOUNTED   0x01D10010
-#define DISK_MOUNTED     0x01D10011
-
-// Master boot record result codes
-#define NO_MASTER_BOOT_RECORD   0x01C10404
-#define FULL_MASTER_BOOT_RECORD 0x01C1FFF0
-
-// Partition result code
-#define REQUESTED_PARTITION_SIZE_NEGATIVE  0x01B10002
-#define REQUESTED_PARTITION_SIZE_TO_BIG    0x01B1FFF0
-#define REQUESTED_PARTITION_ALREADY_EXISTS 0x01B1AAAA
-#define REQUESTED_PARTITION_ALREADY_WIPED  0x01B1AABB
-
-// Filesystem result codes
-
 
 #define KB (1024)
 #define MB (1024 * KB)
 #define GB (1024 * MB)
 #define MAX_DISK_SIZE 5368709120
 
-static const char* code2str(int code){
-    switch(code){
-        case OPERATION_SUCCEED: return "\x1B[32moperation succeed";
-        case UNKNOWN_ERROR: return "unknown error";
-        case INDEX_OUT_OF_BOUNDS: return "Index out of bounds";
-        case NOT_IMPLEMENTED: return "Not implemented";
-
-        case FILE_NOT_FOUND: return "file not found";
-        case FILE_OPEN_FAILED: return "file opening failed";
-
-        case MAPPING_FAILED: return "mapping failed";
-        case STAT_FAILED: return "stat failed";
-
-        case REQUESTED_DISK_SIZE_NEGATIVE: return "requested disk size was negative";
-        case REQUESTED_DISK_SIZE_TO_BIG: return "requested disk size was to big";
-        case DISK_UNMOUNTED: return "disk is not mounted";
-        case DISK_MOUNTED: return "disk is mounted";
-
-        case REQUESTED_PARTITION_SIZE_NEGATIVE: return "requested partition size is negative";
-        case REQUESTED_PARTITION_SIZE_TO_BIG: return "requested partition size is to big";
-        case REQUESTED_PARTITION_ALREADY_EXISTS: return "requested partition already exists";
-        case REQUESTED_PARTITION_ALREADY_WIPED: return "requested partition already wiped";
-
-        default: return "Unknown code";
-    }
-}
-
 /**
  * @brief wait This method waits for input
  * @param in Stream in which should be waited
  */
-static void wait(std::istream& in, const char* msg = "Press [RETURN] to continue ..."){
+static void wait(std::istream& in, const char* message = "Press [RETURN] to continue ..."){
     in.ignore (std::numeric_limits<std::streamsize>::max(), '\n');
     in.clear();
-    std::cout << msg;
+    std::cout << message;
     std::cin.get();
+}
+
+namespace utils::do_not_use{
+    static struct termios old, current;
+
+    /* Initialize new terminal i/o settings */
+    /**
+     * @brief Initializes a new terminal settings
+     * @param echo Enables/Disabled echo mode
+     */
+    static void initTermios(int echo) {
+        tcgetattr(0, &old); /* grab old terminal i/o settings */
+        current = old; /* make new settings same as old settings */
+        current.c_lflag &= ~ICANON; /* disable buffered i/o */
+        if (echo) {
+            current.c_lflag |= ECHO; /* set echo mode */
+        } else {
+            current.c_lflag &= ~ECHO; /* set no echo mode */
+        }
+        tcsetattr(0, TCSANOW, &current); /* use these new terminal i/o settings now */
+    }
+
+    /**
+     * @brief Resets the old terminal
+     */
+    static void resetTermios(void) {
+        tcsetattr(0, TCSANOW, &old);
+    }
+
+    /**
+     * @brief Read 1 char from terminal
+     * @param echo Enables/Disables echo mode
+     * @return char Character which was read
+     */
+    static char getch_(int echo) {
+        char ch;
+        initTermios(echo);
+        fflush(stdin);
+        ch = getchar();
+        resetTermios();
+        return ch;
+    }
+}
+
+/**
+ * @brief Reads one character from the terminal
+ * @return char Character which was read
+ */
+static char getch(void) {
+    return utils::do_not_use::getch_(0);
 }
 
 namespace utils{
 
-    const static char* COLOR_RESET     = "\x1B[0m";
-    const static char* COLOR_RED       = "\x1B[31m";
-    const static char* COLOR_GREEN     = "\x1B[32m";
-    const static char* COLOR_YELLOW    = "\x1B[33m";
-    const static char* COLOR_BLUE      = "\x1B[34m";
-    const static char* COLOR_MAGENTA   = "\x1B[35m";
-    const static char* COLOR_CYAN      = "\x1B[36m";
-    const static char* COLOR_WHITE     = "\x1B[37m";
-    const static char* COLOR_BOLD      = "\x1B[1m";
-    const static char* COLOR_UNDERLINE = "\x1B[4m";
-
-    const static char* TERMINAL_CLEAR = "\e[1;1H\e[2J";
-
-    const static char* ICON_ACCEPT_RAW = "✓";// "\xE2\x9C\x93";
-    const static char* ICON_DENIED_RAW = "✗";
-    const static char* ICON_ACCEPT = "\x1B[32m\xE2\x9C\x93\x1B[0m";
-    const static char* ICON_DENIED = "\x1B[31mx\x1B[0m";
-
-    static bool file_extension_equals(const std::string& file, const std::string& ext){
-        std::string::size_type idx;
-        idx = file.rfind('.');
-        if(idx != std::string::npos){
-            std::string extension = file.substr(idx+1);     
-            for(int i = 0; ext[i] != 0; ++i){
-                if(extension[i] != ext[i]){
-                    return false;
-                }
-            }   
-        } else {        
-            return false;
+    /**
+     * @brief This methods gets the current date and time
+     * @return const char* 
+     */
+    static const char* dateTime(){
+        auto end_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        char* time = std::ctime(&end_time);
+        if (time[strlen(time)-1] == '\n'){
+            time[strlen(time)-1] = '\0'; 
         }
-        return true;
+        return time;
     }
 
-    static bool file_exists(const std::string& name) {
-        struct stat buffer;   
-        return (stat (name.c_str(), &buffer) == 0); 
-    }
-
-    static void printError(std::string message, std::string module_name, uint64_t error_code = 0){
-        std::cerr << COLOR_RED << "[" << module_name << "]" << message << std::endl;
-        if(error_code != 0){
-            std::cerr << "Error code: 0x" << std::hex << error_code << std::dec;
-        }
-        std::cout << COLOR_RESET << std::endl;
-    }
-
-    static void printError(std::string message, int error_code = 0){
-        std::cerr << COLOR_RED << "[Unknown]" << message << std::endl;
-        if(error_code != 0){
-            std::cerr << "Error code: " << std::hex << error_code << std::dec;
-        }
-        std::cout << COLOR_RESET << std::endl;
-    }
-    
-    static void printWarning(std::string message, std::string module_name, int warn_code = 0){
-        std::cerr << COLOR_YELLOW << "[" << module_name << "]" << message << std::endl;
-        if(warn_code != 0){
-            std::cerr << "Warning code: 0x" << std::hex << warn_code << std::dec;
-        }
-        std::cout << COLOR_RESET << std::endl;
-    }
-
-    static void printWarning(std::string message, int warn_code = 0){
-        std::cerr << COLOR_YELLOW << "[Unknown]" << message << std::endl;
-        if(warn_code != 0){
-            std::cerr << "Warn code: 0x" << std::hex << warn_code << std::dec;
-        }
-        std::cout << COLOR_RESET << std::endl;
-    }
-    
-    static void printInfo(std::string message, std::string module_name, int info_code = 0){
-        std::cerr << COLOR_WHITE << "[" << module_name << "]" << message << std::endl;
-        if(info_code != 0){
-            std::cerr << "Info code: 0x" << std::hex << info_code << std::dec;
-        }
-        std::cout << COLOR_RESET << std::endl;
-    }
-
-    static void printInfo(std::string message, int info_code = 0){
-        std::cerr << COLOR_WHITE << "[Unknown]" << message << std::endl;
-        if(info_code != 0){
-            std::cerr << "Info code: 0x" << std::hex << info_code << std::dec;
-        }
-        std::cout << COLOR_RESET << std::endl;
-    }
-        
-    
-
-
+/*
     static void printHeader(const char* name){
         
         struct winsize size;
@@ -257,6 +155,89 @@ namespace utils{
         }
         std::cout << std::endl;
     }
+
+    static void createEmptyVirtualDiskFile(const char* path){
+        a
+    }
+
+    */
+
 }
 
-#endif // UTILS_H
+namespace utils::menu{
+
+    /**
+     * @brief Prints a menu entry to the terminal
+     * @param message Message which should be printed
+     * @param row Row index
+     * @param current_row Index of current row
+     */
+    static void inline printEntry(const char* message, int row, int current_row){
+        const char* color = utils::colors::BACK_GREEN;
+        if(row == current_row){
+            std::cout << color<< utils::colors::BLACK << ">"; 
+        }else{
+            std::cout << utils::colors::RESET;     
+        }
+        std::cout << message; 
+        if(row == current_row){
+            std::cout << color << utils::colors::BLACK << "<"; 
+        }
+        std::cout << utils::colors::RESET << std::endl;     
+        
+    }
+
+    /**
+     * @brief Prints am menu to the terminal
+     * @details This method prints a menu to the terminal. it Will also return the selected item.
+     * @param entries Menu entries
+     * @param size Size of the entries array
+     * @param menu_selected_index Previous selected index
+     * @param overflow Enables the overflow of menu selection
+     * @return int Selected menu entry
+     */
+    static inline int printMenu(const char* menu_header, const char* entries[], int size, int menu_selected_index, bool menu_selection_overflow = true){
+        char c = 'D';
+        int row = menu_selected_index;
+        while(true){
+            std::system("clear");
+            std::cout << utils::colors::CLEAR << menu_header << " " << utils::dateTime() << std::endl;
+
+            std::cout << "Use W/S to navigate and <ENTER> to select" << std::endl<< std::endl;
+            for(int i = 0; i < size; i++){
+                printEntry(entries[i], i, row);
+            }
+            c = getch();
+            if(c == 'W' || c == 'w'){
+                row--;
+                if(row < 0){
+                    row = ((menu_selection_overflow) ? size - 1 : 0);
+                }
+            }
+            if(c == 'S' || c == 's'){
+                row++;
+                if(row >= (size)){
+                    row = ((menu_selection_overflow) ? 0 : size - 1);
+                }
+            }
+            if(c == 10){
+                return row;
+            }
+        }
+        return -1;
+    }
+    
+
+    /**
+     * @brief Prints am menu to the terminal
+     * @details This method prints a menu to the terminal. it Will also return the selected item.
+     * @param entries Menu entries
+     * @param size Size of the entries array
+     * @param overflow Enables the overflow of menu selection
+     * @return int Selected menu entry
+     */
+    static inline int printMenu(const char* menu_header, const char* entries[], int size, bool menu_selection_overflow = true){
+        return printMenu(menu_header, entries, size, -1, menu_selection_overflow);
+    }
+    
+}
