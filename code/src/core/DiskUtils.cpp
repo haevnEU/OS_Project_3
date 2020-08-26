@@ -44,19 +44,46 @@ void DiskUtils::createNewVirtualDiskFile(){
     std::cout << utils::colors::CLEAR << "This wizard guides you through the creation of a virtual disk file" << std::endl;
     std::string path;
     uint64_t size;
+    bool pathIsValid = false;
+    std::string response;
+    while(!pathIsValid)
+    {
+        std::cout << "Path: ";
+        std::cin >> path;
 
-    std::cout << "Path: ";
-    std::cin >> path;
+        if(path.size() <= 0){
+            std::cout << utils::colors::CLEAR << utils::colors::RED << "Given input was invalid." << utils::colors::RESET << std::endl;
+        }else if(path[0] == 'q'|| path[0] == 'Q'){
+            std::cout << utils::colors::YELLOW << "Operation aborted" << utils::colors::RESET << std::endl;
+            wait(std::cin);
+            return;
+        }else if(path[0] != '/'){
+            std::cout << utils::colors::CLEAR << utils::colors::RED << "First char must be " << utils::colors::RESET;
+            std::cout << " /" << utils::colors::RED << ". Given Path is invalid: " << utils::colors::RESET << path << std::endl;
+        }else if((path[path.size()-4] != '.') && 
+                 (path[path.size()-3] != 'v') && 
+                 (path[path.size()-2] != 'd') && 
+                 (path[path.size()-1] != 'f')){
+            path.append(".vdf");
+            std::cout << utils::colors::YELLOW << "Added missing File Extension: " << utils::colors::RESET << path << std::endl;
+            pathIsValid = true;
+        } else {
+            pathIsValid = true;
+        }
 
-    if(path.size() <= 0){
-        std::cout << utils::colors::RED << "Given input was invalid." << utils::colors::RESET << std::endl;
-        return;
-    }else if(path[0] ==  'q' || path[0] == 'Q'){
-        std::cout << utils::colors::YELLOW << "Operation aborted" << utils::colors::RESET << std::endl;
-        return;
-    }else if(path[0] != '/'){
-        std::cout << utils::colors::RED << "Given path was invalid." << utils::colors::RESET << std::endl;
-        return;
+        if(utils::file::exists(path) && pathIsValid) {
+            std::cout << utils::colors::YELLOW << path << " already exists. Do you want to overwrite it? [y/n] " << utils::colors::RESET;
+            while(std::cin >> response && (response != "n" || response != "y")) {
+                if(response == "y") {
+                    break;
+                } if(response == "n") {
+                    pathIsValid = false;
+                    std::cout << utils::colors::CLEAR;
+                    break;
+                }
+            }
+            response = ""; 
+        }
     }
 
     std::cout << "Disk size in bytes: ";
