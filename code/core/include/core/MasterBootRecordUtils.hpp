@@ -21,8 +21,6 @@ namespace core::utilities{
         }    
 
     private:
-        std::string last_result_message;
-
         /**
          * @brief Construct a new Master Boot Record Utils object
          * 

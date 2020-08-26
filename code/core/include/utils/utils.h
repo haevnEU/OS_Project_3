@@ -6,8 +6,9 @@
 #include <string>
 #include <iomanip>
 #include <limits>
-#include <iomanip>
 
+#include <iomanip>
+#include <limits>
 #include <cstdint>
 
 extern "C"{
@@ -22,6 +23,9 @@ extern "C"{
 #include "logger.h"
 #include "progressbar.h"
 #include "terminal_colors.h"
+//#include "diskutils.hpp"
+
+static bool DEBUG = false;
 
 /**
  * @brief Current version

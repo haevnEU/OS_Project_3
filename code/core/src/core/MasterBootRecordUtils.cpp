@@ -11,10 +11,8 @@ void MasterBootRecordUtils::enter(){
     const char* entries[] = {"Create Master Boot Record", "Format Master Boot Record", "Inspect a Master Boot Record", "Return to BIOS"};
     int choice = -1;
     bool active = true;
-    utils::menu::menu_settings settings;
-
     while(active){
-        choice = utils::menu::print(entries, 4, "MBRUtils", settings);
+        choice = utils::menu::printMenu("MBRUtils", entries, 4, choice);
         switch(choice){
             case 0:
                 createMBR();
@@ -29,8 +27,8 @@ void MasterBootRecordUtils::enter(){
                 return;
             break;
         }
-        settings.clear_cache = true;
-        settings.sub_header = last_result_message;
+        choice = -1;
+        wait(std::cin);
     }
 }
 
@@ -40,13 +38,10 @@ void MasterBootRecordUtils::createMBR(){
     std::string path;
     std::cin >> path;
     if(path.size() > 0 && path[0] == 'q'){
-        last_result_message = utils::colors::YELLOW;
-        last_result_message.append("Operation aborted").append(utils::colors::RESET);
+        std::cout << utils::colors::YELLOW << "Operation aborted" << utils::colors::RESET << std::endl;
         return;
     }
     createMasterBootRecord(path.c_str());
-    last_result_message = utils::colors::GREEN;
-    last_result_message.append("Master boot record was successful created").append(utils::colors::RESET);
 }
 
 void MasterBootRecordUtils::formatMBR(){
@@ -55,8 +50,7 @@ void MasterBootRecordUtils::formatMBR(){
     std::string path;
     std::cin >> path;
     if(path.size() > 0 && path[0] == 'q'){
-        last_result_message = utils::colors::YELLOW;
-        last_result_message.append("Operation aborted").append(utils::colors::RESET);
+        std::cout << utils::colors::YELLOW << "Operation aborted" << utils::colors::RESET << std::endl;
         return;
     }
     std::cout << "1) Erase(Insecure)" << std::endl
@@ -70,8 +64,6 @@ void MasterBootRecordUtils::formatMBR(){
     }else if('2' == choice){
         wipeMasterBootRecord(path.c_str());
     }
-        last_result_message = utils::colors::GREEN;
-        last_result_message.append("Master boot record was successful erased/deleted").append(utils::colors::RESET);
 }
 
 void MasterBootRecordUtils::inspectMBR(){
@@ -80,21 +72,17 @@ void MasterBootRecordUtils::inspectMBR(){
     std::string path;
     std::cin >> path;
     if(!DiskUtils::getInstance().verifyDisk(path.c_str())){
-        last_result_message = utils::colors::RED;
-        last_result_message.append("Can not inspect master boot record: Virtual disk file cannot be verified").append(utils::colors::RESET);
         return;
     }
     auto fd = open(path.c_str(), O_RDWR, S_IRUSR | S_IWUSR);
     if(-1 == fd){
-        last_result_message = utils::colors::RED;
-        last_result_message.append("Can not inspect master boot record: Virtual disk file cannot be opened").append(utils::colors::RESET);
+        std::cout << utils::colors::RED << "Cannot inspect master boot record: open virtual disk file" << utils::colors::RESET << std::endl;
         return;
     }
     
     uint8_t* data_m = static_cast<uint8_t*>(mmap(nullptr, 0x1FF, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
     if(MAP_FAILED == data_m){
-        last_result_message = utils::colors::RED;
-        last_result_message.append("Can not inspect master boot record: Virtual disk file cannot be mapped").append(utils::colors::RESET);
+        std::cout << utils::colors::RED << "Cannot inspect master boot record: maping failed" << utils::colors::RESET << std::endl;
         close(fd);
         return;
     }
@@ -126,7 +114,6 @@ void MasterBootRecordUtils::inspectMBR(){
 
     std::cout << std::endl << utils::colors::RESET;
     munmap(data_m, 0x1FF);
-    wait(std::cin);
 }
 
 
@@ -137,24 +124,21 @@ void MasterBootRecordUtils::inspectMBR(){
 
 void MasterBootRecordUtils::createMasterBootRecord(const char* path){
     if(!DiskUtils::getInstance().verifyDisk(path)){
-        last_result_message = utils::colors::RED;
-        last_result_message.append("Can not create master boot record: Virtual disk file cannot be verified").append(utils::colors::RESET);
         return;
     }
     auto fd = open(path, O_RDWR, S_IRUSR | S_IWUSR);
     if(-1 == fd){
-        last_result_message = utils::colors::RED;
-        last_result_message.append("Can not write master boot record: Virtual disk file cannot be opened").append(utils::colors::RESET);
+        std::cout << utils::colors::RED << "Cannot write master boot record: open virtual disk file" << utils::colors::RESET << std::endl;
         return;
     }
     
     uint8_t* data_m = static_cast<uint8_t*>(mmap(nullptr, 0x1FF, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
     if(MAP_FAILED == data_m){
-        last_result_message = utils::colors::RED;
-        last_result_message.append("Can not write master boot record: Virtual disk file cannot be mapped").append(utils::colors::RESET);
+        std::cout << utils::colors::RED << "Cannot write master boot record: maping failed" << utils::colors::RESET << std::endl;
+        close(fd);
         return;
     }
-    
+
     close(fd);
 
     for(int i = 0; i < (0x1BE - 4); i += 4){
@@ -172,29 +156,22 @@ void MasterBootRecordUtils::createMasterBootRecord(const char* path){
     data_m[0x1FF] = static_cast<uint8_t>(0xAA);
 
     munmap(data_m, 0x1FF);
-
-    last_result_message = utils::colors::GREEN;
-    last_result_message.append("Master boot record was created").append(utils::colors::RESET);
 }
         
 void MasterBootRecordUtils::wipeMasterBootRecord(const char* path){
     if(!DiskUtils::getInstance().verifyDisk(path)){
-        last_result_message = utils::colors::RED;
-        last_result_message.append("Can not wipe master boot record: Virtual disk file cannot be verified").append(utils::colors::RESET);
         return;
     }
 
     auto fd = open(path, O_RDWR, S_IRUSR | S_IWUSR);
     if(-1 == fd){
-        last_result_message = utils::colors::RED;
-        last_result_message.append("Can not wipe master boot record: Virtual disk file cannot be opened").append(utils::colors::RESET);
+        std::cout << utils::colors::RED << "Cannot write master boot record: open virtual disk file" << utils::colors::RESET << std::endl;
         return;
     }
     
     uint8_t* data_m = static_cast<uint8_t*>(mmap(nullptr, 0x1FF, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
     if(MAP_FAILED == data_m){
-        last_result_message = utils::colors::RED;
-        last_result_message.append("Can not wipe master boot record: Virtual disk file cannot be mapped").append(utils::colors::RESET);
+        std::cout << utils::colors::RED << "Cannot write master boot record: maping failed" << utils::colors::RESET << std::endl;
         close(fd);
         return;
     }
@@ -215,7 +192,6 @@ void MasterBootRecordUtils::wipeMasterBootRecord(const char* path){
     data_m[0x1FF] = static_cast<uint8_t>(0xAA);
 
     munmap(data_m, 0x1FF);
-    last_result_message.append("Master boot record was wiped").append(utils::colors::RESET);
 }
 
 void MasterBootRecordUtils::eraseMasterBootRecord(const char* path){
