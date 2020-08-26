@@ -21,6 +21,13 @@
                 "kind": "build",
                 "isDefault": true
             }
-        }
+        },
+        {
+            "label" : "make",
+            "command" : "make"
+        }, 
+        {"label": "clean",
+        "command": "make clean"
+    }
     ]
 }

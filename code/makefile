@@ -23,8 +23,8 @@ TARGET   := OperatingSystemProject
 INCLUDE  := -Iinclude/
 # Source files
 SRC      :=                      \
-   $(wildcard src/utils/*.cpp)   \
-   $(wildcard src/lua/*.c)   \
+   $(wildcard src/core/*.cpp)   \
+   $(wildcard src/tui/*.cpp)   \
    $(wildcard src/*.cpp)         
 
 OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
