@@ -28,8 +28,9 @@ namespace core::os{
          * @brief Enters the tui
          * @details This method invokes the TUI of this class, it will work via the terminal interface.
          *          The private wrapper methods are called for the api usage.
+         * @details Return code of the OS, if 100 then restart
          */
-        void enter();
+        int enter();
         
     };
 }

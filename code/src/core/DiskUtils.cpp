@@ -15,13 +15,14 @@ DiskUtils::~DiskUtils(){
     partition_definitions->clear();
     delete partition_definitions;
 }
-
 void DiskUtils::enter(){
     const char* entries[] = {"Load existing virtual disk file", "Create new virtual disk file", "Verify virtual disk file", "Return to BIOS"};
     int choice = -1;
     bool active = true;
+    utils::menu::menu_settings settings;
+    
     while(active){
-        choice = utils::menu::printMenu("DiskUtils", entries, 4, choice);
+        choice = utils::menu::print(entries, 4, "DiskUtils", settings);
         switch(choice){
             case 0:
     	        loadExistingVirtualDiskFile();
@@ -36,35 +37,38 @@ void DiskUtils::enter(){
                 active = false;
             break;
         }
+        settings.clear_cache = true;
     }
 }
 
 
 void DiskUtils::createNewVirtualDiskFile(){
-    std::cout << utils::colors::CLEAR << "This wizard guides you through the creation of a virtual disk file within an existing folder" << std::endl;
+ std::cout << utils::colors::CLEAR << "This wizard guides you through the creation of a virtual disk file within an existing folder" << std::endl;
     std::string path;
     uint64_t size;
     bool pathIsValid = false;
     std::string response;
-    while(!pathIsValid)
-    {
+
+    while(!pathIsValid){
         std::cout << "Enter disk path (e.g. /home/<USERNAME>/disk.vdf):" << std::endl;
         std::cin >> path;
 
-        if(path.size() <= 0){
-            std::cout << utils::colors::CLEAR << utils::colors::RED << "Given input was invalid." << utils::colors::RESET << std::endl;
-        }else if(path[0] == 'q'|| path[0] == 'Q'){
-            std::cout << utils::colors::YELLOW << "Operation aborted" << utils::colors::RESET << std::endl;
-            wait(std::cin);
+        int result = utils::verifyInput(path);
+        if(utils::verify_results::operation_aborted == result){
+            std::cout << utils::colors::YELLOW << "Operation aborted" << utils::colors::RESET;
             return;
+        }else if(utils::verify_results::input_path_invalid == result){
+            std::cout << utils::colors::RED << "Given path is invalid" << utils::colors::RESET;
+        }else if(utils::verify_results::input_to_small == result){
+            std::cout << utils::colors::RED << "Given path is invalid" << utils::colors::RESET;
         }else if(path[0] != '/' && (path[0] != '.' && path[1] != '/')){
             std::cout << utils::colors::CLEAR << utils::colors::RED << "Path must start with <" << utils::colors::RESET;
             std::cout << "/" << utils::colors::RED << "> or <" << utils::colors::RESET << "./";
             std::cout << utils::colors::RED << ">. Given Path is invalid: " << utils::colors::RESET << path << std::endl;
-        }else if((path[path.size()-4] != '.') && 
-                 (path[path.size()-3] != 'v') && 
-                 (path[path.size()-2] != 'd') && 
-                 (path[path.size()-1] != 'f')){
+        }else if((path[path.size() - 4] != '.') && 
+                 (path[path.size() - 3] != 'v') && 
+                 (path[path.size() - 2] != 'd') && 
+                 (path[path.size() - 1] != 'f')){
             path.append(".vdf");
             std::cout << utils::colors::YELLOW << "Added missing File Extension: " << utils::colors::RESET << path << std::endl;
             pathIsValid = true;
@@ -95,9 +99,22 @@ void DiskUtils::createNewVirtualDiskFile(){
     }
 
     createDisk(path.c_str(), size);
+
+
+
+
+    if(utils::verifyInput(path)){
+        std::cout << "Disk size in bytes: ";
+        std::cin >> size;
+        if(size > MAX_DISK_SIZE){
+            std::cout << utils::colors::RED << "Given size is to big." << utils::colors::RESET << std::endl;
+            wait(std::cin);
+            return;
+        }
+        createDisk(path.c_str(), size);
+    }
     wait(std::cin);
 }
-
 void DiskUtils::loadExistingVirtualDiskFile(){
     std::cout << utils::colors::CLEAR << "This wizard allows you to load partitions from a virtual disk file."<< std::endl 
               << "This will allow the using of these partitions." << std::endl;
@@ -105,7 +122,10 @@ void DiskUtils::loadExistingVirtualDiskFile(){
     std::string path;
     std::cout << "Virtual disk file path: ";
     std::cin >> path;
-    loadDisk(path.c_str());
+    
+    if(utils::verifyInput(path)){
+        loadDisk(path.c_str());
+    }
     wait(std::cin);
 }
 
@@ -114,19 +134,9 @@ void DiskUtils::verifyVirtualDiskFile(){
     std::string path;
     std::cout << "Virtual disk file path: ";
     std::cin >> path;
-    
-    if(path.size() <= 0){
-        std::cout << utils::colors::RED << "Given input was invalid." << utils::colors::RESET << std::endl;
-        return;
-    }else if(path[0] ==  'q' || path[0] == 'Q'){
-        std::cout << utils::colors::YELLOW << "Operation aborted" << utils::colors::RESET << std::endl;
-        return;
-    }else if(path[0] != '/'){
-        std::cout << utils::colors::RED << "Given path was invalid." << utils::colors::RESET << std::endl;
-        return;
+    if(utils::verifyInput(path)){
+        verifyDisk(path.c_str());
     }
-    verifyDisk(path.c_str());
-
     wait(std::cin);
 }
 
@@ -224,19 +234,19 @@ void DiskUtils::loadDisk(const char* path){
     core::disk::virtual_disk_file* df = core::disk::load_master_boot_record(path);
 
     if(df->partition_1 != nullptr){
-            partition_definitions->push_back(df->partition_1);
+        partition_definitions->push_back(df->partition_1);
     }
     
     if(df->partition_2 != nullptr){
-            partition_definitions->push_back(df->partition_2);
+        partition_definitions->push_back(df->partition_2);
     }
     
     if(df->partition_3 != nullptr){
-            partition_definitions->push_back(df->partition_3);
+        partition_definitions->push_back(df->partition_3);
     }
     
     if(df->partition_4 != nullptr){
-            partition_definitions->push_back(df->partition_4);
+        partition_definitions->push_back(df->partition_4);
     }
 
 }

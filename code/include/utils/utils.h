@@ -47,9 +47,9 @@ static bool DEBUG = false;
  * @param in Stream in which should be waited
  */
 static void wait(std::istream& in, const char* message = "Press [RETURN] to continue ..."){
+    std::cout << message;
     in.ignore (std::numeric_limits<std::streamsize>::max(), '\n');
     in.clear();
-    std::cout << message;
     std::cin.get();
 }
 
@@ -88,12 +88,14 @@ namespace utils::do_not_use{
     static char getch_(int echo) {
         char ch;
         initTermios(echo);
-        fflush(stdin);
         ch = getchar();
         resetTermios();
         return ch;
     }
-}
+};
+
+
+
 
 /**
  * @brief Reads one character from the terminal
@@ -109,7 +111,7 @@ namespace utils{
      * @brief This methods gets the current date and time
      * @return const char* 
      */
-    static const char* dateTime(){
+    static inline const char* dateTime(){
         auto end_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         char* time = std::ctime(&end_time);
         if (time[strlen(time)-1] == '\n'){
@@ -118,53 +120,106 @@ namespace utils{
         return time;
     }
 
-/*
-    static void printHeader(const char* name){
+    namespace verify_results{
+        /**
+         * @brief States that the operation was ok
+         */
+        static const int operation_ok = 0;
         
-        struct winsize size;
-        ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
-        std::cout << TERMINAL_CLEAR;
-        std::cout << '+';
-        for(int i = 1; i < (size.ws_col - 1); ++i){
-            std::cout << '-';
-        }
-        std::cout << '+' << std::endl;
-        int textWidth = strlen(name);
-        std::cout << '|';
-        int spaces = ((size.ws_col - textWidth) * .5);
-        for(int i = 1; i < spaces; ++i){
-            std::cout << ' ';
-        }
-        std::cout << name;
-        for(int i = ((size.ws_col + textWidth) * .5); i < (size.ws_col - 1); ++i){
-            std::cout << ' ';
-        }
-        std::cout << '|' << std::endl;
-        std::cout << '+';
-        for(int i = 1; i < (size.ws_col - 1); ++i){
-            std::cout << '-';
-        }
-        std::cout << '+' << std::endl;
+        /**
+         * @brief States that the operation was canceled
+         */
+        static const int operation_aborted = 1;
+        
+        /**
+         * @brief States that the path size is invalid
+         */
+        static const int input_to_small = -1;
+        
+        /**
+         * @brief States that the path is invalid
+         */
+        static const int input_path_invalid = -2;
     }
 
-    static void printModule(const char* header, const char* module, const char* description = nullptr){
-        printHeader(header);
-        std::cout << std::endl << "Module: " << module << std::endl;
-        if(nullptr != description){
-            std::cout << description << std::endl;
+    /**
+     * @brief This method verifies a path
+     * @details This method first checks if the size is bigger than 0
+     *          Next its checked if the first letter is a quit(q/Q) letter
+     *          Finally the first letter is checked if its a valid path starter.
+     * @param path Path which should be validated
+     * @return int Result code
+     */
+    static int inline verifyInput(const std::string path){
+        if(path.size() <= 0){
+            std::cout << utils::colors::RED << "Given input was invalid." << utils::colors::RESET << std::endl;
+            return verify_results::input_to_small;
+        }else if(path[0] ==  'q' || path[0] == 'Q'){
+            std::cout << utils::colors::YELLOW << "Operation aborted" << utils::colors::RESET << std::endl;
+            return verify_results::operation_aborted;
+        }else if(path[0] != '/'){
+            std::cout << utils::colors::RED << "Given path was invalid." << utils::colors::RESET << std::endl;
+            return verify_results::input_path_invalid;
         }
-        std::cout << std::endl;
+
+        return verify_results::operation_ok;
     }
-
-    static void createEmptyVirtualDiskFile(const char* path){
-        a
-    }
-
-    */
-
 }
 
+
+
 namespace utils::menu{
+
+    /**
+     * @brief This struct contains all information for a menu 
+     */
+    struct menu_settings{
+        /**
+         * @brief This enables the over/underflow of line selection
+         */
+        bool row_selection_overflow = true;
+
+        /**
+         * @brief This clears the the input cache
+         */
+        bool clear_cache = false;
+
+        /**
+         * @brief This is the previous selected row
+         */
+        int preselected_row = 0;
+
+        /**
+         * @brief This is an optional error message
+         */
+        std::string sub_header;
+
+        /**
+         * @brief This is the background color
+         */
+        const char* background = utils::colors::BACK_GREEN;
+
+        /**
+         * @brief This is the foreground color
+         */
+        const char* foreground = utils::colors::BLACK;
+
+        /**
+         * @brief This is the line selection indicator
+         */
+        const char* line_selector[2] = {" >", "< "};
+
+        /**
+         * @brief The up selection key
+         */
+        char up_key = 'w';
+        
+        /**
+         * @brief The down selection key
+         */
+        char down_key = 's';
+    };
+
 
     /**
      * @brief Prints a menu entry to the terminal
@@ -172,72 +227,86 @@ namespace utils::menu{
      * @param row Row index
      * @param current_row Index of current row
      */
-    static void inline printEntry(const char* message, int row, int current_row){
-        const char* color = utils::colors::BACK_GREEN;
+    static void inline printEntry(const char* message, int row, int current_row, menu_settings& settings){
+        const char* color = settings.background;
         if(row == current_row){
-            std::cout << color<< utils::colors::BLACK << ">"; 
+            std::cout << color << settings.foreground << settings.line_selector[0]; 
         }else{
-            std::cout << utils::colors::RESET;     
+            std::cout << ' ' << ::utils::colors::RESET;     
         }
         std::cout << message; 
         if(row == current_row){
-            std::cout << color << utils::colors::BLACK << "<"; 
+            std::cout << color << settings.foreground << settings.line_selector[1]; 
+        }else{
+            std::cout << ' ';
         }
-        std::cout << utils::colors::RESET << std::endl;     
-        
+        std::cout << ::utils::colors::RESET << std::endl;     
     }
 
     /**
-     * @brief Prints am menu to the terminal
-     * @details This method prints a menu to the terminal. it Will also return the selected item.
-     * @param entries Menu entries
-     * @param size Size of the entries array
-     * @param menu_selected_index Previous selected index
-     * @param overflow Enables the overflow of menu selection
-     * @return int Selected menu entry
-     */
-    static inline int printMenu(const char* menu_header, const char* entries[], int size, int menu_selected_index, bool menu_selection_overflow = true){
+     * @brief This methods prints a menu on the terminal
+     * @details This method prints every menu entry on the terminal and allows the selection
+     *          with specified keys. The menu is customizable via a settings argument.
+     *          The result value correspond to the provided entries, e.g. result 0 <=> entries[0]
+     *          A known bug is that the input stream is filled after some operation, therefore
+     *          setting the settings entry clear_cache is recommended
+     * @param entries Menu entries which should be printed
+     * @param amount_entries Amount of the entries
+     * @param menu_header Header of the menu
+     * @param settings Settings object
+     * @return int Selected 0 based index
+    */
+    static inline int print(const char* entries[], int amount_entries, const char* menu_header, menu_settings& settings){
         char c = 'D';
-        int row = menu_selected_index;
+        int row = settings.preselected_row;
+        if(settings.clear_cache){
+            char c2;
+            while ((c2 = getchar()) != '\n' && c2 != EOF) { }
+        }
+
         while(true){
             std::system("clear");
-            std::cout << utils::colors::CLEAR << menu_header << " " << utils::dateTime() << std::endl;
+            std::cout << ::utils::colors::CLEAR << menu_header << " " << ::utils::dateTime() << std::endl;
 
-            std::cout << "Use W/S to navigate and <ENTER> to select" << std::endl<< std::endl;
-            for(int i = 0; i < size; i++){
-                printEntry(entries[i], i, row);
+            std::cout << "Use W/S to navigate and <ENTER> to select" << std::endl;
+            
+            if(settings.sub_header.size() > 0){
+                std::cout << settings.sub_header << std::endl;
+            }
+
+            std::cout << std::endl;
+            for(int i = 0; i < amount_entries; i++){
+                printEntry(entries[i], i, row, settings);
             }
             c = getch();
-            if(c == 'W' || c == 'w'){
+
+            if(c == 'W' || c == settings.up_key){
                 row--;
                 if(row < 0){
-                    row = ((menu_selection_overflow) ? size - 1 : 0);
+                    row = ((settings.row_selection_overflow) ? amount_entries - 1 : 0);
                 }
             }
-            if(c == 'S' || c == 's'){
+            if(c == 'S' || c == settings.down_key){
                 row++;
-                if(row >= (size)){
-                    row = ((menu_selection_overflow) ? 0 : size - 1);
+                if(row >= (amount_entries)){
+                    row = ((settings.row_selection_overflow) ? 0 : amount_entries - 1);
                 }
             }
             if(c == 10){
-                return row;
+                break;
             }
         }
-        return -1;
+
+        return row;
     }
-    
 
     /**
-     * @brief Prints am menu to the terminal
-     * @details This method prints a menu to the terminal. it Will also return the selected item.
-     * @param entries Menu entries
-     * @param size Size of the entries array
-     * @param overflow Enables the overflow of menu selection
-     * @return int Selected menu entry
+     * @brief This is deprectaed and must be replaced with print
+     * @deprecated
      */
-    static inline int printMenu(const char* menu_header, const char* entries[], int size, bool menu_selection_overflow = true){
-        return printMenu(menu_header, entries, size, -1, menu_selection_overflow);
+    static inline int printMenu(const char* menu_header, const char* entries[], int size, int menu_selected_index, bool clear_input = true){
+        menu_settings setting;
+        setting.preselected_row = menu_selected_index;
+        return print(entries, size, menu_header, setting);
     }
-    
 }

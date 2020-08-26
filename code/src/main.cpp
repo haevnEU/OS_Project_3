@@ -8,6 +8,7 @@
 #include "../include/core/PartitionUtils.hpp"
 #include "../include/tui/BasiOS.hpp"
 
+
 void signalHandler(int signum){
     std::cout << utils::colors::RED << "An important signal was caught: " << strsignal(signum) << ": " << signum << utils::colors::RESET << std::endl;
     std::cout << utils::colors::RED << "Please open a new issue ticket on github with your previous interaction, if possible including detailed description and screenshot" << utils::colors::RESET << std::endl;
@@ -20,7 +21,7 @@ void signalHandler(int signum){
 
 
 int main(int argc, const char* argv[]) {
-    std::cout << "START";
+    std::cout << utils::colors::CLEAR;
     for(int i = 0; i < argc; i++){
         if(strcmp(argv[i], "-d") == 0){
             DEBUG = true;
@@ -32,15 +33,17 @@ int main(int argc, const char* argv[]) {
     signal(SIGFPE, signalHandler);
     signal(SIGILL, signalHandler);
     signal(SIGSEGV, signalHandler);
-  
     const char* entries[] = {"Disk", "Master Boot Record", "Partition", "Shutdown", "Start OS"};
     core::utilities::DiskUtils& du = core::utilities::DiskUtils::getInstance();
     core::utilities::MasterBootRecordUtils& mbru = core::utilities::MasterBootRecordUtils::getInstance();
     core::utilities::PartitionUtils& pu = core::utilities::PartitionUtils::getInstance();
     int choice;
     bool active = true;
+
+    utils::menu::menu_settings settings;
     while(active){
-        choice = utils::menu::printMenu("BIOS", entries, 5);
+        //choice = utils::menu::printMenu("BIOS", entries, 5, 0);
+        choice = utils::menu::print(entries, 5, "BIOS", settings);
         switch(choice){
             case 0:
                 du.enter();
@@ -59,8 +62,13 @@ int main(int argc, const char* argv[]) {
         }
     }
     core::os::BasicOS os;
-    os.enter();
-    return 0;
+    int ret = os.enter();
+    
+    if(100 == ret){
+        execve(argv[0], const_cast<char**>(argv), nullptr);
+    }
+    
+    return ret;
 }
 
 
