@@ -4,15 +4,16 @@
 // c++ includes
 #include <vector>
 
-// c++ equivalent includes from c 
+// c++ equivalent includes from c
 #include <cstdint>
 
 // c include
-extern "C"{
-    #include <unistd.h>
-    #include <fcntl.h>
-    #include <sys/mman.h>
-    #include <sys/stat.h>
+extern "C"
+{
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 }
 
 // libraries
@@ -25,10 +26,13 @@ extern "C"{
  *  @{
  */
 
-//! Core Elements
+/**
+ * @brief Core Elements
+ * @details Defines partitions, their details and codes.
+ */
 namespace core
 {
-  
+
     /**
      * @brief Contains all possible Result Codes of any operation on a partition
      * @details Mostly used by validators.
@@ -36,19 +40,19 @@ namespace core
      */
     enum partition_codes
     {
-        OK = 0x00,                      ///< Ok
-        data_invalid = 0x01,            ///< Invalid Data
-        address_underflow = 0x02,       ///< Address Underflow
-        address_overflow = 0x03,        ///< Address Overflow
-        partition_mounted = 0x04,       ///< Partition is mounted.
-        partition_not_mounted = 0x05,   ///< Partition is not mountet.
-        index_out_of_bounds = 0x06,     ///< Array has been accessed with an illegal index.
-        no_definition = 0x07,           ///< Definition is missing
-        file_not_exist = 0x08,          ///< File does not exist
-        file_open_failure = 0x09,       ///< Can't open file
-        mapping_failure = 0x0A,         ///< Mapping failed  
+        OK = 0x00,                    ///< Ok
+        data_invalid = 0x01,          ///< Invalid Data
+        address_underflow = 0x02,     ///< Address Underflow
+        address_overflow = 0x03,      ///< Address Overflow
+        partition_mounted = 0x04,     ///< Partition is mounted.
+        partition_not_mounted = 0x05, ///< Partition is not mountet.
+        index_out_of_bounds = 0x06,   ///< Array has been accessed with an illegal index.
+        no_definition = 0x07,         ///< Definition is missing
+        file_not_exist = 0x08,        ///< File does not exist
+        file_open_failure = 0x09,     ///< Can't open file
+        mapping_failure = 0x0A,       ///< Mapping failed
 
-        unknown = 0xFF                  ///< Unknown result
+        unknown = 0xFF ///< Unknown result
     };
 
     /**
@@ -194,15 +198,46 @@ namespace core
             }
         }
 
-    // inlined methods
-    private: 
+        /**
+         * @brief Clears a byte
+         * @details Clears a byte inside the partition.
+         *          Requires a mounted partition.
+         * @param address Byteaddress
+         * @todo Add data access
+         */
+        void clearByte(uint64_t address);
+
+
+    public: /* setter **************************************/
+        /**
+         * @brief Sets the error handler
+         * @param callback Callback for the error handler, signature: void name(uint8_t code);
+         */
+        void settErrorHandler(void (*callback)(uint8_t code))
+        {
+            error_handler = callback;
+        }
+
+
+    public: /* getter **************************************/
+        /**
+         * @brief Gets mounting state.
+         * @return True if the partition is mounted
+         */
+        bool isMounted()
+        {
+            return mounted;
+        }
+
+
+    private: /* inlined methods *****************************/
         /**
          * @brief Checks if a error handler exists and calls it      
          * @param code Errorcode for the error handler
          */
         inline void handle_error(uint8_t code)
         {
-            if(nullptr != error_handler)
+            if (nullptr != error_handler)
             {
                 error_handler(code);
             }
@@ -216,7 +251,7 @@ namespace core
          */
         inline bool validate_data()
         {
-            if(nullptr == data_m)
+            if (nullptr == data_m)
             {
                 handle_error(partition_codes::data_invalid);
                 return false;
@@ -231,15 +266,18 @@ namespace core
          * @param address To be validated address
          * @return True if the address within partition range, otherwise false
          */
-        inline bool validate_address(uint64_t address){
-            ///1. Checks if address is behind end of address range    
-            if(address > definition->end_address){
+        inline bool validate_address(uint64_t address)
+        {
+            ///1. Checks if address is behind end of address range
+            if (address > definition->end_address)
+            {
                 handle_error(partition_codes::address_overflow);
                 return false;
             }
-            
-            ///2. Checks if address is before start of address range    
-            if(address < definition->start_address){
+
+            ///2. Checks if address is before start of address range
+            if (address < definition->start_address)
+            {
                 handle_error(partition_codes::address_underflow);
                 return false;
             }
@@ -247,6 +285,6 @@ namespace core
             return true;
         }
     };
-}
+} // namespace core
 
 #endif //CORE__PARTITION_HPP

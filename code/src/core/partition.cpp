@@ -79,25 +79,28 @@ void Partition::unmount()
 
 void Partition::setByte(uint64_t address, uint8_t data)
 {
-    /// Checks if Partition is mounted, abort if not
+    ///- Checks if Partition is mounted, abort if not
     if(!isMounted()){
         handle_error(partition_codes::partition_not_mounted);
         return;
     }
-    if(validate_address(address) && validate_data()){
+
+    ///- Checks if address and data is valid
+    if(validate_address(address && validate_data())){
+        
     }
         data_m[512 + address] = data;
 }
 
 void Partition::clearByte(uint64_t address)
 {
-    /// Checks if Partition is mounted, abort if not
+    ///- Checks if Partition is mounted, abort if not
     if(!isMounted()){
         handle_error(partition_codes::partition_not_mounted);
         return;
     }
 
-    /// Checks if address and data is valid
+    ///- Checks if address and data is valid
     if(validate_address(address) && validate_data()){
 
     }
