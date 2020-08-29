@@ -3,10 +3,16 @@
 #include "../utils/utils.h"
 #include "partition.hpp"
 
+/*!
+ *  \addtogroup core
+ *  @{
+ */
+
+//! Virtual Disk File implementations
 namespace core::disk{
 
     /**
-     * @brief This struct contains the definition of a virtual disk file.
+     * @brief Contains the definition of a virtual disk file.
      */
     struct virtual_disk_file{
         /**
@@ -124,4 +130,6 @@ namespace core::disk{
         munmap(data, 0x1FF);
         return mbr;
     }
-}
+} // End namespace disk
+
+/*! @} End of Doxygen Groups*/
