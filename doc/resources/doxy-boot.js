@@ -64,7 +64,7 @@ $(document).ready(function () {
 	 */
 	$("div.contents").wrapAll("<div class='container' style='flex-grow: 1'><div class='row'><div class='col-12'><div class='card'><div class='card-body'></div></div></div></div></div>");
 
-	$("div.card-body > .contents > .textblock").replaceWith("<h5 class='card-title'>" + $("div.card-body > .contents > .textblock").text() + "</h5>");
+	$("div.card-body > .contents > .textblock > h1").addClass("card-title");
 
 	$("div.contents > h3").addClass("card-title mt-4");
 	$("div.contents > ul").addClass("list-group list-group-flush");
@@ -72,40 +72,75 @@ $(document).ready(function () {
 
 	$("div.contents > ul > li > a").addClass("badge badge-secondary badge-pill");
 
-
+	$("div.ingroups > a").addClass("badge badge-secondary badge-pill");
 	/*
 	 * Tables
 	 */
 	// add bootstrap class
-	$("div.contents > table").attr("class", "table table-hover");
+	$("div.contents table").addClass("table table-hover");
 	// remove default class
 	$("div.contents table tr").removeClass("even");
-	
-	// fix toggler for dropdown rows
-	$("div.contents > table tr").prepend("<td class='toggler'></td>");
-	$("div.contents > table span.arrow").each(function() {
-		$(this).appendTo($(this).parent().parent().children("td.toggler"));
-	});
+
+	$("div.contents table td").css("vertical-align", "middle");
 	
 	// fix tree alignment 
+
+	$("div.contents table span").filter(function() {
+		return $(this).attr("style") && $(this).attr("style").indexOf("width:112px;") >= 0;
+	}).remove();
+
+	$("div.contents table span").filter(function() {
+		return $(this).attr("style") && $(this).attr("style").indexOf("width:96px;") >= 0;
+	}).remove();
+
+	$("div.contents table span").filter(function() {
+		return $(this).attr("style") && $(this).attr("style").indexOf("width:80px;") >= 0;
+	}).remove();
+
 	$("div.contents table span").filter(function() {
 		return $(this).attr("style") && $(this).attr("style").indexOf("width:64px;") >= 0;
-	}).css("width", "auto").css("margin", "0 1rem 0 2rem").css("transform", "rotate(90deg)").css("display", "inline-flex").css("justify-content", "center").prepend("<i class='fas fa-level-up-alt'></i>");
+	}).remove();
+
+	// fix tree alignment 
+	$("div.contents table span").filter(function() {
+		return $(this).attr("style") && $(this).attr("style").indexOf("width:48px;") >= 0;
+	}).remove();
 
 	// fix tree alignment 
 	$("div.contents table span").filter(function() {
 		return $(this).attr("style") && $(this).attr("style").indexOf("width:32px;") >= 0;
-	}).css("width", "auto").css("margin", "0 1rem 0 0").css("transform", "rotate(90deg)").css("display", "inline-flex").css("justify-content", "center").prepend("<i class='fas fa-level-up-alt'></i>");
+	}).remove();
 
 	// fix tree alignment 
 	$("div.contents table span").filter(function() {
 		return $(this).attr("style") && $(this).attr("style").indexOf("width:16px;") >= 0;
+	}).remove(); 
 
-	}).css("width", "auto");
 	// fix tree alignment 
-	$("div.contents table span").filter(function() {
+	$("div.contents table tr").filter(function() {
 		return $(this).attr("style") && $(this).attr("style").indexOf("width:0px;") >= 0;
-	}).css("width", "auto");
+	}).remove(); 
+
+
+	$("div.contents table tr[id^='row']").filter(function() { 
+		if($(this).attr("id").length == 6) {
+			$(this).children("td").first().css("padding-left", "1.375rem");
+		} else if($(this).attr("id").length == 8) {
+			$(this).children("td").first().css("padding-left", "3.375rem");
+		} else if($(this).attr("id").length == 10) {
+			$(this).children("td").first().css("padding-left", "5.375rem");
+		}else if($(this).attr("id").length == 12) {
+			$(this).children("td").first().css("padding-left", "7.375rem");
+		}else if($(this).attr("id").length == 14) {
+			$(this).children("td").first().css("padding-left", "9.375rem");
+		}else if($(this).attr("id").length == 16) {
+			$(this).children("td").first().css("padding-left", "11.375rem");
+		}else if($(this).attr("id").length == 18) {
+			$(this).children("td").first().css("padding-left", "13.375rem");
+		}else if($(this).attr("id").length == 20) {
+			$(this).children("td").first().css("padding-left", "15.375rem");
+		}
+	});
 
 	// adds monospace font + fix layout
 	$("div.contents table tr > td.entry").css("font-family", "Courier, 'Lucida Console'");
@@ -113,8 +148,10 @@ $(document).ready(function () {
 	$("div.contents table tr > td.desc").attr("class", "text-muted");
 	$("div.directory").removeClass("directory");
 	
-	// fix prefix icon
-	$("div.contents table tr > td .icona").attr("style", "width: 1.375rem; height: 1.375rem; margin-right: 0.5rem;").addClass("badge badge-secondary badge-pill");
+	// fix prefix icon (dropdown-arrow)
+	$("div.contents table tr > td .arrow").attr("style", "display: inline-block; width: 1.375rem; height: 1.375rem; text-align: center; margin-left: -1.375rem;");
+
+	$("div.contents table tr > td .icona").attr("style", "width: 1.375rem; height: 1.375rem; margin: 0 1ch 0 0;").addClass("badge badge-secondary badge-pill");
 	$("div.contents table tr > td .icona > .icon").attr("style", "width: 1.375rem; height: 1.375rem; font-size: 1rem;");
 	
 	// adjust index table layout
@@ -129,7 +166,12 @@ $(document).ready(function () {
 		$(this).parent().parent().parent().next().remove();
 	});
 
-
+	$(".memdoc > p.definition").addClass("text-muted");
+	$(".memname").css("margin", "0");
+	$(".memitem").css("margin", "0 0 2rem 0").css("padding", "0 0 2rem 0").css("border-bottom", "1px solid #777777")
+	$(".memproto").css("min-height", "4rem").css("font-size", " 1.15rem").css("font-family", "Courier, 'Lucida Console'");
+	$(".memname.table tr > td").css("padding", "0");
+	$("span.mlabel").css("margin-right", "1ch");
 	/*
 	 * Headertitle
 	 */
@@ -298,4 +340,7 @@ $(document).ready(function () {
 	 */
 	$("div#titlearea").remove();
 
+	if(window.location.hash) {
+		$(window).scrollTop($(window.location.hash).offset().top).scrollLeft($(window.location.hash).offset().left);
+	}
 });
