@@ -62,7 +62,7 @@ $(document).ready(function () {
 	/*
 	 * Wrap page content in card
 	 */
-	$("div.contents").wrapAll("<div class='container' style='flex-grow: 1'><div class='row'><div class='col-12'><div class='card'><div class='card-body'></div></div></div></div></div>");
+	$("div.contents").wrapAll("<div class='container-fluid' style='flex-grow: 1'><div class='row'><div class='col-12'><div class='card'><div class='card-body'></div></div></div></div></div>");
 
 	$("div.card-body > .contents > .textblock > h1").addClass("card-title");
 
@@ -73,6 +73,14 @@ $(document).ready(function () {
 	$("div.contents > ul > li > a").addClass("badge badge-secondary badge-pill");
 
 	$("div.ingroups > a").addClass("badge badge-secondary badge-pill");
+
+	/*
+	 * Sidenav
+	 */
+	$("div#side-nav").css("min-height", "100%").css("margin-bottom", "5rem").prependTo($("#doc-content"));
+	$("div#side-nav ul").addClass("list-group");
+	$(".ui-resizable-e").css("background-image", "none").css("border-right", "6px solid #343a40")
+	
 	/*
 	 * Tables
 	 */
@@ -171,14 +179,20 @@ $(document).ready(function () {
 	$(".memitem").css("margin", "0 0 2rem 0").css("padding", "0 0 2rem 0").css("border-bottom", "1px solid #777777")
 	$(".memproto").css("min-height", "4rem").css("font-size", " 1.15rem").css("font-family", "Courier, 'Lucida Console'");
 	$(".memname.table tr > td").css("padding", "0");
-	$("span.mlabel").css("margin-right", "1ch");
+	$("span.mlabel").css("margin-right", "1ch").addClass("badge badge-secondary badge-pill");
+	$("dl.todo").addClass("alert alert-dark");
+	$(".groupheader").addClass("h1 mb-5");
+	$("td.fieldname").css("font-family", "Courier, 'Lucida Console'");
+
+	$("table table td").css("border", "none");
 	/*
 	 * Headertitle
 	 */
-	$("div.headertitle").wrap("<div class='container'>" + "<div class='row'>" + "<div class='col-12'>" + "</div>" + "</div>" + "</div>") .addClass("page-header");
+	$("div.headertitle").wrap("<div class='container-fluid'>" + "<div class='row'>" + "<div class='col-12'>" + "</div>" + "</div>" + "</div>") .addClass("page-header");
 	$("div.title").addClass("h1");
 
-
+	$(".summary").addClass("btn-group m-3").children("a").addClass("btn btn-secondary");
+	$(".summary").contents().filter(function(){return this.nodeType === 3;}).remove()
 	/*
 	 * Navigation prefix symbols
 	 */
