@@ -8,7 +8,122 @@
 #include "../include/core/PartitionUtils.hpp"
 #include "../include/tui/BasiOS.hpp"
 
+/*! \mainpage Documentation for OS Project 3
+ *
+ * \section introEN_sec Introduction
+ *
+ * This is the introduction.
+ * 
+ * \subsection runDE_sec Program sequence
+ * 
+ * A TUI (Terminal User Interface) will be displayed after the program started. You can navigate within this TUI using [W] and [S] keys to move your
+ * selection up- or downwards. To confirm your selection press [RETURN].
+ * 
+ * <h5>Example for a possible program sequence</h5>
+ * 
+ * Select ><b>DISK</b><, confirm with <b>[RETURN]</b>.
+ * 
+ * Select ><b>Create new virtual disk file</b><, confirm with <b>[RETURN]</b>.
+ * 
+ * Enter any file path. We use <b>/home/user/disk.vdf</b> in this example.
+ * <small><i>Hint: Replace user with your individual user name. A disk can only be created within folder with appropriate permissions.</i></small>
+ * 
+ * The disk size can be chosen freely. We use <b>3221225472</b> Byte in this example.
+ * 
+ * Navigate back to the main menu. Select ><b>Master Boot Record</b><, confirm with <b>[RETURN]</b>.
+ * 
+ * Select ><b>Create Master Boot Record</b>< in the following menu, confirm with <b>[RETURN]</b>.
+ * 
+ * Enter the disk path. We used <b>/home/user/disk.vdf</b> in this example.
+ * 
+ * Navigate back to the main menu. Select ><b>Partition</b><, confirm with <b>[RETURN]</b>.
+ * 
+ * Im folgenden Menü ><b>Create new partition</b>< markieren, confirm with <b>[RETURN]</b>.
+ * 
+ * Enter the disk path. We used <b>/home/user/disk.vdf</b> in this example.
+ * 
+ * Select ><b>FAT</b>< in the following menu, confirm with <b>[RETURN]</b>.
+ * 
+ * The partition size can be chosen freely.
+ *
+ * \subsection docEN_sec Update the documentation
+ * 
+ * Um die Dokumentation zu aktualisieren wird Doxygen benötigt. 
+ * <ol>
+ *  <li>
+ *   <h5>Doxywizard öffnen</h5>
+ *   <p>Recommended version: <a href="https://www.doxygen.nl/download.html">1.8.18</a></p>
+ *  </li>
+ *  <li>
+ *   <h5>Use Doxywizard to open Doxyfile</h5>
+ *   <p>The doxyfile is placed here: [project_root]/doc</p>
+ * </li>
+ *  <li>
+ *   <h5>Run Doxywizard</h5>
+ *   <p>The wizard will update the documentation itself.</p>
+ *  </li>
+ * </ol>
+ * 
+ * ===================================================================================================================
+ * 
+ * \section introDE_sec Einleitung
+ * 
+ * Dieses Projekt simuliert ein 
+ * 
+ * \subsection runDE_sec Programmablauf
+ * 
+ * Nach dem Starten wird ein TUI (Terminal User Interface) dargestellt. Mithilfe der Tasten [W] und [S] kann in diesem auf-, bzw. abwärts navigiert werden. 
+ * Eine getroffene Auswahl wird mit [ENTER] bestätigt.
+ * 
+ * <h5>Beispiel für einen möglichen Programmablauf</h5>
+ * 
+ * Eintrag ><b>DISK</b>< markieren, mit <b>[ENTER]</b> bestätigen.
+ * 
+ * Eintrag ><b>Create new virtual disk file</b>< markieren, mit <b>[ENTER]</b> bestätigen.
+ * 
+ * Einen beliebigen Pfad eingeben. In diesem Beispiel wird <b>/home/user/disk.vdf</b> gewählt.
+ * <small><i>Anmerkung: user ist mit dem individuellen Benutzernamen zu ersetzen. Eine Disk kann nur in einem Verzeichnis mit entsprechender Rechtevergabe erstellt werden.</i></small>
+ * 
+ * Eine beliebige Größe für die zu erzeugende Disk festlegen. In diesem Beispiel wird <b>3221225472</b> Byte gewählt.
+ * 
+ * Zurück zum Hauptmenü navigieren. Dort ><b>Master Boot Record</b>< markieren, mit <b>[ENTER]</b> bestätigen.
+ * 
+ * Im folgenden Menü ><b>Create Master Boot Record</b>< markieren, mit <b>[ENTER]</b> bestätigen.
+ * 
+ * Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>/home/user/disk.vdf</b> .
+ * 
+ * Zurück zum Hauptmenü navigieren. Dort ><b>Partition</b>< markieren, mit <b>[ENTER]</b> bestätigen.
+ * 
+ * Im folgenden Menü ><b>Create new partition</b>< markieren, mit <b>[ENTER]</b> bestätigen.
+ * 
+ * Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>/home/user/disk.vdf</b> .
+ * 
+ * Im folgenden Menü ><b>FAT</b>< markieren, mit <b>[ENTER]</b> bestätigen.
+ * 
+ * Eine beliebige Größe für die zu erzeugende Partition festlegen.
+ * 
+ * \subsection updateDocDE Dokumentation aktualisieren
+ * 
+ * Um die Dokumentation zu aktualisieren wird Doxygen benötigt.
+ * <ol>
+ *  <li>
+ *   <h5>Doxywizard öffnen</h5>
+ *   <p>Empfohlene Version: <a href="https://www.doxygen.nl/download.html">1.8.18</a></p>
+ *  </li>
+ *  <li>
+ *   <h5>Mit Doxywizard die Doxyfile öffnen</h5>
+ *   <p>Die doxyfile befindet sich im Verzeichnis [project_root]/doc</p>
+ * </li>
+ *  <li>
+ *   <h5>Doxywizard starten</h5>
+ *   <p>Der Wizard wird die Dokumetation automatisch aktualisieren</p>
+ *  </li>
+ * </ol>
+ */
 
+* @brief This is a function pointer for an error handler
+         * @details This fp is called iff an error occurred during one operation
+         * @param code The error code of the operation
 void signalHandler(int signum){
     std::cout << utils::colors::RESET << std::dec << std::endl << utils::colors::RED 
             << "An important signal was caught: " << strsignal(signum) << "[" << signum << "]" << std::endl
@@ -33,6 +148,11 @@ void signalINT(int signum){
 
 #include <stdio.h>
 #include <sys/stat.h>
+
+
+/************************************************
+ * Main function
+ ***********************************************/
 int main(int argc, const char* argv[]) {
 
     std::cout << utils::colors::CLEAR;
