@@ -21,10 +21,17 @@ extern "C"{
 #include "partition.hpp"
 #include "DiskUtils.hpp"
 
+
+/*!
+ *  \addtogroup core
+ *  @{
+ */
+
+//! Utilities for handling virtual disk file operations
 namespace core::utilities{
     
     /**
-     * @brief This is is utility class.
+     * @brief Partiton Utility Class.
      * @details This class handles the operation with the pure virtual disk file. It will also contain all loaded partitions from all virtual disk files.
      * @version 1.0.0.0
      */
@@ -108,4 +115,4 @@ namespace core::utilities{
         void createFAT(const char* path);
 
     };
-}
+}// End namespace utilities
