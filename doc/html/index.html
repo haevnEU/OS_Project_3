@@ -155,7 +155,7 @@ Einleitung</h1>
 <p>Dieses Projekt simuliert ein</p>
 <h1><a class="anchor" id="runDE_sec"></a>
 Program sequence</h1>
-<p>Nach dem Starten wird ein TUI (Terminal User Interface) dargestellt. Mithilfe der Tasten [W] und [S] kann in diesem auf-, bzw. abwärts navigiert werden. Eine getroffene Auswahl wird mit [ENTER] bestätigt.</p>
+<p>Nach dem Starten wird ein TUI (Terminal User Interface) dargestellt. Mithilfe der Tasten [W] und [S] kann in diesem auf-, bzw. abwärts navigiert werden. Eine getroffene Auswahl wird mit [ENTER] bestätigt. Im simulierten OS können Partitionsinformationen und eingesehen</p>
 <h5>Beispiel für einen möglichen Programmablauf</h5>
 <h2><a class="anchor" id="step1"></a>
 1. Disk erstellen</h2>
@@ -165,38 +165,65 @@ Eintrag &gt;<b>DISK</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
 <li>
 Eintrag &gt;<b>Create new virtual disk file</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
 <li>
-Einen beliebigen Pfad eingeben. In diesem Beispiel wird <b>/home/user/disk.vdf</b> gewählt <small><em>Anmerkung: user ist mit dem individuellen Benutzernamen zu ersetzen. Eine Disk kann nur in einem Verzeichnis mit entsprechender Rechtevergabe erstellt werden.</em></small>  </li>
+Einen beliebigen Pfad eingeben. In diesem Beispiel wird <b>./disk.vdf</b> gewählt. <small><em>Anmerkung: Eine Disk kann nur in einem Verzeichnis mit entsprechender Rechtevergabe erstellt werden.</em></small>  </li>
 <li>
-Eine beliebige Größe für die zu erzeugende Disk festlegen. In diesem Beispiel wird <b>3221225472</b> Byte gewählt </li>
+Eine beliebige Größe für die zu erzeugende Disk festlegen. In diesem Beispiel wird <b>500000000</b> Byte gewählt </li>
 </ol>
 <h2><a class="anchor" id="step2"></a>
 2. Disk verifizieren</h2>
 <ol>
 <li>
-</li>
+Eintrag &gt;<b>Verify virtual disk file</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
+</ol>
+<h2><a class="anchor" id="step3"></a>
+3. Master Boot Record erstellen</h2>
+<ol>
 <li>
-Zurück zum Hauptmenü navigieren. Dort &gt;<b>Master Boot Record</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
+Im Hauptmenü &gt;<b>Master Boot Record</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
 <li>
 Im folgenden Menü &gt;<b>Create Master Boot Record</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
 <li>
-Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>/home/user/disk.vdf</b> </li>
+Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>./disk.vdf</b> </li>
+</ol>
+<h2><a class="anchor" id="step4"></a>
+4. Partition erstellen</h2>
+<ol>
 <li>
-Zurück zum Hauptmenü navigieren. Dort &gt;<b>Partition</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
+Im Hauptmenü &gt;<b>Partition</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
 <li>
 Im folgenden Menü &gt;<b>Create new partition</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
 <li>
 Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>/home/user/disk.vdf</b> </li>
 <li>
-</li>
+Im folgenden Menü &gt;<b>FAT</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
 <li>
-<p class="startli">Im folgenden Menü &gt;<b>FAT</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen</p>
+Eine beliebige Größe für die zu erzeugende Partition festlegen In diesem Beispiel wird <b>250000000</b> Byte gewählt </li>
+<li>
+<b>Wichtig:</b> Nach dem erstellen einer Partition unbedingt die Disk neu laden. (<b>Disk</b> =&gt; <b>Load existing virtual disk file</b>) </li>
+</ol>
+<h2><a class="anchor" id="step5"></a>
+5. OS Starten</h2>
+<ol>
+<li>
+Im Hauptmenü &gt;<b>Start OS</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
+<li>
+Im folgenden Menü &gt;<b>Workspace</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
+<li>
+Den Pfad zur vorbereiteten Disk angeben. In diesem Beispiel <b>/home/user/disk.vdf</b> <small><em>Anmerkung: Oberhalb des Menüs wird nun der Mount-Status angezeigt.</em></small>  </li>
+<li>
+Um die Disk zu mounten &gt;<b>Mount/Unmount</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
+<li>
+<p class="startli">Nun sind folgende Optionen möglich: </p><ul>
+<li>
+Disk Informationen anzeigen: <b>List Information</b> </li>
+<li>
+Dateien auf Disk anzeigen: <b>Show Files</b> </li>
+</ul>
 <p class="endli"></p>
 </li>
-<li>
-Eine beliebige Größe für die zu erzeugende Partition festlegen </li>
 </ol>
-<h2><a class="anchor" id="updateDocDE"></a>
-Dokumentation aktualisieren</h2>
+<h1><a class="anchor" id="updateDocDE"></a>
+Dokumentation aktualisieren</h1>
 <p>Um die Dokumentation zu aktualisieren wird Doxygen benötigt. </p><ol>
 <li>
 <h5>Doxywizard öffnen</h5>
@@ -228,7 +255,7 @@ Dokumentation aktualisieren</h2>
 			<img class="align-self-center mr-3" src="doxygen.png" alt="doxygen">
 			<div class="media-body py-2">
 				<h5 class="text-light">1.8.18 <a href="http://www.doxygen.org/index.html">doygen.org</a></h5>
-				<h6 class="text-muted">Generated on Sun Aug 30 2020 23:03:39 for OS Project 3 by <a href="http://www.doxygen.org/index.html">doygen
+				<h6 class="text-muted">Generated on Sun Aug 30 2020 23:33:56 for OS Project 3 by <a href="http://www.doxygen.org/index.html">doygen
 						1.8.18</a></h6>
 			</div>
 		</div>

@@ -108,6 +108,7 @@ $(document).ready(function(){initNavTree('classcore_1_1os_1_1_basic_o_s.html',''
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classcore_1_1os_1_1_basic_o_s-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">core::os::BasicOS Class Reference<div class="ingroups"><a class="el" href="group__core.html">Core</a></div></div>  </div>
@@ -139,11 +140,25 @@ Static Public Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
 <tr class="memitem:ga4dee526dcf49c84aa042b2c7c9557253"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core.html#ga4dee526dcf49c84aa042b2c7c9557253">workspace</a> ()</td></tr>
+<tr class="memdesc:ga4dee526dcf49c84aa042b2c7c9557253"><td class="mdescLeft">&#160;</td><td class="mdescRight">Workspace routine.  <a href="group__core.html#ga4dee526dcf49c84aa042b2c7c9557253">More...</a><br /></td></tr>
 <tr class="separator:ga4dee526dcf49c84aa042b2c7c9557253"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga038e688c2aa91676426fc5b3e2ceee33"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core.html#ga038e688c2aa91676426fc5b3e2ceee33">createFile</a> ()</td></tr>
+<tr class="memdesc:ga038e688c2aa91676426fc5b3e2ceee33"><td class="mdescLeft">&#160;</td><td class="mdescRight">File create routine.  <a href="group__core.html#ga038e688c2aa91676426fc5b3e2ceee33">More...</a><br /></td></tr>
+<tr class="separator:ga038e688c2aa91676426fc5b3e2ceee33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga564b42a0fe92880b76dc3eafc9623b86"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core.html#ga564b42a0fe92880b76dc3eafc9623b86">deleteFile</a> ()</td></tr>
+<tr class="memdesc:ga564b42a0fe92880b76dc3eafc9623b86"><td class="mdescLeft">&#160;</td><td class="mdescRight">File delete routine.  <a href="group__core.html#ga564b42a0fe92880b76dc3eafc9623b86">More...</a><br /></td></tr>
+<tr class="separator:ga564b42a0fe92880b76dc3eafc9623b86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga989ee0897c19431b65efe084bfd456c5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core.html#ga989ee0897c19431b65efe084bfd456c5">print_loaded_partitions</a> ()</td></tr>
+<tr class="memdesc:ga989ee0897c19431b65efe084bfd456c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method prints all disk which the bios loaded.  <a href="group__core.html#ga989ee0897c19431b65efe084bfd456c5">More...</a><br /></td></tr>
 <tr class="separator:ga989ee0897c19431b65efe084bfd456c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad6db2388e27b4b1c5341e5aee004604a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core.html#gad6db2388e27b4b1c5341e5aee004604a">select_loaded_partition</a> ()</td></tr>
+<tr class="memdesc:gad6db2388e27b4b1c5341e5aee004604a"><td class="mdescLeft">&#160;</td><td class="mdescRight">This methods allow the selecion of a disk.  <a href="group__core.html#gad6db2388e27b4b1c5341e5aee004604a">More...</a><br /></td></tr>
 <tr class="separator:gad6db2388e27b4b1c5341e5aee004604a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:ga37fdb0c312c00a4830f709a73023d236"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__core.html#ga37fdb0c312c00a4830f709a73023d236">partition_index</a> = -1</td></tr>
+<tr class="separator:ga37fdb0c312c00a4830f709a73023d236"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Basic OS Simulation. </p>
@@ -164,7 +179,7 @@ Private Member Functions</h2></td></tr>
 			<img class="align-self-center mr-3" src="doxygen.png" alt="doxygen">
 			<div class="media-body py-2">
 				<h5 class="text-light">1.8.18 <a href="http://www.doxygen.org/index.html">doygen.org</a></h5>
-				<h6 class="text-muted">Generated on Sun Aug 30 2020 23:03:39 for OS Project 3 by <a href="http://www.doxygen.org/index.html">doygen
+				<h6 class="text-muted">Generated on Sun Aug 30 2020 23:33:56 for OS Project 3 by <a href="http://www.doxygen.org/index.html">doygen
 						1.8.18</a></h6>
 			</div>
 		</div>

@@ -33,8 +33,11 @@ var NAVTREE =
       [ "Einleitung", "index.html#introDE_sec", [
         [ "1. Disk erstellen", "index.html#step1", null ],
         [ "2. Disk verifizieren", "index.html#step2", null ],
-        [ "Dokumentation aktualisieren", "index.html#updateDocDE", null ]
-      ] ]
+        [ "3. Master Boot Record erstellen", "index.html#step3", null ],
+        [ "4. Partition erstellen", "index.html#step4", null ],
+        [ "5. OS Starten", "index.html#step5", null ]
+      ] ],
+      [ "Dokumentation aktualisieren", "index.html#updateDocDE", null ]
     ] ],
     [ "Todo List", "todo.html", null ],
     [ "Deprecated List", "deprecated.html", null ],
@@ -76,10 +79,10 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_basi_o_s_8hpp.html",
-"group__core.html#gaab23a2e4c6ca7c57845496843049a02a",
-"lauxlib_8h.html#ac9d38b77e425247b630afdb212401a05",
-"luaapihelp_8h.html#afa47abfe22b16820aa7bce38a6720301",
-"utils_8h.html#ga41f6840bd0aeb45f22c1e61c6eed45ed"
+"group__core.html#gaa82665bee684e8fca6d5c53d206706d7",
+"lauxlib_8h.html#ab5ca0c51890e3970d0db1df2a1922b34",
+"lua_8h.html#af5cd8db0ed930193f1bf67c583666f91",
+"utils_8h.html#a52eb744e9b44e441ce11285e2cc48cb4"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
