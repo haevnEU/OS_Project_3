@@ -21,25 +21,36 @@ extern "C"{
 #include "partition.hpp"
 #include "DiskUtils.hpp"
 
-namespace core::utilities{
+
+/*!
+ *  \addtogroup core
+ *  @{
+ */
+
+//! Utilities for handling virtual disk file operations
+namespace core::utilities
+{
     
     /**
-     * @brief This is is utility class.
-     * @details This class handles the operation with the pure virtual disk file. It will also contain all loaded partitions from all virtual disk files.
+     * @brief Partiton Utility Class.
+     * @details Handles the operation with the pure virtual disk file. Also contains all loaded partitions from all virtual disk files.
      * @version 1.0.0.0
      */
-    class PartitionUtils{
+    class PartitionUtils
+    {
     public:
         
         static PartitionUtils& getInstance(){
             static PartitionUtils instance;
             return instance;
         }
-        
-    private:
+
+
+    private: /* attributes **********************************/
         std::string error_message;      
 
-    private: 
+
+    private: /* methods *************************************/
         /**
          * @brief Construct a new Partition Utils object
          */
@@ -63,7 +74,7 @@ namespace core::utilities{
          */
         void eraseExistingPartition();
 
-    public:
+    public: /* methods *************************************/
         
         /**
          * @brief Destroy the Partition Utils object
@@ -78,7 +89,7 @@ namespace core::utilities{
         void enter();
 
         /**
-         * @brief Create a new Partition object
+         * @brief Creates a new Partition object
          * @details This methods maps the master boot from a virtual disk file and updates the partition table.
          * @param path Path to the virtual disk file
          * @param start Start address of the partition
@@ -108,4 +119,4 @@ namespace core::utilities{
         void createFAT(const char* path);
 
     };
-}
+}// End namespace utilities

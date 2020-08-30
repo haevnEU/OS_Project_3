@@ -1,21 +1,33 @@
 #pragma once
 
+// project includes
 #include "../utils/utils.h"
 
 
 #include "partition.hpp"
 #include "DiskUtils.hpp"
 
-namespace core::utilities{
+/*!
+ *  \addtogroup core
+ *  @{
+ */
+
+/**
+ * @brief Utilities
+ */
+namespace core::utilities
+{
     
     /**
      * @brief This is is utility class.
      * @details This class handles the operation with a master boot record of a virtual disk file.
      * @version 1.0.0.0
      */
-    class MasterBootRecordUtils{
+    class MasterBootRecordUtils
+    {
     public:
-        static MasterBootRecordUtils& getInstance(){
+        static MasterBootRecordUtils& getInstance()
+        {
             static MasterBootRecordUtils instance;
             return instance;
         }    
@@ -23,9 +35,10 @@ namespace core::utilities{
     private:
         std::string last_result_message;
 
+    private: /* methods *************************************/
         /**
-         * @brief Construct a new Master Boot Record Utils object
-         * 
+         * @brief Constructor
+         * @details Constructs a new Master Boot Record Utils object
          */
         MasterBootRecordUtils();
         
@@ -48,9 +61,10 @@ namespace core::utilities{
          */
         void inspectMBR();
 
-    public:
+    public: /* methods *************************************/
         /**
-         * @brief Destroy the Master Boot Record Utils object
+         * @brief Destructor
+         * @details Destroys the Master Boot Record Utils object
          */
         ~MasterBootRecordUtils();
 
@@ -78,6 +92,7 @@ namespace core::utilities{
          * @brief Wipes a master boot record from a virtual disk file
          * @details Note erasing is secure, it will override the master boot record and zeros the partition.
          * @param path path to virtual disk file
+         * @todo implement overriding of partition
          */
         void eraseMasterBootRecord(const char* path);
     };

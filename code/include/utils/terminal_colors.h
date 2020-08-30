@@ -1,7 +1,16 @@
 #ifndef UTILS__COLORS__COLOR_H
 #define UTILS__COLORS__COLOR_H
 
-namespace utils::colors{
+/*!
+ *  \addtogroup utils
+ *  @{
+ */
+
+/**
+ * @brief Terminal color utilities
+ */
+namespace utils::colors
+{
     /**
      * @brief Line ending.
      */
