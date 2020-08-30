@@ -1,16 +1,21 @@
 #include "../../include/core/DiskUtils.hpp"
-
+#include "../../include/core/FAT.hpp"
 #define NOT_IMPLEMENTED
 
 using namespace core::utilities;
 
 DiskUtils::DiskUtils(){ 
-    partition_definitions = new std::vector<core::partition_definition*>();
+    partition_definitions = new std::vector<core::Partition*>();
 }
     
 DiskUtils::~DiskUtils(){
+    std::cout << "Delete DiskUtils" << std::endl;
     for(auto element = partition_definitions->begin(); element < partition_definitions->end(); element++){
-        delete ((core::partition_definition*)*element);
+        if(dynamic_cast<core::file_allocation_table::FATFileSystem*>(*element) != nullptr){
+            delete ((core::file_allocation_table::FATFileSystem*)*element);
+        }else{
+            delete ((core::Partition*)*element);
+        }
     }
     partition_definitions->clear();
     delete partition_definitions;
@@ -254,19 +259,35 @@ void DiskUtils::loadDisk(const char* path){
     core::disk::virtual_disk_file* df = core::disk::load_master_boot_record(path);
 
     if(df->partition_1 != nullptr){
-        partition_definitions->push_back(df->partition_1);
+        if(df->partition_1->file_system_type == FAT){
+            partition_definitions->push_back(new core::file_allocation_table::FATFileSystem(df->partition_1));
+        }else{
+            partition_definitions->push_back(new core::Partition(df->partition_1));
+        }
     }
     
     if(df->partition_2 != nullptr){
-        partition_definitions->push_back(df->partition_2);
+        if(df->partition_2->file_system_type == FAT){
+            partition_definitions->push_back(new core::file_allocation_table::FATFileSystem(df->partition_2));
+        }else{
+            partition_definitions->push_back(new core::Partition(df->partition_2));
+        }
     }
     
     if(df->partition_3 != nullptr){
-        partition_definitions->push_back(df->partition_3);
+        if(df->partition_3->file_system_type == FAT){
+            partition_definitions->push_back(new core::file_allocation_table::FATFileSystem(df->partition_3));
+        }else{
+            partition_definitions->push_back(new core::Partition(df->partition_3));
+        }
     }
     
     if(df->partition_4 != nullptr){
-        partition_definitions->push_back(df->partition_4);
+        if(df->partition_4->file_system_type == FAT){
+            partition_definitions->push_back(new core::file_allocation_table::FATFileSystem(df->partition_4));
+        }else{
+            partition_definitions->push_back(new core::Partition(df->partition_4));
+        }
     }
 
 }

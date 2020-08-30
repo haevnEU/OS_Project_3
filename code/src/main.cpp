@@ -10,8 +10,9 @@
 
 
 void signalHandler(int signum){
-    std::cout << utils::colors::RED << "An important signal was caught: " << strsignal(signum) << ": " << signum << utils::colors::RESET << std::endl;
-    std::cout << utils::colors::RED << "Please open a new issue ticket on github with your previous interaction, if possible including detailed description and screenshot" << utils::colors::RESET << std::endl;
+    std::cout << utils::colors::RESET << std::dec << std::endl << utils::colors::RED 
+            << "An important signal was caught: " << strsignal(signum) << "[" << signum << "]" << std::endl
+            << "Please open a new issue ticket on github with your previous interaction, if possible including detailed description and screenshot" << utils::colors::RESET << std::endl;
     exit(signum);
 }
 
@@ -31,13 +32,15 @@ void signalINT(int signum){
 }
 
 #include <stdio.h>
-
+#include <sys/stat.h>
 int main(int argc, const char* argv[]) {
+
     std::cout << utils::colors::CLEAR;
     for(int i = 0; i < argc; i++){
         if(strcmp(argv[i], "-d") == 0){
             std::cout << utils::colors::MAGENTA << "DEBUG ENABLED" << utils::colors::RESET << std::endl;
         }
+        std::cout<<argv[i];
     }   
     
     signal(SIGABRT, signalHandler);

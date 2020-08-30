@@ -72,7 +72,6 @@ namespace core::disk{
                 // If the bootable flag is 0x80 this is a primary partition
                 definition->primary = data[0x1BE + (index * 16)];
                 definition->file_system_type = data[0x1BF + (index * 16)];
-
                 // Calculate the start and end address
                 uint32_t start = 0;
                 start |= (uint32_t)data[0x1C0 + (index * 16)];
@@ -85,9 +84,29 @@ namespace core::disk{
                 end |= (uint32_t)data[0x1C5 + (index * 16)] << 8;
                 end |= (uint32_t)data[0x1C6 + (index * 16)] << 16;
                 end |= (uint32_t)data[0x1C7 + (index * 16)] << 24;
-
+                
                 definition->start_address = start;
                 definition->end_address = end;
+
+
+                uint16_t block_size = 0;
+                uint64_t cluster_size = 0;
+
+                
+                cluster_size |= (uint32_t)data[0x1C8 + (index * 16)];
+                cluster_size |= (uint32_t)data[0x1C9 + (index * 16)] << 8;
+                cluster_size |= (uint32_t)data[0x1CA + (index * 16)] << 16;
+                cluster_size |= (uint32_t)data[0x1CB + (index * 16)] << 24;
+
+                block_size |= (uint8_t)data[0x1CC + (index * 16)];
+                block_size |= (uint8_t)data[0x1CD + (index * 16)] << 8;
+
+                definition->block_size = block_size;
+                definition->cluster_size = cluster_size;
+
+                definition->path = new char[strlen(disk_path) + 1];
+                memcpy(definition->path, disk_path, strlen(disk_path) + 1);
+
             }else{
                 definition = nullptr;
             }

@@ -103,5 +103,9 @@ namespace core::utilities{
          */
         void erasePartition(const char* path, int index);//partition_definition* definitition);
 
+
+
+        void createFAT(const char* path);
+
     };
 }

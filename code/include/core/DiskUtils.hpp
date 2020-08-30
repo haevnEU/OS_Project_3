@@ -26,7 +26,7 @@ namespace core::utilities{
         /**
          * @brief This attribute contains all laoded partitions from any virtual disk
          */
-        std::vector<core::partition_definition*>* partition_definitions;
+        std::vector<core::Partition*>* partition_definitions;
 
         std::string last_result_message;
     private: 
@@ -98,7 +98,7 @@ namespace core::utilities{
          * @brief This methods returns all partition which are loaded via the loadDisk command.
          * @return std::vector<core::partition_definition*>* 
          */
-        std::vector<core::partition_definition*>* loadedPartitions(){
+        std::vector<core::Partition*>* loadedPartitions(){
             return partition_definitions;
         }
 
