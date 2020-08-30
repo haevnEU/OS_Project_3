@@ -47,7 +47,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">OS Project 3
-   &#160;<span id="projectnumber">1.0.0.0</span>
+   &#160;<span id="projectnumber">1.0.0.0 Beta</span>
    </div>
    <div id="projectbrief">github.com/nimile/OS_Project_3</div>
   </td>
@@ -109,55 +109,92 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h1><a class="anchor" id="introEN_sec"></a>
-Introduction</h1>
-<p>This is the introduction.</p>
-<h2><a class="anchor" id="runDE_sec"></a>
-Program sequence</h2>
+Quickstart</h1>
+<p>Execute run file in /code using Linux</p>
+<h1><a class="anchor" id="introEN_sec"></a>
+Quickstart</h1>
+<p>This projct simulates the creating, partitioning and using of a virtual disk within a terminal interface. Feature development (including file editing) is planned.</p>
+<h1><a class="anchor" id="runEN_sec"></a>
+Program sequence</h1>
 <p>A TUI (Terminal User Interface) will be displayed after the program started. You can navigate within this TUI using [W] and [S] keys to move your selection up- or downwards. To confirm your selection press [RETURN].</p>
 <h5>Example for a possible program sequence</h5>
-<p>Select &gt;<b>DISK</b>&lt;, confirm with <b>[RETURN]</b>.</p>
-<p>Select &gt;<b>Create new virtual disk file</b>&lt;, confirm with <b>[RETURN]</b>.</p>
-<p>Enter any file path. We use <b>/home/user/disk.vdf</b> in this example. <small><em>Hint: Replace user with your individual user name. A disk can only be created within folder with appropriate permissions.</em></small></p>
-<p>The disk size can be chosen freely. We use <b>3221225472</b> Byte in this example.</p>
-<p>Navigate back to the main menu. Select &gt;<b>Master Boot Record</b>&lt;, confirm with <b>[RETURN]</b>.</p>
-<p>Select &gt;<b>Create Master Boot Record</b>&lt; in the following menu, confirm with <b>[RETURN]</b>.</p>
-<p>Enter the disk path. We used <b>/home/user/disk.vdf</b> in this example.</p>
-<p>Navigate back to the main menu. Select &gt;<b>Partition</b>&lt;, confirm with <b>[RETURN]</b>.</p>
-<p>Im folgenden Menü &gt;<b>Create new partition</b>&lt; markieren, confirm with <b>[RETURN]</b>.</p>
-<p>Enter the disk path. We used <b>/home/user/disk.vdf</b> in this example.</p>
-<p>Select &gt;<b>FAT</b>&lt; in the following menu, confirm with <b>[RETURN]</b>.</p>
-<p>The partition size can be chosen freely.</p>
-<h2><a class="anchor" id="docEN_sec"></a>
-Update the documentation</h2>
-<p>Um die Dokumentation zu aktualisieren wird Doxygen benötigt. </p><ol>
+<h2><a class="anchor" id="step1EN"></a>
+1. Disk creation</h2>
+<ol>
 <li>
-<h5>Doxywizard öffnen</h5>
-<p class="interli"></p>
-<p class="interli">Recommended version: <a href="https://www.doxygen.nl/download.html">1.8.18</a></p>
-<p class="endli"></p>
-</li>
+Select &gt;<b>DISK</b>&lt;, confirm with <b>[RETURN]</b>. </li>
 <li>
-<h5>Use Doxywizard to open Doxyfile</h5>
-<p class="interli"></p>
-<p class="interli">The doxyfile is placed here: [project_root]/doc</p>
-<p class="endli"></p>
-</li>
+Select &gt;<b>Create new virtual disk file</b>&lt;, confirm with <b>[RETURN]</b> </li>
 <li>
-<h5>Run Doxywizard</h5>
-<p class="interli"></p>
-<p class="interli">The wizard will update the documentation itself.</p>
-<p class="endli"></p>
+Enter any file path. We use <b>./disk.vdf</b> in this example. <small><em>Hint: A disk can only be created within folder with appropriate permissions.</em></small>  </li>
+<li>
+The disk size can be chosen freely. We use <b>500000000</b> Byte in this example </li>
+</ol>
+<h2><a class="anchor" id="step2EN"></a>
+2. Verify Disk</h2>
+<ol>
+<li>
+Select &gt;<b>Verify virtual disk file</b>&lt;, confirm with <b>[RETURN]</b>. </li>
+</ol>
+<h2><a class="anchor" id="step3EN"></a>
+3. Master Boot Record creation</h2>
+<ol>
+<li>
+Select &gt;<b>Master Boot Record</b>&lt;, confirm with <b>[RETURN]</b>. </li>
+<li>
+Select &gt;<b>Create Master Boot Record</b>&lt; in the following menu, confirm with <b>[RETURN]</b>. </li>
+<li>
+Enter the disk path. We used <b>./disk.vdf</b> in this example. </li>
+</ol>
+<h2><a class="anchor" id="step4EN"></a>
+4. Create Partition</h2>
+<ol>
+<li>
+Select &gt;<b>Partition</b>&lt;, confirm with <b>[RETURN]</b>. </li>
+<li>
+Select &gt;<b>Create new partition</b>&lt;, confirm with <b>[RETURN]</b>. </li>
+<li>
+Enter the disk path. We used <b>./disk.vdf</b> in this example. </li>
+<li>
+Select &gt;<b>FAT</b>&lt;, confirm with <b>[RETURN]</b>. </li>
+<li>
+The partition size can be chosen freely. We use <b>250000000</b> Byte in this example </li>
+<li>
+<b>Important:</b> Load disk again after creating a partition. (<b>Disk</b> =&gt; <b>Load existing virtual disk file</b>) </li>
+</ol>
+<h2><a class="anchor" id="step5EN"></a>
+5. Boot OS</h2>
+<ol>
+<li>
+Select&gt;<b>Start OS</b>&lt;, confirm with <b>[RETURN]</b>. </li>
+<li>
+Select &gt;<b>Workspace</b>&lt;, confirm with <b>[RETURN]</b>. </li>
+<li>
+Enter the disk path. We used <b>./disk.vdf</b> in this example. <small><em>Hint: The Mount-Status is displayed above the menu.</em></small>  </li>
+<li>
+Select &gt;<b>Mount/Unmount</b>&lt; to mount a disk, confirm with <b>[RETURN]</b>. </li>
+<li>
+Following operations are possible: <ul>
+<li>
+<b>List Information</b> </li>
+<li>
+<b>Show Files</b> </li>
+<li>
+<b>Create Files</b> </li>
+<li>
+<b>Delete Files</b> </li>
+</ul>
 </li>
 </ol>
 <hr  />
 <h1><a class="anchor" id="introDE_sec"></a>
 Einleitung</h1>
-<p>Dieses Projekt simuliert ein</p>
+<p>Dieses Projekt simuliert das erstellen, partitionieren, sowie die Benutzung einer virtuellen Disk in einer Kommandozeilenumgebung. Weitere Ergänzugen wie das modifizieren von Dateiinhalten sind geplant.</p>
 <h1><a class="anchor" id="runDE_sec"></a>
-Program sequence</h1>
-<p>Nach dem Starten wird ein TUI (Terminal User Interface) dargestellt. Mithilfe der Tasten [W] und [S] kann in diesem auf-, bzw. abwärts navigiert werden. Eine getroffene Auswahl wird mit [ENTER] bestätigt. Im simulierten OS können Partitionsinformationen und eingesehen</p>
+Programmablauf</h1>
+<p>Nach dem Starten wird ein TUI (Terminal User Interface) dargestellt. Mithilfe der Tasten [W] und [S] kann in diesem auf-, bzw. abwärts navigiert werden. Eine getroffene Auswahl wird mit [ENTER] bestätigt.</p>
 <h5>Beispiel für einen möglichen Programmablauf</h5>
-<h2><a class="anchor" id="step1"></a>
+<h2><a class="anchor" id="step1de"></a>
 1. Disk erstellen</h2>
 <ol>
 <li>
@@ -169,13 +206,13 @@ Einen beliebigen Pfad eingeben. In diesem Beispiel wird <b>./disk.vdf</b> gewäh
 <li>
 Eine beliebige Größe für die zu erzeugende Disk festlegen. In diesem Beispiel wird <b>500000000</b> Byte gewählt </li>
 </ol>
-<h2><a class="anchor" id="step2"></a>
+<h2><a class="anchor" id="step2de"></a>
 2. Disk verifizieren</h2>
 <ol>
 <li>
 Eintrag &gt;<b>Verify virtual disk file</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
 </ol>
-<h2><a class="anchor" id="step3"></a>
+<h2><a class="anchor" id="step3de"></a>
 3. Master Boot Record erstellen</h2>
 <ol>
 <li>
@@ -185,7 +222,7 @@ Im folgenden Menü &gt;<b>Create Master Boot Record</b>&lt; markieren, mit <b>[E
 <li>
 Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>./disk.vdf</b> </li>
 </ol>
-<h2><a class="anchor" id="step4"></a>
+<h2><a class="anchor" id="step4de"></a>
 4. Partition erstellen</h2>
 <ol>
 <li>
@@ -201,7 +238,7 @@ Eine beliebige Größe für die zu erzeugende Partition festlegen In diesem Beis
 <li>
 <b>Wichtig:</b> Nach dem erstellen einer Partition unbedingt die Disk neu laden. (<b>Disk</b> =&gt; <b>Load existing virtual disk file</b>) </li>
 </ol>
-<h2><a class="anchor" id="step5"></a>
+<h2><a class="anchor" id="step5de"></a>
 5. OS Starten</h2>
 <ol>
 <li>
@@ -213,13 +250,16 @@ Den Pfad zur vorbereiteten Disk angeben. In diesem Beispiel <b>/home/user/disk.v
 <li>
 Um die Disk zu mounten &gt;<b>Mount/Unmount</b>&lt; markieren, mit <b>[ENTER]</b> bestätigen </li>
 <li>
-<p class="startli">Nun sind folgende Optionen möglich: </p><ul>
+Nun sind folgende Optionen möglich: <ul>
 <li>
 Disk Informationen anzeigen: <b>List Information</b> </li>
 <li>
 Dateien auf Disk anzeigen: <b>Show Files</b> </li>
+<li>
+Dateien auf Disk erzeugen: <b>Create Files</b> </li>
+<li>
+Dateien auf Disk löschen: <b>Delete Files</b> </li>
 </ul>
-<p class="endli"></p>
 </li>
 </ol>
 <h1><a class="anchor" id="updateDocDE"></a>
@@ -255,7 +295,7 @@ Dokumentation aktualisieren</h1>
 			<img class="align-self-center mr-3" src="doxygen.png" alt="doxygen">
 			<div class="media-body py-2">
 				<h5 class="text-light">1.8.18 <a href="http://www.doxygen.org/index.html">doygen.org</a></h5>
-				<h6 class="text-muted">Generated on Sun Aug 30 2020 23:33:56 for OS Project 3 by <a href="http://www.doxygen.org/index.html">doygen
+				<h6 class="text-muted">Generated on Sun Aug 30 2020 23:59:33 for OS Project 3 by <a href="http://www.doxygen.org/index.html">doygen
 						1.8.18</a></h6>
 			</div>
 		</div>

@@ -26,16 +26,21 @@ var NAVTREE =
 [
   [ "OS Project 3", "index.html", [
     [ "Documentation for OS Project 3", "index.html", [
-      [ "Introduction", "index.html#introEN_sec", null ],
-      [ "Program sequence", "index.html#runDE_sec", [
-        [ "Update the documentation", "index.html#docEN_sec", null ]
+      [ "Quickstart", "index.html#introEN_sec", null ],
+      [ "Program sequence", "index.html#runEN_sec", [
+        [ "1. Disk creation", "index.html#step1EN", null ],
+        [ "2. Verify Disk", "index.html#step2EN", null ],
+        [ "3. Master Boot Record creation", "index.html#step3EN", null ],
+        [ "4. Create Partition", "index.html#step4EN", null ],
+        [ "5. Boot OS", "index.html#step5EN", null ]
       ] ],
-      [ "Einleitung", "index.html#introDE_sec", [
-        [ "1. Disk erstellen", "index.html#step1", null ],
-        [ "2. Disk verifizieren", "index.html#step2", null ],
-        [ "3. Master Boot Record erstellen", "index.html#step3", null ],
-        [ "4. Partition erstellen", "index.html#step4", null ],
-        [ "5. OS Starten", "index.html#step5", null ]
+      [ "Einleitung", "index.html#introDE_sec", null ],
+      [ "Programmablauf", "index.html#runDE_sec", [
+        [ "1. Disk erstellen", "index.html#step1de", null ],
+        [ "2. Disk verifizieren", "index.html#step2de", null ],
+        [ "3. Master Boot Record erstellen", "index.html#step3de", null ],
+        [ "4. Partition erstellen", "index.html#step4de", null ],
+        [ "5. OS Starten", "index.html#step5de", null ]
       ] ],
       [ "Dokumentation aktualisieren", "index.html#updateDocDE", null ]
     ] ],
@@ -80,9 +85,9 @@ var NAVTREEINDEX =
 [
 "_basi_o_s_8hpp.html",
 "group__core.html#gaa82665bee684e8fca6d5c53d206706d7",
-"lauxlib_8h.html#ab5ca0c51890e3970d0db1df2a1922b34",
-"lua_8h.html#af5cd8db0ed930193f1bf67c583666f91",
-"utils_8h.html#a52eb744e9b44e441ce11285e2cc48cb4"
+"lauxlib_8h.html#aac5dfab9ba0ced4f5ae3b22aa35faffe",
+"lua_8h.html#af4bd6d4de5f10de738f81d007982abed",
+"utils_8h.html#a0f089f6e048ef47cedffaaef07396004"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
