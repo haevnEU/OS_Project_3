@@ -60,8 +60,7 @@ sysconf(_SC_PAGE_SIZE);
     mounted = true;
 }
 
-void Partition::unmount()
-{
+void Partition::unmount(){
     ///- Checks if Partition is mounted, abort if not
     if(!isMounted()){
         return;
