@@ -162,7 +162,10 @@ void DiskUtils::verifyVirtualDiskFile(){
         last_result_message.append("Path must start with</> or <./>").append(utils::colors::RESET);
         return;
     }
-    verifyDisk(path.c_str());
+    if(verifyDisk(path.c_str())){
+        std::cout << "Disk is valid" << std::endl;
+    }
+    wait(std::cin);
 }
 
 

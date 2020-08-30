@@ -5,34 +5,27 @@ using namespace core;
     int Partition::counter = 0;
 Partition::Partition(partition_definition* definition){ 
     this->definition = definition;
-    std::cout << "Created: " << counter << std::endl;
 }
 
 Partition::~Partition(){
-    std::cout << "DTOR" << std::endl;
     unmount();
     delete[] definition->path;
     delete definition;
-    std::cout << "Remaining: " << counter << std::endl;
 }
 
 void Partition::mount(){
-    std::cout << "Mounting partition" << std::endl;
     if(isMounted()){
         return;
     }
-    std::cout << "Verify definition" << std::endl;
     if(nullptr == definition){
         handle_error(partition_codes::no_definition);
         return;
     }
-    std::cout << "Verify path" << std::endl;
     if(!utils::file::exists(definition->path)){
         handle_error(partition_codes::file_not_exist);
         return;
     }
     
-    std::cout << "Open disk" << std::endl;
     auto fd = open(definition->path, O_RDWR, S_IRUSR | S_IWUSR);
     if(-1 == fd){
         handle_error(partition_codes::file_open_failure);
@@ -41,7 +34,6 @@ void Partition::mount(){
     
     size = definition->end_address - definition->start_address;
 
-    std::cout << "Map partition" << std::endl;
     std::cout << definition->start_address << std::endl;
     data_m = static_cast<uint8_t*>(mmap(nullptr,  static_cast<size_t>(size), PROT_READ | PROT_WRITE, MAP_SHARED, fd, ((definition->start_address / 4096) * 4096)));
 
@@ -53,9 +45,7 @@ sysconf(_SC_PAGE_SIZE);
         close(fd);
         return;
     }
-    std::cout << "MOUNTED" << std::endl;
     std::cout << (int) getByte(0) << " " << getByte(0) << std::endl;
-    wait(std::cin);
     mounted = true;
 }
 

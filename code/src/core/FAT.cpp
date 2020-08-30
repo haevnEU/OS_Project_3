@@ -4,16 +4,13 @@ using namespace core::file_allocation_table;
     int FATFileSystem::counter = 0;
 FATFileSystem::FATFileSystem(partition_definition* definition) : Partition(definition){
     counter++;
-    std::cout << "Created: " << counter << std::endl;
 }
 
 FATFileSystem::~FATFileSystem(){
-    std::cout << "FAT DTOR" << std::endl;
     for(uint64_t i= 0; i < TABLE_SIZE; i++){
         delete fat_table[i];
     }
     counter--;
-    std::cout << "Remaining: " << counter << std::endl;
 }
 
 void FATFileSystem::mount(){
@@ -91,6 +88,8 @@ uint64_t FATFileSystem::get_used_space(){
     return 0;
 }
 
+
+
 uint64_t FATFileSystem::get_table_entry(const char name[8], const char extension[3]){
     uint32_t address = 0;
     for(int i = 0; i < TABLE_SIZE; i++){
@@ -153,6 +152,8 @@ void FATFileSystem::write_file(const char name[8], const char extension[3], uint
         fat_table[free_entry]->extension[i] = extension[i];
     }
     update_fat_table();
+    unmount();
+    mount();
 }
 
 void FATFileSystem::delete_file(const char name[8], const char extension[3]){
@@ -162,20 +163,16 @@ void FATFileSystem::delete_file(const char name[8], const char extension[3]){
     if(address == -1){
         return;
     }
-    fat_table[address]->name[0] = 0; 
-    fat_table[address]->name[1] = 0; 
-    fat_table[address]->name[2] = 0; 
-    fat_table[address]->name[3] = 0; 
-    fat_table[address]->name[4] = 0; 
-    fat_table[address]->name[5] = 0; 
-    fat_table[address]->name[6] = 0;
-    fat_table[address]->name[6] = 0; 
-    
-    fat_table[address]->extension[0] = 0; 
-    fat_table[address]->extension[1] = 0; 
-    fat_table[address]->extension[2] = 0;
-    show_file_allocation_table();
-    update_fat_table();   
+
+    for(int i = 0; i < 8; i++){
+        fat_table[address]->name[i] = 0;
+    }
+    for(int i = 0; i < 3; i++){
+        fat_table[address]->extension[i] = 0; 
+    }
+    update_fat_table(); 
+    unmount();
+    mount(); 
 }
 
 root_table* FATFileSystem::get_meta_data(const char name[8], const char extension[3]){
@@ -219,6 +216,6 @@ void FATFileSystem::update_fat_table(){
         setByte((22 + (index * 32)), (fat_table[index]->start_address >> 8) & 0xFF);
         setByte((23 + (index * 32)), (fat_table[index]->start_address >> 16) & 0xFF);
         setByte((24 + (index * 32)), (fat_table[index]->start_address >> 24) & 0xFF);
-        
+
     }
 }

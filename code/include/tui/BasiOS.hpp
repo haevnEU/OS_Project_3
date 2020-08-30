@@ -15,8 +15,26 @@ namespace core::os{
     class BasicOS{
     private:
 
+        int partition_index = -1;
+
+        /**
+         * @brief Workspace routine
+         */
         void workspace();
 
+        /**
+         * @brief File create routine
+         */
+        void createFile();
+
+        /**
+         * @brief File delete routine
+         */
+        void deleteFile();
+
+        /**
+         * @brief This method prints all disk which the bios loaded
+         */
         void inline print_loaded_partitions(){
             uint64_t counter = 0;
             core::utilities::DiskUtils& handler = core::utilities::DiskUtils::getInstance();
@@ -27,9 +45,13 @@ namespace core::os{
             }
         }
 
+        /**
+         * @brief This methods allow the selecion of a disk
+         * @return int Disk index
+         */
         int inline select_loaded_partition(){
             core::utilities::DiskUtils& handler = core::utilities::DiskUtils::getInstance();
-            std::cout << utils::colors::CLEAR << "\033[4m";
+            std::cout << utils::colors::CLEAR << "SELECT A DISK TO CONTINUE\n\033[4m";
             char* entries[handler.loadedPartitions()->size()];
             
             for(int i = 0; i < handler.loadedPartitions()->size(); i++){
@@ -41,7 +63,7 @@ namespace core::os{
             //settings.row_selection_overflow = true;
             //int choice = utils::menu::print(entries, handler.loadedPartitions()->size(), "Select a disk to operate on", settings);
             int choice;
-            std::cout << utils::colors::RESET << "Select a disk: ";
+            std::cout << utils::colors::RESET << "Choice: ";
             std::cin >> choice;
             return choice;
         }
