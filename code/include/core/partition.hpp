@@ -87,7 +87,6 @@ namespace core
          */
         uint8_t* data_m = nullptr;
 
-<<<<<<< HEAD
         static int counter;
     protected: // attributes
     
@@ -97,11 +96,6 @@ namespace core
          * @param code The error code of the operation
          */
         void(*error_handler)(uint8_t code);
-=======
-        uint8_t *data_m; ///< Partition Data
-
-        char *path; ///< Disk File Path
->>>>>>> 8bcdd1c... doc update
 
         /**
          * @brief This struct contains basic information about this partition
