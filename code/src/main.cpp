@@ -74,6 +74,7 @@
  * 
  * Nach dem Starten wird ein TUI (Terminal User Interface) dargestellt. Mithilfe der Tasten [W] und [S] kann in diesem auf-, bzw. abwärts navigiert werden. 
  * Eine getroffene Auswahl wird mit [ENTER] bestätigt.
+ * Im simulierten OS können Partitionsinformationen und  eingesehen
  * 
  * <h5>Beispiel für einen möglichen Programmablauf</h5>
  * \subsection step1 1. Disk erstellen
@@ -81,34 +82,50 @@
  *      <li>Eintrag ><b>DISK</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
  *      <li>Eintrag ><b>Create new virtual disk file</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
  *      <li>
- *          Einen beliebigen Pfad eingeben. In diesem Beispiel wird <b>/home/user/disk.vdf</b> gewählt
- *          <small><i>Anmerkung: user ist mit dem individuellen Benutzernamen zu ersetzen. Eine Disk kann nur in einem Verzeichnis mit entsprechender Rechtevergabe erstellt werden.</i></small>
+ *          Einen beliebigen Pfad eingeben. In diesem Beispiel wird <b>./disk.vdf</b> gewählt.
+ *          <small><i>Anmerkung: Eine Disk kann nur in einem Verzeichnis mit entsprechender Rechtevergabe erstellt werden.</i></small>
  *      </li>
- *      <li>Eine beliebige Größe für die zu erzeugende Disk festlegen. In diesem Beispiel wird <b>3221225472</b> Byte gewählt</li>
+ *      <li>Eine beliebige Größe für die zu erzeugende Disk festlegen. In diesem Beispiel wird <b>500000000</b> Byte gewählt</li>
  *  </ol>
  * 
  * \subsection step2 2. Disk verifizieren
  *  <ol>
- *      <li>
+ *      <li>Eintrag ><b>Verify virtual disk file</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
  *  </ol>
  * 
  * \subsection step3 3. Master Boot Record erstellen
  *  <ol>
  *     <li>Im Hauptmenü ><b>Master Boot Record</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
  *     <li>Im folgenden Menü ><b>Create Master Boot Record</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
- *     <li>Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>/home/user/disk.vdf</b></li>
+ *     <li>Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>./disk.vdf</b></li>
+ * </ol>
  * 
  * \subsection step4 4. Partition erstellen
  *  <ol>
  *      <li>Im Hauptmenü ><b>Partition</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
  *      <li>Im folgenden Menü ><b>Create new partition</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
- *      <li>Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>/home/user/disk.vdf</b> <li>
+ *      <li>Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>/home/user/disk.vdf</b></li>
  *      <li>Im folgenden Menü ><b>FAT</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
- *      <li>Eine beliebige Größe für die zu erzeugende Partition festlegen</li>
+ *      <li>Eine beliebige Größe für die zu erzeugende Partition festlegen In diesem Beispiel wird <b>250000000</b> Byte gewählt</li>
  *      <li><b>Wichtig:</b> Nach dem erstellen einer Partition unbedingt die Disk neu laden. (<b>Disk</b> => <b>Load existing virtual disk file</b>)
  * </ol>
  * 
  * \subsection step5 5. OS Starten
+ * <ol>
+ *      <li>Im Hauptmenü ><b>Start OS</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
+ *      <li>Im folgenden Menü ><b>Workspace</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
+ *      <li>
+ *          Den Pfad zur vorbereiteten Disk angeben. In diesem Beispiel <b>/home/user/disk.vdf</b>
+ *          <small><i>Anmerkung: Oberhalb des Menüs wird nun der Mount-Status angezeigt.</i></small>
+ *      </li>
+ *      <li>Um die Disk zu mounten ><b>Mount/Unmount</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
+ *      <li>Nun sind folgende Optionen möglich:
+ *          <ul>
+ *              <li>Disk Informationen anzeigen: <b>List Information</b></li>
+ *              <li>Dateien auf Disk anzeigen: <b>Show Files</b></li>
+ *          </ul>
+ * 
+ * </ol>
  * 
  * \section updateDocDE Dokumentation aktualisieren
  * 
