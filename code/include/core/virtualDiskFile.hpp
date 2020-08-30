@@ -14,7 +14,8 @@ namespace core::disk{
     /**
      * @brief Contains the definition of a virtual disk file.
      */
-    struct virtual_disk_file{
+    struct virtual_disk_file
+    {
         /**
          * @brief Path of the virtual disk file
          */
@@ -55,43 +56,56 @@ namespace core::disk{
      * @param disk_path Path to the virtual disk file
      * @return virtual_disk_file* Definition of the virtual disk file
      */
-    static virtual_disk_file* load_master_boot_record(const char* disk_path){
+    static virtual_disk_file* load_master_boot_record(const char* disk_path)
+    {
         virtual_disk_file* mbr = new virtual_disk_file();
         
-    
+        ///- Tries opening file
         auto fd = open(disk_path, O_RDWR, S_IRUSR | S_IWUSR);
-        if(-1 == fd){
+        if(-1 == fd)
+        {
             return nullptr;
         }
-        uint8_t* data = static_cast<uint8_t*>(mmap(nullptr,  0x1FF, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
-        if(MAP_FAILED == data){
+
+        uint8_t* data = static_cast<uint8_t*>(
+            mmap(nullptr,  0x1FF, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
+        
+        ///- Handle possible mapping failure error
+        if(MAP_FAILED == data)
+        {
             close(fd);
             return nullptr;
         }
+
         close(fd);
         
-        for(int index = 0; index < 4; index++){
+        for(int index = 0; index < 4; index++)
+        {
             core::partition_definition* definition = new core::partition_definition();
             
-
-            if(data[0x1BE + (index * 16)] > 0x00){
+            if(data[0x1BE + (index * 16)] > 0x00)
+            {
                 // If the bootable flag is 0x80 this is a primary partition
                 definition->primary = data[0x1BE + (index * 16)];
                 definition->file_system_type = data[0x1BF + (index * 16)];
-                // Calculate the start and end address
+
+                // Calculate the start address
                 uint32_t start = 0;
                 start |= (uint32_t)data[0x1C0 + (index * 16)];
                 start |= (uint32_t)data[0x1C1 + (index * 16)] << 8;
                 start |= (uint32_t)data[0x1C2 + (index * 16)] << 16;
                 start |= (uint32_t)data[0x1C3 + (index * 16)] << 24;
 
+                // Calculate the end address
                 uint32_t end = 0;
                 end |= (uint32_t)data[0x1C4 + (index * 16)];
                 end |= (uint32_t)data[0x1C5 + (index * 16)] << 8;
                 end |= (uint32_t)data[0x1C6 + (index * 16)] << 16;
                 end |= (uint32_t)data[0x1C7 + (index * 16)] << 24;
-                
+
+                // Set start address
                 definition->start_address = start;
+                // Set end address
                 definition->end_address = end;
 
 
@@ -116,13 +130,22 @@ namespace core::disk{
             }else{
                 definition = nullptr;
             }
-            if(0 == index){
+
+            ///- Checks Index
+            if(0 == index)
+            {
                 mbr->partition_1 = definition;
-            }else if(1 == index){
+            }
+            else if(1 == index)
+            {
                 mbr->partition_2 = definition;
-            }else if(2 == index){
+            }
+            else if(2 == index)
+            {
                 mbr->partition_3 = definition;
-            }else if(3 == index){
+            }
+            else if(3 == index)
+            {
                 mbr->partition_4 = definition;
             }
         }
