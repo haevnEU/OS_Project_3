@@ -23,7 +23,7 @@ void MasterBootRecordUtils::enter()
     ///-- Console Output: Print Terminal User Interface
     while(active){
         choice = utils::menu::print(entries, 4, "MBRUtils", settings);
-        switch(choice){
+        switch(choice)
         {
             ///- Create Master Boot Recod
             case 0:

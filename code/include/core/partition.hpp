@@ -198,37 +198,6 @@ namespace core
             }
         }
 
-        /**
-         * @brief Clears a byte
-         * @details Clears a byte inside the partition.
-         *          Requires a mounted partition.
-         * @param address Byteaddress
-         * @todo Add data access
-         */
-        void clearByte(uint64_t address);
-
-
-    public: /* setter **************************************/
-        /**
-         * @brief Sets the error handler
-         * @param callback Callback for the error handler, signature: void name(uint8_t code);
-         */
-        void settErrorHandler(void (*callback)(uint8_t code))
-        {
-            error_handler = callback;
-        }
-
-
-    public: /* getter **************************************/
-        /**
-         * @brief Gets mounting state.
-         * @return True if the partition is mounted
-         */
-        bool isMounted()
-        {
-            return mounted;
-        }
-
 
     private: /* inlined methods *****************************/
         /**
