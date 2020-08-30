@@ -11,6 +11,7 @@
 extern "C"{
     #include <time.h>
 }
+
 #include "utils.h"
 #include "terminal_colors.h"
 

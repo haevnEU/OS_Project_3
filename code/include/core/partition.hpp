@@ -22,7 +22,8 @@ extern "C"{
 
 
 namespace core{
-  
+    
+
     /**
      * @brief This enumeration contains all possible result codes of any operation on a partition
      */
@@ -46,6 +47,7 @@ namespace core{
      * @brief This struct contains basic information about a partition
      */
     struct partition_definition{
+
         uint64_t start_address;
         uint64_t end_address;
         uint8_t file_system_type;
@@ -54,14 +56,26 @@ namespace core{
         uint8_t reserved_2;
         uint8_t reserved_3;
         uint8_t reserved_4;
+
+        uint16_t block_size;
+        uint64_t cluster_size;
+
+        char* path;
     };
 
     /**
      * @brief This class wraps a part of a virtual disk file which represents a partition.
      */
     class Partition{
+        private:
     
-    private: // attributes
+        /**
+         * @brief Actual partition data
+         */
+        uint8_t* data_m = nullptr;
+
+        static int counter;
+    protected: // attributes
     
         /**
          * @brief This is a function pointer for an error handler
@@ -75,15 +89,8 @@ namespace core{
          */
         partition_definition* definition;
 
-        /**
-         * @brief Actual partition data
-         */
-        uint8_t* data_m;
+       
 
-        /**
-         * @brief Path to the disk file
-         */
-        char* path;
 
         /**
          * @brief Partition size, startaddress + endaddress
@@ -93,13 +100,18 @@ namespace core{
         /**
          * @brief Mounting state of the partition
          */
-        bool mounted;
+        bool mounted = false;
 
 
     public: //methods;
+
+
+
         Partition() = delete;
+
         explicit Partition(partition_definition* definition);
-        ~Partition();
+
+        virtual ~Partition();
 
         /**
          * @brief Mounts the partition
@@ -131,6 +143,14 @@ namespace core{
          */
         void clearByte(uint64_t address);
 
+        uint8_t inline getByte(uint64_t address){
+//            return data_m[(definition->start_address % 4096) + address];
+            if(!isMounted()){
+                std::cout << "NOT MOUNTED" << std::endl;
+                return 0xFF;
+            }
+            return data_m[512 + address];
+        }
 
     public: // setter
         /**
@@ -151,6 +171,19 @@ namespace core{
             return mounted;
         }
 
+        partition_definition* part_definition(){
+            return definition;
+        }
+
+    void showPartition(uint64_t start = 0, uint64_t end = -1);
+    
+        void inline toggle_mount(){
+            if(isMounted()){
+                unmount();
+            }else{
+                mount();
+            }
+        }
 
     private: // inlined methods
         /**

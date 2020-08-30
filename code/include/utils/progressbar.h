@@ -29,7 +29,7 @@ extern "C"{
     *              <tr><td>Cyan</td><td>Custom foreground color</td></tr>
     *              <tr><td>Purple</td><td>Custom foreground color</td></tr>
     *          </table>
-    * @author Nils Milewski(nils.milewski@outlook.de)
+    * @author Nils Milewski
     * @version 1.0
     * @todo Add windows support
     */

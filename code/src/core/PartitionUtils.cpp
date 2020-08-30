@@ -31,6 +31,23 @@ void PartitionUtils::createNewPartition(){
         settings.row_selection_overflow = true;
         settings.preselected_row = 0;
         int choice = utils::menu::print(entries, 4, "New Partition", settings);
+
+        switch(choice){
+        case 0:
+            choice = 0x82; 
+        break;
+        case 1:
+            choice = 0x0C;
+        break;
+        case 2:
+            choice = 0x1C;
+        break;
+        case 3:
+        break;
+        default:
+            choice = 0x00;
+        }
+
         uint64_t size;
         std::cout << "Enter virtual disk size: ";
         std::cin >> size;
@@ -169,8 +186,8 @@ void PartitionUtils::createPartition(const char* path, uint64_t size, int file_s
         if(data_m[0x1BE + (index * 16)] == 0x00){
             break;
         }
-        start = (0) + 1;
     }
+    start = 512 + (index * 32);
     uint64_t end = start + size;
     // Write primary partition flag and filesystem type.
     // Note an partition entry is exact 16 Bytes
@@ -178,28 +195,59 @@ void PartitionUtils::createPartition(const char* path, uint64_t size, int file_s
     data_m[0x1BF + (index * 16)] =  static_cast<uint8_t>(file_system);
 
     // Ill assign the LSB to the smallest position and the HSB to the highest position.
-    // Start adress of partition
+    // Start address of partition
     data_m[0x1C0 + (index * 16)] = static_cast<uint8_t>(start & 0xFF);
     data_m[0x1C1 + (index * 16)] = static_cast<uint8_t>((start >> 8) & 0xFF);
     data_m[0x1C2 + (index * 16)] = static_cast<uint8_t>((start >> 16) & 0xFF);
     data_m[0x1C3 + (index * 16)] = static_cast<uint8_t>((start >> 24) & 0xFF);
 
-    // End adress of partition
+    // End address of partition
     data_m[0x1C4 + (index * 16)] = static_cast<uint8_t>(end & 0xFF);
     data_m[0x1C5 + (index * 16)] = static_cast<uint8_t>((end >> 8) & 0xFF);
     data_m[0x1C6 + (index * 16)] = static_cast<uint8_t>((end >> 16) & 0xFF);
     data_m[0x1C7 + (index * 16)] = static_cast<uint8_t>((end >> 24) & 0xFF);
 
-    // Unused, e.g. CHS address, etc
-    for(uint64_t i = 0x1C8; i < (0x1CE - 4); i+= 4){
-        data_m[i] = static_cast<uint8_t>(0xBA);
-        data_m[i + 1] = static_cast<uint8_t>(0xDF);
-        data_m[i + 2] = static_cast<uint8_t>(0xF0);
-        data_m[i + 3] = static_cast<uint8_t>(0x0D);
+    uint16_t block_size = 4096;
+    uint64_t cluster_size = (size - block_size) / block_size;
+  
+    data_m[0x1C8 + (index * 16)] = static_cast<uint8_t>(cluster_size & 0xFF);
+    data_m[0x1C9 + (index * 16)] = static_cast<uint8_t>((cluster_size >> 8) & 0xFF);
+    data_m[0x1CA + (index * 16)] = static_cast<uint8_t>((cluster_size >> 16) & 0xFF);
+    data_m[0x1CB + (index * 16)] = static_cast<uint8_t>((cluster_size >> 24) & 0xFF);
+    data_m[0x1CC + (index * 16)] = static_cast<uint8_t>(block_size & 0xFF);
+    data_m[0x1CD + (index * 16)] = static_cast<uint8_t>((block_size >> 8) & 0xFF);
+
+    munmap(data_m, 0x1FF);
+
+    if(file_system == FAT || file_system == FAT_HIDDEN){
+        createFAT(path);
     }
+}
+
+void PartitionUtils::createFAT(const char* path){
+    if(!DiskUtils::getInstance().verifyDisk(path)){
+        return;
+    }
+    auto fd = open(path, O_RDWR, S_IRUSR | S_IWUSR);
+    if(-1 == fd){
+        std::cout << utils::colors::RED << "Failed to create new partition: open virtual disk file" << utils::colors::RESET << std::endl;
+        return;
+    }
+    
+    uint8_t* data_m = static_cast<uint8_t*>(mmap(nullptr, 0x1FF, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0));
+    if(MAP_FAILED == data_m){
+        std::cout << utils::colors::RED << "Failed to create new partition: maping failed" << utils::colors::RESET << std::endl;
+        close(fd);
+        return;
+    }
+
+    close(fd);
+
+    int index = 0;
 
 
     munmap(data_m, 0x1FF);
+
 }
 
 void PartitionUtils::wipePartition(const char* path, int index){

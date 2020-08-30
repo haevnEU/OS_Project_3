@@ -1,5 +1,12 @@
-#ifndef UTILS__FILE__FILE_H
-#define UTILS__FILE__FILE_H
+/**
+ * @file file.h
+ * @brief This file is utility to handle file related operation
+ * @details Extension check and existence check are implemented here
+ * @version 0.1
+ * @date 2020-08-26
+ * 
+ */
+#pragma once
 
 #include <string>
 #include <iomanip>
@@ -46,5 +53,3 @@ namespace utils::file{
         return (stat (name.c_str(), &buffer) == 0); 
     } 
 }
-
-#endif //UTILS__FILE__FILE_H

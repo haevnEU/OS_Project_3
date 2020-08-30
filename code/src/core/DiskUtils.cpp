@@ -1,16 +1,21 @@
 #include "../../include/core/DiskUtils.hpp"
-
+#include "../../include/core/FAT.hpp"
 #define NOT_IMPLEMENTED
 
 using namespace core::utilities;
 
 DiskUtils::DiskUtils(){ 
-    partition_definitions = new std::vector<core::partition_definition*>();
+    partition_definitions = new std::vector<core::Partition*>();
 }
     
 DiskUtils::~DiskUtils(){
+    std::cout << "Delete DiskUtils" << std::endl;
     for(auto element = partition_definitions->begin(); element < partition_definitions->end(); element++){
-        delete ((core::partition_definition*)*element);
+        if(dynamic_cast<core::file_allocation_table::FATFileSystem*>(*element) != nullptr){
+            delete ((core::file_allocation_table::FATFileSystem*)*element);
+        }else{
+            delete ((core::Partition*)*element);
+        }
     }
     partition_definitions->clear();
     delete partition_definitions;
@@ -38,6 +43,7 @@ void DiskUtils::enter(){
             break;
         }
         settings.clear_cache = true;
+        settings.sub_header = last_result_message;
     }
 }
 
@@ -48,23 +54,25 @@ void DiskUtils::createNewVirtualDiskFile(){
     uint64_t size;
     bool pathIsValid = false;
     std::string response;
-
+    int result;
     while(!pathIsValid){
         std::cout << "Enter disk path (e.g. /home/<USERNAME>/disk.vdf):" << std::endl;
         std::cin >> path;
 
-        int result = utils::verifyInput(path);
+        result = utils::verifyInput(path);
         if(utils::verify_results::operation_aborted == result){
-            std::cout << utils::colors::YELLOW << "Operation aborted" << utils::colors::RESET;
+            last_result_message = utils::colors::YELLOW;
+            last_result_message.append("Operation aborted.").append(utils::colors::RESET);
             return;
-        }else if(utils::verify_results::input_path_invalid == result){
-            std::cout << utils::colors::RED << "Given path is invalid" << utils::colors::RESET;
         }else if(utils::verify_results::input_to_small == result){
-            std::cout << utils::colors::RED << "Given path is invalid" << utils::colors::RESET;
+            last_result_message = utils::colors::RED;
+            last_result_message.append("Given path is invalid.").append(utils::colors::RESET);
         }else if(path[0] != '/' && (path[0] != '.' && path[1] != '/')){
-            std::cout << utils::colors::CLEAR << utils::colors::RED << "Path must start with <" << utils::colors::RESET;
-            std::cout << "/" << utils::colors::RED << "> or <" << utils::colors::RESET << "./";
-            std::cout << utils::colors::RED << ">. Given Path is invalid: " << utils::colors::RESET << path << std::endl;
+            last_result_message = utils::colors::RED;
+            last_result_message.append("Path must start with</> or <./>").append(utils::colors::RESET);
+            //std::cout << utils::colors::CLEAR << utils::colors::RED << "Path must start with <" << utils::colors::RESET;
+            //std::cout << "/" << utils::colors::RED << "> or <" << utils::colors::RESET << "./";
+            //std::cout << utils::colors::RED << ">. Given Path is invalid: " << utils::colors::RESET << path << std::endl;
         }else if((path[path.size() - 4] != '.') && 
                  (path[path.size() - 3] != 'v') && 
                  (path[path.size() - 2] != 'd') && 
@@ -83,6 +91,8 @@ void DiskUtils::createNewVirtualDiskFile(){
                     break;
                 } if(response == "n") {
                     pathIsValid = false;
+                    last_result_message = utils::colors::YELLOW;
+                    last_result_message.append("Operation aborted.").append(utils::colors::RESET);
                     std::cout << utils::colors::CLEAR;
                     break;
                 }
@@ -93,27 +103,17 @@ void DiskUtils::createNewVirtualDiskFile(){
 
     std::cout << "Disk size in bytes: ";
     std::cin >> size;
+   
+
     if(size > MAX_DISK_SIZE){
-        std::cout << utils::colors::RED << "Given size is to big." << utils::colors::RESET << std::endl;
+        last_result_message = utils::colors::RED;
+        last_result_message.append("Given size is to big.").append(utils::colors::RESET);
         return;
     }
-
     createDisk(path.c_str(), size);
-
-
-
-
-    if(utils::verifyInput(path)){
-        std::cout << "Disk size in bytes: ";
-        std::cin >> size;
-        if(size > MAX_DISK_SIZE){
-            std::cout << utils::colors::RED << "Given size is to big." << utils::colors::RESET << std::endl;
-            wait(std::cin);
-            return;
-        }
-        createDisk(path.c_str(), size);
-    }
-    wait(std::cin);
+    last_result_message = utils::colors::GREEN;
+    last_result_message.append("Disk created under ").append(path).append(utils::colors::RESET);
+    
 }
 void DiskUtils::loadExistingVirtualDiskFile(){
     std::cout << utils::colors::CLEAR << "This wizard allows you to load partitions from a virtual disk file."<< std::endl 
@@ -122,11 +122,24 @@ void DiskUtils::loadExistingVirtualDiskFile(){
     std::string path;
     std::cout << "Virtual disk file path: ";
     std::cin >> path;
+    int result = utils::verifyInput(path);
     
-    if(utils::verifyInput(path)){
-        loadDisk(path.c_str());
+    if(utils::verify_results::operation_aborted == result){
+        last_result_message = utils::colors::YELLOW;
+        last_result_message.append("Operation aborted.").append(utils::colors::RESET);
+        return;
+    }else if(utils::verify_results::input_to_small == result){
+        last_result_message = utils::colors::RED;
+        last_result_message.append("Given path is invalid.").append(utils::colors::RESET);
+        return;
+    }else if(path[0] != '/' && (path[0] != '.' && path[1] != '/')){
+        last_result_message = utils::colors::RED;
+        last_result_message.append("Path must start with</> or <./>").append(utils::colors::RESET);
+        return;
     }
-    wait(std::cin);
+    loadDisk(path.c_str());
+    last_result_message = utils::colors::GREEN;
+    last_result_message.append("Disk loaded from ").append(path).append(utils::colors::RESET);
 }
 
 void DiskUtils::verifyVirtualDiskFile(){
@@ -134,10 +147,22 @@ void DiskUtils::verifyVirtualDiskFile(){
     std::string path;
     std::cout << "Virtual disk file path: ";
     std::cin >> path;
-    if(utils::verifyInput(path)){
-        verifyDisk(path.c_str());
+    int result = utils::verifyInput(path);
+    
+    if(utils::verify_results::operation_aborted == result){
+        last_result_message = utils::colors::YELLOW;
+        last_result_message.append("Operation aborted.").append(utils::colors::RESET);
+        return;
+    }else if(utils::verify_results::input_to_small == result){
+        last_result_message = utils::colors::RED;
+        last_result_message.append("Given path is invalid.").append(utils::colors::RESET);
+        return;
+    }else if(path[0] != '/' && (path[0] != '.' && path[1] != '/')){
+        last_result_message = utils::colors::RED;
+        last_result_message.append("Path must start with</> or <./>").append(utils::colors::RESET);
+        return;
     }
-    wait(std::cin);
+    verifyDisk(path.c_str());
 }
 
 
@@ -234,19 +259,35 @@ void DiskUtils::loadDisk(const char* path){
     core::disk::virtual_disk_file* df = core::disk::load_master_boot_record(path);
 
     if(df->partition_1 != nullptr){
-        partition_definitions->push_back(df->partition_1);
+        if(df->partition_1->file_system_type == FAT){
+            partition_definitions->push_back(new core::file_allocation_table::FATFileSystem(df->partition_1));
+        }else{
+            partition_definitions->push_back(new core::Partition(df->partition_1));
+        }
     }
     
     if(df->partition_2 != nullptr){
-        partition_definitions->push_back(df->partition_2);
+        if(df->partition_2->file_system_type == FAT){
+            partition_definitions->push_back(new core::file_allocation_table::FATFileSystem(df->partition_2));
+        }else{
+            partition_definitions->push_back(new core::Partition(df->partition_2));
+        }
     }
     
     if(df->partition_3 != nullptr){
-        partition_definitions->push_back(df->partition_3);
+        if(df->partition_3->file_system_type == FAT){
+            partition_definitions->push_back(new core::file_allocation_table::FATFileSystem(df->partition_3));
+        }else{
+            partition_definitions->push_back(new core::Partition(df->partition_3));
+        }
     }
     
     if(df->partition_4 != nullptr){
-        partition_definitions->push_back(df->partition_4);
+        if(df->partition_4->file_system_type == FAT){
+            partition_definitions->push_back(new core::file_allocation_table::FATFileSystem(df->partition_4));
+        }else{
+            partition_definitions->push_back(new core::Partition(df->partition_4));
+        }
     }
 
 }

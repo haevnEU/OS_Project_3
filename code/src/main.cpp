@@ -10,29 +10,45 @@
 
 
 void signalHandler(int signum){
-    std::cout << utils::colors::RED << "An important signal was caught: " << strsignal(signum) << ": " << signum << utils::colors::RESET << std::endl;
-    std::cout << utils::colors::RED << "Please open a new issue ticket on github with your previous interaction, if possible including detailed description and screenshot" << utils::colors::RESET << std::endl;
+    std::cout << utils::colors::RESET << std::dec << std::endl << utils::colors::RED 
+            << "An important signal was caught: " << strsignal(signum) << "[" << signum << "]" << std::endl
+            << "Please open a new issue ticket on github with your previous interaction, if possible including detailed description and screenshot" << utils::colors::RESET << std::endl;
     exit(signum);
 }
 
+void signalINT(int signum){
+    if(signum == SIGINT){
+        const char* entries[2] = {"Yes", "No"};
+        utils::menu::menu_settings settings; 
+        settings.preselected_row = 1;
+        settings.sub_header = "You are going to quit the driver application, are you sure?";
+        int choice = utils::menu::print(entries, 2, "BIOS", settings);
+        if(0 == choice){
+            exit(signum);
+        }
+    }else{
+        exit(signum);
+    }
+}
 
 #include <stdio.h>
-
-
-
+#include <sys/stat.h>
 int main(int argc, const char* argv[]) {
+
     std::cout << utils::colors::CLEAR;
     for(int i = 0; i < argc; i++){
         if(strcmp(argv[i], "-d") == 0){
-            DEBUG = true;
             std::cout << utils::colors::MAGENTA << "DEBUG ENABLED" << utils::colors::RESET << std::endl;
         }
+        std::cout<<argv[i];
     }   
     
     signal(SIGABRT, signalHandler);
     signal(SIGFPE, signalHandler);
     signal(SIGILL, signalHandler);
     signal(SIGSEGV, signalHandler);
+
+    signal(SIGINT, signalINT);
     const char* entries[] = {"Disk", "Master Boot Record", "Partition", "Shutdown", "Start OS"};
     core::utilities::DiskUtils& du = core::utilities::DiskUtils::getInstance();
     core::utilities::MasterBootRecordUtils& mbru = core::utilities::MasterBootRecordUtils::getInstance();

@@ -6,9 +6,8 @@
 #include <string>
 #include <iomanip>
 #include <limits>
-
 #include <iomanip>
-#include <limits>
+
 #include <cstdint>
 
 extern "C"{
@@ -23,9 +22,6 @@ extern "C"{
 #include "logger.h"
 #include "progressbar.h"
 #include "terminal_colors.h"
-//#include "diskutils.hpp"
-
-static bool DEBUG = false;
 
 /**
  * @brief Current version
@@ -41,6 +37,20 @@ static bool DEBUG = false;
 #define MB (1024 * KB)
 #define GB (1024 * MB)
 #define MAX_DISK_SIZE 5368709120
+
+
+#define INODE 0x82
+#define FAT 0x0C
+#define FAT_HIDDEN 0x1C
+
+static const char* fs_number_to_string(uint8_t number){
+    switch(number){
+        case 0x82: return "INODE";
+        case 0x0C: return "FAT";
+        case 0x1C: return "FAT HIDDEN";
+    }
+    return "UNKNOWN";
+}
 
 /**
  * @brief wait This method waits for input
@@ -157,9 +167,6 @@ namespace utils{
         }else if(path[0] ==  'q' || path[0] == 'Q'){
             std::cout << utils::colors::YELLOW << "Operation aborted" << utils::colors::RESET << std::endl;
             return verify_results::operation_aborted;
-        }else if(path[0] != '/'){
-            std::cout << utils::colors::RED << "Given path was invalid." << utils::colors::RESET << std::endl;
-            return verify_results::input_path_invalid;
         }
 
         return verify_results::operation_ok;
@@ -269,7 +276,63 @@ namespace utils::menu{
             std::cout << ::utils::colors::CLEAR << menu_header << " " << ::utils::dateTime() << std::endl;
 
             std::cout << "Use W/S to navigate and <ENTER> to select" << std::endl;
-            
+            if(settings.sub_header.size() > 0){
+                std::cout << settings.sub_header << std::endl;
+            }
+
+            std::cout << std::endl;
+            for(int i = 0; i < amount_entries; i++){
+                printEntry(entries[i], i, row, settings);
+            }
+            c = getch();
+
+            if(c == 'W' || c == settings.up_key){
+                row--;
+                if(row < 0){
+                    row = ((settings.row_selection_overflow) ? amount_entries - 1 : 0);
+                }
+            }
+            if(c == 'S' || c == settings.down_key){
+                row++;
+                if(row >= (amount_entries)){
+                    row = ((settings.row_selection_overflow) ? 0 : amount_entries - 1);
+                }
+            }
+            if(c == 10){
+                break;
+            }
+        }
+
+        return row;
+    }
+
+
+    /**
+     * @brief This methods prints a menu on the terminal
+     * @details This method prints every menu entry on the terminal and allows the selection
+     *          with specified keys. The menu is customizable via a settings argument.
+     *          The result value correspond to the provided entries, e.g. result 0 <=> entries[0]
+     *          A known bug is that the input stream is filled after some operation, therefore
+     *          setting the settings entry clear_cache is recommended
+     * @param entries Menu entries which should be printed
+     * @param amount_entries Amount of the entries
+     * @param menu_header Header of the menu
+     * @param settings Settings object
+     * @return int Selected 0 based index
+    */
+    static inline int print(char* entries[], int amount_entries, const char* menu_header, menu_settings& settings){
+        char c = 'D';
+        int row = settings.preselected_row;
+        if(settings.clear_cache){
+            char c2;
+            while ((c2 = getchar()) != '\n' && c2 != EOF) { }
+        }
+
+        while(true){
+            std::system("clear");
+            std::cout << ::utils::colors::CLEAR << menu_header << " " << ::utils::dateTime() << std::endl;
+
+            std::cout << "Use W/S to navigate and <ENTER> to select" << std::endl;
             if(settings.sub_header.size() > 0){
                 std::cout << settings.sub_header << std::endl;
             }
