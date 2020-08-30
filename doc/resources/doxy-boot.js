@@ -77,7 +77,7 @@ $(document).ready(function () {
 	/*
 	 * Sidenav
 	 */
-	$("div#side-nav").css("min-height", "100%").css("margin-bottom", "5rem").prependTo($("#doc-content"));
+	$("div#side-nav").css("min-height", "100%").css("border-bottom", "6px solid #343a40").css("margin-bottom", "5rem").prependTo($("#doc-content"));
 	$("div#side-nav ul").addClass("list-group");
 	$(".ui-resizable-e").css("background-image", "none").css("border-right", "6px solid #343a40")
 	
@@ -328,6 +328,12 @@ $(document).ready(function () {
 	}).remove();
 	$("div.qindex > a.qindex").addClass("btn btn-default btn-secondary btn-xs");
 
+	/* TTC
+	 *
+	 */
+	$(".ttname").addClass
+	$(".ttc").addClass("my-4");
+	$(".ttc").wrapAll("<div class='container-fluid' style='flex-grow: 1'><div class='row'><div class='col-12'><div class='card'><div class='card-body'></div></div></div></div></div>");
 	/*
 	 * Page Footer
 	 */
