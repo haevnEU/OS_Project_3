@@ -1,0 +1,28 @@
+var terminal__colors_8h =
+[
+    [ "BACK_BLACK", "terminal__colors_8h.html#gab1803b48972c48ff88fefe556b9efd90", null ],
+    [ "BACK_BLUE", "terminal__colors_8h.html#ga9da295acd71123a4dc49191a5d6d5bd5", null ],
+    [ "BACK_CYAN", "terminal__colors_8h.html#ga3a1d4ad0d73e32be694e28eda55848ae", null ],
+    [ "BACK_GREEN", "terminal__colors_8h.html#ga82ac096ef6dda7601cf7c41474dec82c", null ],
+    [ "BACK_MAGENTA", "terminal__colors_8h.html#gaab18f3b8694b85880c9c87133c1c271d", null ],
+    [ "BACK_RED", "terminal__colors_8h.html#ga18fd265a9d79d6fadb7a5f40070dd1eb", null ],
+    [ "BACK_WHITE", "terminal__colors_8h.html#ga7270f3dfa22b187440a3e990039dff23", null ],
+    [ "BACK_YELLOW", "terminal__colors_8h.html#ga92452e1dea12135ba87c9be819ae770c", null ],
+    [ "BLACK", "terminal__colors_8h.html#ga3c6a324bf54b546bce165f2b94653a15", null ],
+    [ "BLUE", "terminal__colors_8h.html#gac06b432bc5919eee4ff0e75dcb2d6dd8", null ],
+    [ "BOLD", "terminal__colors_8h.html#gaa049ef8364fe6314afb82a3a28bd6166", null ],
+    [ "CLEAR", "terminal__colors_8h.html#ga6bb3fcf1c0dfdc267017454a311ce598", null ],
+    [ "CYAN", "terminal__colors_8h.html#ga81ab18f506ec71227a11b71e55a26aac", null ],
+    [ "endl", "terminal__colors_8h.html#ga04589a910affb07bc61467c410908604", null ],
+    [ "GREEN", "terminal__colors_8h.html#ga5aaacd7277aa298742af537b48416b04", null ],
+    [ "ICON_ACCEPT", "terminal__colors_8h.html#gae1de14ffa8f0de13f0c4e15a3f22ab6f", null ],
+    [ "ICON_ACCEPT_RAW", "terminal__colors_8h.html#gab33e30e60f7a0590493a7ce584ee36cc", null ],
+    [ "ICON_DENIED", "terminal__colors_8h.html#ga154c4ca6f17fc29bbf71a82f8eb8f284", null ],
+    [ "ICON_DENIED_RAW", "terminal__colors_8h.html#ga591eff8db2fe2fca9b5435aa7bb0a9e9", null ],
+    [ "MAGENTA", "terminal__colors_8h.html#gadfa5c19c5130e07ce97ec511e1f80fca", null ],
+    [ "RED", "terminal__colors_8h.html#ga35bae08f101f8d977f2332fe24da8e39", null ],
+    [ "RESET", "terminal__colors_8h.html#ga524eea5d0aa7f10bb7728b140905385c", null ],
+    [ "UNDERLINE", "terminal__colors_8h.html#ga1d8613f04cd4555e31b1ec52baad8690", null ],
+    [ "WHITE", "terminal__colors_8h.html#gaa0569a83228c5bbb1234f5271a6e17db", null ],
+    [ "YELLOW", "terminal__colors_8h.html#ga2c15ee871a8fce6df870974a7c5316be", null ]
+];
