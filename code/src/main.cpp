@@ -121,9 +121,11 @@
  * </ol>
  */
 
-* @brief This is a function pointer for an error handler
-         * @details This fp is called iff an error occurred during one operation
-         * @param code The error code of the operation
+/**
+ * @brief This is a function pointer for an error handler
+ * @details This fp is called iff an error occurred during one operation
+ * @param code The error code of the operation
+ */
 void signalHandler(int signum){
     std::cout << utils::colors::RESET << std::dec << std::endl << utils::colors::RED 
             << "An important signal was caught: " << strsignal(signum) << "[" << signum << "]" << std::endl
