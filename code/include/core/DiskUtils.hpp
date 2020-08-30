@@ -1,23 +1,35 @@
 #pragma once
 
+// c++ includes
 #include <vector>
 
+// project includes
 #include "../utils/utils.h"
-
 #include "virtualDiskFile.hpp"
 #include "partition.hpp"
 
-namespace core::utilities{
+/*!
+ *  \addtogroup core
+ *  @{
+ */
+
+/**
+ * @brief Utilities
+ */
+namespace core::utilities
+{
     
     /**
      * @brief This is is utility class.
      * @details This class handles the operation with the pure virtual disk file. It will also contain all loaded partitions from all virtual disk files.
      * @version 1.0.0.0
      */
-    class DiskUtils{
+    class DiskUtils
+    {
     public:
         
-        static DiskUtils& getInstance(){
+        static DiskUtils& getInstance()
+        {
             static DiskUtils instance;
             return instance;
         }
@@ -29,9 +41,11 @@ namespace core::utilities{
         std::vector<core::Partition*>* partition_definitions;
 
         std::string last_result_message;
-    private: 
+
+    private: /* methods *************************************/
         /**
-         * @brief Construct a new Disk Utils object
+         * @brief Constructor
+         * @details Constructs a new Disk Utils object
          */
         DiskUtils();
 
@@ -53,41 +67,41 @@ namespace core::utilities{
          */
         void verifyVirtualDiskFile();
 
-    public:
-        
+    public: /* methods *************************************/
         /**
-         * @brief Destroy the Disk Utils object
+         * @brief Disk Destroyer
+         * @details Destroys the Disk Utils object
          */
         ~DiskUtils();
 
         /**
          * @brief Enters the tui
-         * @details This method invokes the TUI of this class, it will work via the terminal interface.
+         * @details Invokes the TUI of this class, will work via the terminal interface.
          *          The private wrapper methods are called for the api usage.
          */
         void enter();
 
         /**
-         * @brief This method creates a new virtual disk file
+         * @brief Disk Constructor
+         * @details Creates a new virtual disk file
          * @param path Full path, including file name, to the virtual disk file
          * @param size Size of the virtual disk file
          */
         void createDisk(const char* path, uint64_t size);
 
         /**
-         * @brief Verifies a virtual disk file.
-         * @details This method does a couple steps. First step is to ensure the path is valid. Next step is to verify the extension
-         *          The last step is to ensure that the virtual disk file is compatible with this code, doing so the file will
-         *          be mapped into memory and searched for the version check at the end, if its found the version is checked against the
-         *          project ID and code version.
+         * @brief Virtual disk file verificator
+         * @details Validates path, extendion and compatibilty. Maps file into memory.
+         *          Also searched for the version check at the end, if its found the 
+         *          version is checked against the project ID and code version.
          * @param path Path to the virtual disk file
-         * @return True Iff the virtual disk file is a valid one.
+         * @return True if the virtual disk file is a valid one
          */
         bool verifyDisk(const char* path);
 
         /**
-         * @brief This methods loads the content of the master boot record
-         * @details Important the disk is not fully loaded into memory. This method checks the master boot record
+         * @brief Loads content of the master boot record
+         * @details Important the disk is not fully loaded into memory. Checks the master boot record
          *          and creates a new virtual_disk_file definition where the partitions from will be added
          *          to the partition_definitions object.
          * @param path Path to the virtual disk file

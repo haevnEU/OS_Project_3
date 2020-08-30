@@ -7,25 +7,37 @@ PartitionUtils::PartitionUtils(){}
 
 PartitionUtils::~PartitionUtils(){}
 
-void PartitionUtils::createNewPartition(){
+void PartitionUtils::createNewPartition()
+{
+    ///-- Console Output: Request path input
     std::cout << utils::colors::CLEAR;
     std::cout << "This wizard allows the creation of a master boot record." << std::endl << "Enter path to virtual disk file: ";
+
+    ///-- Console Input: Path
     std::string path;
     std::cin >> path;
+
+    ///-- Verify Input: Path
     int resultCode = utils::verifyInput(path);
-    if(resultCode == utils::verify_results::operation_aborted){
+
+    if(resultCode == utils::verify_results::operation_aborted)
+    {
+        ///- Handle possible abort
         error_message = utils::colors::YELLOW;
         error_message.append("Operation aborted").append(utils::colors::RESET);
         return;
-    }else if(resultCode == utils::verify_results::input_to_small || resultCode == utils::verify_results::input_path_invalid){
+    }
+    else if(resultCode == utils::verify_results::input_to_small || resultCode == utils::verify_results::input_path_invalid)
+    {
+        ///- Handle possible invalid input
         error_message = utils::colors::YELLOW;
         error_message.append("Given input was invalid").append(utils::colors::RESET);
         return;
-    }else{
+    }
+    else
+    {
+        ///-- Console Output: Request partition file system type
         const char* entries[] = { "INode", "FAT", "FAT hidden", "Cancel"};
-        char c2;
-       // int choice = utils::menu::printMenu("New Partition", entries, 4, true);
-        
         utils::menu::menu_settings settings;
         settings.clear_cache = true;
         settings.row_selection_overflow = true;
@@ -49,102 +61,176 @@ void PartitionUtils::createNewPartition(){
         }
 
         uint64_t size;
-        std::cout << "Enter virtual disk size: ";
+
+        ///-- Console Output: Request path input
+        std::cout << "Enter partition size: ";
+
+        ///-- Console Input: Path
         std::cin >> size;
-        if(size < 0){
+
+        if(size < 0)
+        {
+            ///- Handle possible invalid input (negative input)
             error_message = utils::colors::RED;
             error_message.append("Given size is to small").append(utils::colors::RESET);
             return;
-        }else if(size > MAX_DISK_SIZE){
+        }
+        else if(size > MAX_DISK_SIZE)
+        {
+            ///- Handle possible invalid input (input bigger than max disk size)
             error_message = utils::colors::RED;
             error_message.append("Given size is to big").append(utils::colors::RESET);
             return;
         }
 
+        ///-- Call createPartition
         createPartition(path.c_str(), size, choice);
     }
 }
 
-void PartitionUtils::wipeExistingPartition(){
+void PartitionUtils::wipeExistingPartition()
+{
+    ///-- Console Output: Request path input
     std::cout << utils::colors::CLEAR;
-    std::cout << "This wizard allows the creation of a master boot record." << std::endl << "Enter path to virtual disk file: ";
+    std::cout << "This wizard wipes a partition." << std::endl << "Enter path to virtual disk file: ";
+
+    ///-- Console Input: Path
     std::string path;
     std::cin >> path;
+
+    ///-- Verify Input: Path
     int resultCode = utils::verifyInput(path);
-     if(resultCode == utils::verify_results::operation_aborted){
+
+    if(resultCode == utils::verify_results::operation_aborted)
+    {
+        ///- Handle possible abort
         error_message = utils::colors::YELLOW;
         error_message.append("Operation aborted").append(utils::colors::RESET);
         return;
-    }else if(resultCode == utils::verify_results::input_to_small || resultCode == utils::verify_results::input_path_invalid){
+    }
+    else if(resultCode == utils::verify_results::input_to_small || resultCode == utils::verify_results::input_path_invalid)
+    {
+        ///- Handle possible invalid input
         error_message = utils::colors::YELLOW;
         error_message.append("Given input was invalid").append(utils::colors::RESET);
         return;
-    }else{
+    }
+    else
+    {
+        ///-- Console Output: Request partition number
         const char* entries[] = { "Partition 1", "Partition 2", "Partition 3", "Partition 4", "Cancel"};
         utils::menu::menu_settings settings;
         settings.clear_cache = true;
         settings.row_selection_overflow = true;
         settings.preselected_row = 0;
         int choice = utils::menu::print(entries, 5, "Wipe Partition", settings);
-        if(choice == 4){
-            return;
-        }else if(choice < 0 || choice > 3){
+        
+        if(choice == 4)
+        {
+            ///- Handle possible abort
             return;
         }
+        else if(choice < 0 || choice > 3)
+        {
+            ///- Handle possible invalid input
+            return;
+        }
+
+        ///-- Call wipePartition
         wipePartition(path.c_str(), choice);
     }
 }
 
-void PartitionUtils::eraseExistingPartition(){
+void PartitionUtils::eraseExistingPartition()
+{
+    ///-- Console Output: Request path input
     std::cout << utils::colors::CLEAR;
-    std::cout << "This wizard allows the creation of a master boot record." << std::endl << "Enter path to virtual disk file: ";
+    std::cout << "This wizard erases a partition." << std::endl << "Enter path to virtual disk file: ";
+    
+    ///-- Console Input: Path
     std::string path;
     std::cin >> path;
+    
+    ///-- Verify Input: Path
     int resultCode = utils::verifyInput(path);
-     if(resultCode == utils::verify_results::operation_aborted){
+
+    if(resultCode == utils::verify_results::operation_aborted)
+    {
+        ///- Handle possible abort
         error_message = utils::colors::YELLOW;
         error_message.append("Operation aborted").append(utils::colors::RESET);
         return;
-    }else if(resultCode == utils::verify_results::input_to_small || resultCode == utils::verify_results::input_path_invalid){
+    }
+    else if(resultCode == utils::verify_results::input_to_small || resultCode == utils::verify_results::input_path_invalid)
+    {
+        ///- Handle possible invalid input
         error_message = utils::colors::YELLOW;
         error_message.append("Given input was invalid").append(utils::colors::RESET);
         return;
-    }else{
+    }
+    else
+    {
+        ///-- Console Output: Request partition number
         const char* entries[] = { "Partition 1", "Partition 2", "Partition 3", "Partition 4", "Cancel"};
         utils::menu::menu_settings settings;
         settings.clear_cache = true;
         settings.row_selection_overflow = true;
         settings.preselected_row = 0;
         int choice = utils::menu::print(entries, 5, "Erase Partition", settings);
-        if(choice == 4){
-            return;
-        }else if(choice < 0 || choice > 3){
+        
+        if(choice == 4)
+        {
+            ///- Handle possible abort
             return;
         }
+        else if(choice < 0 || choice > 3)
+        {
+            ///- Handle possible invalid input
+            return;
+        }
+
+        ///-- Call wipePartition
         erasePartition(path.c_str(), choice);
     }
 }
 
-void PartitionUtils::enter(){
-    const char* entries[] = {"Create new partition", "Wipe partition", "Erase partition", "Return to BIOS"};
+void PartitionUtils::enter()
+{
+    const char* entries[] = {
+        "Create new partition", 
+        "Wipe partition", 
+        "Erase partition", 
+        "Return to BIOS"
+    }; // TUI Options
+
     int choice = -1;
     bool active = true;
     utils::menu::menu_settings settings;
     settings.clear_cache = false;
     settings.row_selection_overflow = true;
     settings.preselected_row = 0;
-    while(active){
+
+    ///-- Console Output: Print Terminal User Interface
+    while(active)
+    {
         choice = utils::menu::print(entries, 4, "PartitionUtils", settings);
-        switch(choice){
+        switch(choice)
+        {
+            ///- Create New Partition Wizard
             case 0:
                 createNewPartition();
             break;
+
+            ///- Wipe Partition Wizard
             case 1:
                 wipeExistingPartition();
             break;
+
+            ///- Erase Partition Wizard
             case 2:
                 eraseExistingPartition();
             break; 
+
             case 3:
                 return;
             break;

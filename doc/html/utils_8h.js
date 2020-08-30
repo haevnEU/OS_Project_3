@@ -1,0 +1,28 @@
+var utils_8h =
+[
+    [ "CURRENT_VIRTUAL_DISK_FILE_VERSION", "utils_8h.html#a3554cb3e2ef7a28253e435954efd73bb", null ],
+    [ "FAT", "utils_8h.html#a2a4ff3ebb1e84d19ad8c832240ced6a7", null ],
+    [ "FAT_HIDDEN", "utils_8h.html#a52eb744e9b44e441ce11285e2cc48cb4", null ],
+    [ "GB", "utils_8h.html#a44172ac633c517cb4c9e278cef36b000", null ],
+    [ "INODE", "utils_8h.html#abc34329ed4fdc8733f156d783ed30a69", null ],
+    [ "KB", "utils_8h.html#a1841fd1a462d245d8c73dce55e2f45da", null ],
+    [ "MAX_DISK_SIZE", "utils_8h.html#a0f089f6e048ef47cedffaaef07396004", null ],
+    [ "MB", "utils_8h.html#aa6b38d492364d98453284934ed7caee9", null ],
+    [ "MINIMUM_VIRTUAL_DISK_FILE_VERSION", "utils_8h.html#ac3c45f1ff9dff3702770384fd9c085c0", null ],
+    [ "dateTime", "utils_8h.html#ga391707b5e70fd090b62ab87fc1050b51", null ],
+    [ "fs_number_to_string", "utils_8h.html#af61383476397434575c51310df034467", null ],
+    [ "getch", "group__utils.html#ga072c04715852bf9b6295a975af1d3988", null ],
+    [ "getch_", "utils_8h.html#gaccfa71d8ecc05a8b63dd74fe8201671b", null ],
+    [ "initTermios", "utils_8h.html#ga7f7b29309466c1011c3dd4077e899523", null ],
+    [ "print", "utils_8h.html#ga780f217793fbbb8219440fa732c6fd60", null ],
+    [ "printEntry", "utils_8h.html#ga18318e627f2ca02d3cf68e49f54ef213", null ],
+    [ "printMenu", "utils_8h.html#ga4d0bd531d639cad5677010ff9500ca1d", null ],
+    [ "resetTermios", "utils_8h.html#ga41f6840bd0aeb45f22c1e61c6eed45ed", null ],
+    [ "verifyInput", "utils_8h.html#gae547711a9947c91084910505aac4152e", null ],
+    [ "wait", "utils_8h.html#acd755f8972c9cca5a982eec97a2ad70f", null ],
+    [ "current", "utils_8h.html#ga82226651e86f75c41312e1588d268020", null ],
+    [ "input_path_invalid", "utils_8h.html#gaa4f8400938eedab34eed86bf4ab90d96", null ],
+    [ "input_to_small", "utils_8h.html#gabb54f0195e10bb348b6769678f13a188", null ],
+    [ "operation_aborted", "utils_8h.html#ga4eb2393a0d7f81feccc627c951fce230", null ],
+    [ "operation_ok", "utils_8h.html#ga1540de495a213e1086370a8d3950bc52", null ]
+];

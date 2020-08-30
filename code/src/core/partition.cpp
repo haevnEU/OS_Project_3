@@ -32,6 +32,7 @@ void Partition::mount(){
         return;
     }
     
+    ///- Calculate Partition size
     size = definition->end_address - definition->start_address;
 
     std::cout << definition->start_address << std::endl;
@@ -50,32 +51,45 @@ sysconf(_SC_PAGE_SIZE);
 }
 
 void Partition::unmount(){
+    ///- Checks if Partition is mounted, abort if not
     if(!isMounted()){
         return;
     }
+
+    ///- Handle possible mapping failure error
     if(0 != munmap(data_m,  static_cast<size_t>(size))){ 
         handle_error(partition_codes::mapping_failure);
         return;
     }
 
+    ///- Set mounted false
     mounted = false;
 }
 
-void Partition::setByte(uint64_t address, uint8_t data){
+void Partition::setByte(uint64_t address, uint8_t data)
+{
+    ///- Checks if Partition is mounted, abort if not
     if(!isMounted()){
         handle_error(partition_codes::partition_not_mounted);
         return;
     }
-    if(validate_address(address) && validate_data()){
+
+    ///- Checks if address and data is valid
+    if(validate_address(address && validate_data())){
+        
     }
         data_m[512 + address] = data;
 }
 
-void Partition::clearByte(uint64_t address){
+void Partition::clearByte(uint64_t address)
+{
+    ///- Checks if Partition is mounted, abort if not
     if(!isMounted()){
         handle_error(partition_codes::partition_not_mounted);
         return;
     }
+
+    ///- Checks if address and data is valid
     if(validate_address(address) && validate_data()){
 
     }

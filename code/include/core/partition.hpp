@@ -4,11 +4,12 @@
 // c++ includes
 #include <vector>
 
-// c++ equivalent includes from c 
+// c++ equivalent includes from c
 #include <cstdint>
 
 // c include
-extern "C"{
+extern "C"
+{
     #include <unistd.h>
     #include <fcntl.h>
     #include <sys/mman.h>
@@ -20,31 +21,43 @@ extern "C"{
 // project includes
 #include "../utils/utils.h"
 
+/*!
+ *  \addtogroup core
+ *  @{
+ */
 
-namespace core{
-    
+/**
+ * @brief Core Elements
+ * @details Defines partitions, their details and codes.
+ */
+namespace core
+{
 
     /**
-     * @brief This enumeration contains all possible result codes of any operation on a partition
+     * @brief Contains all possible Result Codes of any operation on a partition
+     * @details Mostly used by validators.
+     * @version 1.0.0.0
      */
-    enum partition_codes{
-        OK = 0x00,
-        data_invalid = 0x01,
-        address_underflow = 0x02,
-        address_overflow = 0x03,
-        partition_mounted = 0x04,
-        partition_not_mounted = 0x05,
-        index_out_of_bounds = 0x06,
-        no_definition = 0x07,
-        file_not_exist = 0x08,
-        file_open_failure = 0x09, 
-        mapping_failure = 0x0A,
+    enum partition_codes
+    {
+        OK = 0x00,                    ///< Ok
+        data_invalid = 0x01,          ///< Invalid Data
+        address_underflow = 0x02,     ///< Address Underflow
+        address_overflow = 0x03,      ///< Address Overflow
+        partition_mounted = 0x04,     ///< Partition is mounted.
+        partition_not_mounted = 0x05, ///< Partition is not mountet.
+        index_out_of_bounds = 0x06,   ///< Array has been accessed with an illegal index.
+        no_definition = 0x07,         ///< Definition is missing
+        file_not_exist = 0x08,        ///< File does not exist
+        file_open_failure = 0x09,     ///< Can't open file
+        mapping_failure = 0x0A,       ///< Mapping failed
 
-        unknown = 0xFF
+        unknown = 0xFF ///< Unknown result
     };
 
     /**
-     * @brief This struct contains basic information about a partition
+     * @brief Defines partition details on a virtual disk
+     * @details Contains basic information about addresses, type and primary flag
      */
     struct partition_definition{
 
@@ -64,7 +77,7 @@ namespace core{
     };
 
     /**
-     * @brief This class wraps a part of a virtual disk file which represents a partition.
+     * @brief Wraps a part of a virtual disk file which represents a partition
      */
     class Partition{
         private:
@@ -185,25 +198,30 @@ namespace core{
             }
         }
 
-    private: // inlined methods
+
+    private: /* inlined methods *****************************/
         /**
-         * @brief This method checks if a error handler exists and calls it      
+         * @brief Checks if a error handler exists and calls it      
          * @param code Errorcode for the error handler
          */
-        inline void handle_error(uint8_t code){
-            if(nullptr != error_handler){
+        inline void handle_error(uint8_t code)
+        {
+            if (nullptr != error_handler)
+            {
                 error_handler(code);
             }
         }
 
         /**
-         * @brief Validates the data block 
-         * @details This inlined method validate the existing data block for nullptr.
-         *          Calls an error handler if the validation fails
-         * @return True iff the data block is not null otherwise false 
+         * @brief Validates data block 
+         * @details Validates the block for nullptr.
+         *          Calls an error handler if check was failed.
+         * @return true if block is valid, otherwise false 
          */
-        inline bool validate_data(){
-            if(nullptr == data_m){
+        inline bool validate_data()
+        {
+            if (nullptr == data_m)
+            {
                 handle_error(partition_codes::data_invalid);
                 return false;
             }
@@ -211,25 +229,31 @@ namespace core{
         }
 
         /**
-         * @brief Validates the address
-         * @details This methods validates if a address is in range of the partition
-         *          Calls an error handler if the validation fails
-         * @param address Address which should be validated
-         * @return True iff the address is in range of the partition range
+         * @brief Validates address
+         * @details Validates if a address is within partition range.
+         *          Calls an error handler if the validation fails.
+         * @param address To be validated address
+         * @return True if the address within partition range, otherwise false
          */
-        inline bool validate_address(uint64_t address){        
-            if(address > definition->end_address){
+        inline bool validate_address(uint64_t address)
+        {
+            ///1. Checks if address is behind end of address range
+            if (address > definition->end_address)
+            {
                 handle_error(partition_codes::address_overflow);
                 return false;
             }
-            
-            if(address < definition->start_address){
+
+            ///2. Checks if address is before start of address range
+            if (address < definition->start_address)
+            {
                 handle_error(partition_codes::address_underflow);
                 return false;
             }
+
             return true;
         }
     };
-}
+} // namespace core
 
 #endif //CORE__PARTITION_HPP

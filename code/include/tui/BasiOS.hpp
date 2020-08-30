@@ -5,14 +5,24 @@
 
 #include "../core/DiskUtils.hpp"
 
-namespace core::os{
+/*!
+ *  \addtogroup core
+ *  @{
+ */
+
+/**
+ * @brief OS Simulation elements
+ */
+namespace core::os
+{
     /**
-     * @brief This class is something like an OS.
+     * @brief Basic OS Simulation.
      * @details This class is the the virtual operating system which only handles file IO with loaded partition.
      *          It utilizes the core::utility namespace to operate with a virtual disk and implements the basic
      *          File IO with loaded disk. It also handles the disk management and defragmentation.
      */
-    class BasicOS{
+    class BasicOS
+    {
     private:
 
         int partition_index = -1;
@@ -70,12 +80,14 @@ namespace core::os{
 
     public:
         /**
-         * @brief Construct a new Basic O S object
+         * @brief Constructor
+         * @details Constructs a new Basic O S object
          */
         BasicOS();
         
         /**
-         * @brief Destroy the Basic O S object
+         * @brief Destructor
+         * @details Destroys the Basic O S object
          */
         ~BasicOS();
 
