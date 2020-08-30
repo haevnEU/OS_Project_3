@@ -70,54 +70,62 @@
  * 
  * Dieses Projekt simuliert ein 
  * 
- * \subsection runDE_sec Programmablauf
+ * \section runDE_sec Programmablauf
  * 
  * Nach dem Starten wird ein TUI (Terminal User Interface) dargestellt. Mithilfe der Tasten [W] und [S] kann in diesem auf-, bzw. abwärts navigiert werden. 
  * Eine getroffene Auswahl wird mit [ENTER] bestätigt.
  * 
  * <h5>Beispiel für einen möglichen Programmablauf</h5>
+ * \subsection step1 1. Disk erstellen
+ *  <ol>
+ *      <li>Eintrag ><b>DISK</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
+ *      <li>Eintrag ><b>Create new virtual disk file</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
+ *      <li>
+ *          Einen beliebigen Pfad eingeben. In diesem Beispiel wird <b>/home/user/disk.vdf</b> gewählt
+ *          <small><i>Anmerkung: user ist mit dem individuellen Benutzernamen zu ersetzen. Eine Disk kann nur in einem Verzeichnis mit entsprechender Rechtevergabe erstellt werden.</i></small>
+ *      </li>
+ *      <li>Eine beliebige Größe für die zu erzeugende Disk festlegen. In diesem Beispiel wird <b>3221225472</b> Byte gewählt</li>
+ *  </ol>
  * 
- * Eintrag ><b>DISK</b>< markieren, mit <b>[ENTER]</b> bestätigen.
+ * \subsection step2 2. Disk verifizieren
+ *  <ol>
+ *      <li>
+ *  </ol>
  * 
- * Eintrag ><b>Create new virtual disk file</b>< markieren, mit <b>[ENTER]</b> bestätigen.
+ * \subsection step3 3. Master Boot Record erstellen
+ *  <ol>
+ *     <li>Im Hauptmenü ><b>Master Boot Record</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
+ *     <li>Im folgenden Menü ><b>Create Master Boot Record</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
+ *     <li>Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>/home/user/disk.vdf</b></li>
  * 
- * Einen beliebigen Pfad eingeben. In diesem Beispiel wird <b>/home/user/disk.vdf</b> gewählt.
- * <small><i>Anmerkung: user ist mit dem individuellen Benutzernamen zu ersetzen. Eine Disk kann nur in einem Verzeichnis mit entsprechender Rechtevergabe erstellt werden.</i></small>
+ * \subsection step4 4. Partition erstellen
+ *  <ol>
+ *      <li>Im Hauptmenü ><b>Partition</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
+ *      <li>Im folgenden Menü ><b>Create new partition</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
+ *      <li>Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>/home/user/disk.vdf</b> <li>
+ *      <li>Im folgenden Menü ><b>FAT</b>< markieren, mit <b>[ENTER]</b> bestätigen</li>
+ *      <li>Eine beliebige Größe für die zu erzeugende Partition festlegen</li>
+ *      <li><b>Wichtig:</b> Nach dem erstellen einer Partition unbedingt die Disk neu laden. (<b>Disk</b> => <b>Load existing virtual disk file</b>)
+ * </ol>
  * 
- * Eine beliebige Größe für die zu erzeugende Disk festlegen. In diesem Beispiel wird <b>3221225472</b> Byte gewählt.
+ * \subsection step5 5. OS Starten
  * 
- * Zurück zum Hauptmenü navigieren. Dort ><b>Master Boot Record</b>< markieren, mit <b>[ENTER]</b> bestätigen.
- * 
- * Im folgenden Menü ><b>Create Master Boot Record</b>< markieren, mit <b>[ENTER]</b> bestätigen.
- * 
- * Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>/home/user/disk.vdf</b> .
- * 
- * Zurück zum Hauptmenü navigieren. Dort ><b>Partition</b>< markieren, mit <b>[ENTER]</b> bestätigen.
- * 
- * Im folgenden Menü ><b>Create new partition</b>< markieren, mit <b>[ENTER]</b> bestätigen.
- * 
- * Den Pfad zur erstellten Disk angeben, in diesem Beispiel <b>/home/user/disk.vdf</b> .
- * 
- * Im folgenden Menü ><b>FAT</b>< markieren, mit <b>[ENTER]</b> bestätigen.
- * 
- * Eine beliebige Größe für die zu erzeugende Partition festlegen.
- * 
- * \subsection updateDocDE Dokumentation aktualisieren
+ * \section updateDocDE Dokumentation aktualisieren
  * 
  * Um die Dokumentation zu aktualisieren wird Doxygen benötigt.
  * <ol>
- *  <li>
- *   <h5>Doxywizard öffnen</h5>
- *   <p>Empfohlene Version: <a href="https://www.doxygen.nl/download.html">1.8.18</a></p>
- *  </li>
- *  <li>
- *   <h5>Mit Doxywizard die Doxyfile öffnen</h5>
- *   <p>Die doxyfile befindet sich im Verzeichnis [project_root]/doc</p>
- * </li>
- *  <li>
- *   <h5>Doxywizard starten</h5>
- *   <p>Der Wizard wird die Dokumetation automatisch aktualisieren</p>
- *  </li>
+ *      <li>
+ *          <h5>Doxywizard öffnen</h5>
+ *          <p>Empfohlene Version: <a href="https://www.doxygen.nl/download.html">1.8.18</a></p>
+ *      </li>
+ *      <li>
+ *          <h5>Mit Doxywizard die Doxyfile öffnen</h5>
+ *          <p>Die doxyfile befindet sich im Verzeichnis [project_root]/doc</p>
+ *      </li>
+ *      <li>
+ *          <h5>Doxywizard starten</h5>
+ *          <p>Der Wizard wird die Dokumetation automatisch aktualisieren</p>
+ *      </li>
  * </ol>
  */
 
